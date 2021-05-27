@@ -1,0 +1,70 @@
+{
+  "name": "vanity-address-xApp",
+  "version": "0.4.0",
+  "description": "an XUMM xApp to buy XRP Ledger vanity addresses ",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --port 4201 --open",
+    "build": "ng build --prod",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nixer89/vanity-address-xApp.git"
+  },
+  "keywords": [
+    "xumm",
+    "xrp",
+    "xrpl"
+  ],
+  "author": "nixer89",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/nixer89/vanity-address-xApp/issues"
+  },
+  "homepage": "https://github.com/nixer89/vanity-address-xApp#readme",
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^11.2.14",
+    "@angular/cdk": "^11.2.13",
+    "@angular/common": "^11.2.14",
+    "@angular/compiler": "^11.2.14",
+    "@angular/core": "^11.2.14",
+    "@angular/flex-layout": "^11.0.0-beta.33",
+    "@angular/forms": "^11.2.14",
+    "@angular/material": "^11.2.13",
+    "@angular/material-moment-adapter": "^11.2.13",
+    "@angular/platform-browser": "^11.2.14",
+    "@angular/platform-browser-dynamic": "^11.2.14",
+    "@angular/router": "^11.2.14",
+    "buffer": "^6.0.3",
+    "copy-to-clipboard": "^3.3.1",
+    "moment": "^2.29.1",
+    "rxjs": "^6.6.7",
+    "tslib": "^2.2.0",
+    "xrpl-tagged-address-codec": "^0.2.1",
+    "xumm-sdk": "^0.4.6",
+    "zone.js": "~0.11.3"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^0.1102.13",
+    "@angular/cli": "^11.2.13",
+    "@angular/compiler-cli": "^11.2.14",
+    "@types/jasmine": "^3.7.4",
+    "@types/node": "^14.17.1",
+    "codelyzer": "^6.0.2",
+    "jasmine-core": "~3.6.0",
+    "jasmine-spec-reporter": "^6.0.0",
+    "karma": "^6.3.2",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.0.3",
+    "karma-jasmine": "~4.0.0",
+    "karma-jasmine-html-reporter": "^1.6.0",
+    "protractor": "~7.0.0",
+    "ts-node": "^9.1.1",
+    "tslint": "~6.1.0",
+    "typescript": "~4.1.5"
+  }
+}
