@@ -1,5 +1,4 @@
 import { Component, ViewChild, OnInit, Input, OnDestroy } from '@angular/core';
-import * as normalizer from './utils/normalizers'
 import { isValidXRPAddress } from './utils/utils';
 import { MatStepper } from '@angular/material/stepper';
 import { XummService } from './services/xumm.service';
@@ -10,16 +9,13 @@ import { XummTypes } from 'xumm-sdk';
 import { webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import { Subscription, Observable } from 'rxjs';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import * as flagUtils from './utils/flagutils';
-import { FormControl } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { TypeWriter } from './utils/TypeWriter';
 import * as clipboard from 'copy-to-clipboard';
 
 @Component({
   selector: 'vanity',
-  templateUrl: './vanity.html',
-  styleUrls: ['./vanity.css']
+  templateUrl: './vanity.html'
 })
 export class VanityComponent implements OnInit, OnDestroy {
 
@@ -30,17 +26,8 @@ export class VanityComponent implements OnInit, OnDestroy {
               private dateAdapter: DateAdapter<any>) { }
 
 
-  @ViewChild('inpamount') inpamount;
-  amountInput: string;
-
   @ViewChild('inpvanityword') inpvanityword;
   vanityWordInput: string;
-
-  @ViewChild('inpcancelaftertime') inpcancelaftertime;
-  cancelafterTimeInput: any;
-
-  @ViewChild('inpfinishaftertime') inpfinishaftertime;
-  finishafterTimeInput: string;
 
   @ViewChild('escrowStepper') stepper: MatStepper;
 
@@ -50,50 +37,25 @@ export class VanityComponent implements OnInit, OnDestroy {
   @Input()
   themeChanged: Observable<any>;
 
-  finishAfterFormCtrl:FormControl = new FormControl();
-  cancelAfterFormCtrl:FormControl = new FormControl();
-
   websocket: WebSocketSubject<any>;
+
+  displayedColumns: string[] = ['account'];
+  searchResult:string[] = null;
 
   originalAccountInfo:any;
   testMode:boolean = false;
+  selectedVanityAddress:string = null;
+  fixAmounts:any = null;
+  purchaseSuccess:boolean = false;
+  accountActivated:boolean = false;
+  accountRekeyed:boolean = false;
+  accountMasterKeyDisabled:boolean = false;
 
   private ottReceived: Subscription;
   private themeReceived: Subscription;
-
-  isValidEscrow:boolean = false;
-  validAmount:boolean = false;
-  validAddress:boolean = false;
-  validCancelAfter:boolean = false;
-  validFinishAfter:boolean = false;
-
-  cancelAfterDateTime:Date;
-  finishAfterDateTime:Date;
-
-  cancelDateInFuture:boolean = false;
-  finishDateInFuture:boolean = false;
-  cancelDateBeforeFinishDate:boolean = false;
-
-  escrowYears:number = 0;
-  maxSixDigits:boolean = false;
-
-  dateTimePickerSupported:boolean = true;
-
   loadingData:boolean = false;
 
-  createdEscrow:any = {}
-  escrowReleaseData: any = {};
-
   infoLabel:string = null;
-  autoReleaseActivated:boolean = false;
-  escrowDestinationSigned:boolean = false;
-  escrowDestinationHasDestTagEnabled:boolean = false;
-  destinationAccountExists = false;
-  validatingEscrow:boolean = false;
-
-  checkBoxYears:boolean = false;
-
-  oldDestinationInput:string = null;
 
   title: string = "Vanity Address xApp";
   tw: TypeWriter
@@ -103,7 +65,12 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   errorLabel:string = null;
 
-  ngOnInit() {
+  async ngOnInit() {
+
+    this.fixAmounts = await this.xummService.getFixAmounts();
+    this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
+    this.loadingData = false;
+
     this.ottReceived = this.ottChanged.subscribe(async ottData => {
       //console.log("ottReceived: " + JSON.stringify(ottData));
 
@@ -119,12 +86,12 @@ export class VanityComponent implements OnInit, OnDestroy {
 
         if(ottData && ottData.account && ottData.accountaccess == 'FULL') {
 
-          await this.loadAccountData(ottData.account);
-          this.loadingData = false;
+          //await this.loadAccountData(ottData.account);
+          //this.loadingData = false;
 
           //await this.loadAccountData(ottData.account); //false = ottResponse.node == 'TESTNET' 
         } else {
-          this.originalAccountInfo = "no account";
+          //this.originalAccountInfo = "no account";
         }
       }
 
@@ -149,23 +116,11 @@ export class VanityComponent implements OnInit, OnDestroy {
     });
     //this.infoLabel = JSON.stringify(this.device.getDeviceInfo());
 
-    //add event listeners
-    if (typeof window.addEventListener === 'function') {
-      window.addEventListener("message", event => this.handleOverlayEvent(event));
-    }
-    
-    if (typeof document.addEventListener === 'function') {
-      document.addEventListener("message", event => this.handleOverlayEvent(event));
-    }
-
-    this.tw = new TypeWriter(["Xumm Community xApp", "created by nixerFFM", "Xumm Community xApp"], t => {
+    this.tw = new TypeWriter(["Vanity Address xApp", "created by nixerFFM and WietseWind", "Vanity Address xApp"], t => {
       this.title = t;
     })
 
     this.tw.start();
-
-    //this.dateTimePickerSupported = !(this.device && this.device.getDeviceInfo() && this.device.getDeviceInfo().os_version && (this.device.getDeviceInfo().os_version.toLowerCase().includes('ios') || this.device.getDeviceInfo().browser.toLowerCase().includes('safari') || this.device.getDeviceInfo().browser.toLowerCase().includes('edge')));
-    this.dateTimePickerSupported = true;
   }
 
   ngOnDestroy() {
@@ -174,230 +129,6 @@ export class VanityComponent implements OnInit, OnDestroy {
 
     if(this.themeReceived)
       this.themeReceived.unsubscribe();
-  }
-
-  async checkChanges(insertedDestinationAccount?: boolean, userHasSignedInDestination?: boolean) {
-    if(!insertedDestinationAccount)
-      insertedDestinationAccount = false;
-
-    if(!userHasSignedInDestination)
-      userHasSignedInDestination = false;
-    //console.log("amountInput: " + this.amountInput);
-    //console.log("destinationInput: " + this.destinationInput);
-
-    if(this.finishAfterFormCtrl && this.finishAfterFormCtrl.value && this.finishafterTimeInput) {
-      this.finishAfterDateTime = new Date(this.finishAfterFormCtrl.value.format("yyyy-MM-DD") + "T" + this.finishafterTimeInput.trim());    
-    }
-    else
-      this.finishAfterDateTime = null;
-  
-    this.finishDateInFuture = this.finishAfterDateTime != null && this.finishAfterDateTime.getTime() < Date.now();
-    this.validFinishAfter = this.finishAfterDateTime != null && this.finishAfterDateTime.getTime() > 0 && !this.finishDateInFuture;
-    
-    if(this.finishAfterDateTime)
-      this.escrowYears = this.finishAfterDateTime.getFullYear() - (new Date()).getFullYear();
-
-    if(this.cancelAfterFormCtrl && this.cancelAfterFormCtrl.value && this.cancelafterTimeInput) {
-      this.cancelAfterDateTime = new Date(this.cancelAfterFormCtrl.value.format("yyyy-MM-DD") + "T" + this.cancelafterTimeInput.trim());    
-    }
-    else
-      this.cancelAfterDateTime = null;
-
-    this.cancelDateInFuture = this.cancelAfterDateTime != null && this.cancelAfterDateTime.getTime() < Date.now();
-    this.validCancelAfter = this.cancelAfterDateTime != null && this.cancelAfterDateTime.getTime() > 0;
-
-    if(this.validCancelAfter && this.validFinishAfter)
-      this.cancelDateBeforeFinishDate = this.finishAfterDateTime.getTime() >= this.cancelAfterDateTime.getTime();
-    else
-      this.cancelDateBeforeFinishDate = false;
-
-    if(this.amountInput) {
-      this.validAmount = !(/[^.0-9]|\d*\.\d{7,}/.test(this.amountInput));
-
-      if(!this.validAmount) {
-        this.maxSixDigits = this.amountInput.includes('.') && this.amountInput.split('.')[1].length > 6;
-      } else {
-        this.maxSixDigits = false;
-      }
-    }
-
-    if(this.validAmount)
-      this.validAmount = this.amountInput && parseFloat(this.amountInput) >= 0.000001 && !this.escrowBiggerThanAvailable();
-    
-    this.validAddress = this.destinationInput && this.destinationInput.trim().length > 0 && isValidXRPAddress(this.destinationInput.trim());
-
-    if((this.oldDestinationInput != this.destinationInput && this.validAddress) || userHasSignedInDestination || insertedDestinationAccount) {
-
-      //dest acc has changed, check status
-      this.destinationAccountExists = await this.checkIfDestinationAccountExists(this.destinationInput);
-
-      if(this.destinationAccountExists) {
-
-        this.escrowDestinationSigned = userHasSignedInDestination;
-
-        if(insertedDestinationAccount)
-          this.snackBar.open("Destination address inserted", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
-      } else {
-        if(insertedDestinationAccount)
-          this.snackBar.open("Account not existent on " + (this.testMode ? "TESTNET" : "MAINNET"), null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
-      }
-    } else {
-      //destination acc might have changed and/or is not valid:
-      if(this.oldDestinationInput != this.destinationInput) {
-        this.escrowDestinationHasDestTagEnabled = false;
-        this.escrowDestinationSigned = false;
-      }
-    }
-
-    this.oldDestinationInput = this.destinationInput;
-
-
-    this.validatingEscrow = true;
-
-    this.isValidEscrow = true;
-    //check some fields first
-    if(!this.validAddress || !this.validAmount)
-      this.isValidEscrow = false;
-
-    if(this.isFinishAfterDateSet() && !this.finishafterTimeInput)
-      this.isValidEscrow = false;
-
-    if(this.finishafterTimeInput && !this.validFinishAfter)
-      this.isValidEscrow = false;
-
-    if(this.validFinishAfter && this.finishDateInFuture)
-      this.isValidEscrow = false;
-
-    if(this.isCancelAfterDateSet() && !this.cancelafterTimeInput)
-      this.isValidEscrow = false;
-
-    if(this.cancelafterTimeInput && !this.validCancelAfter)
-      this.isValidEscrow = false;
-
-    if(this.validCancelAfter && this.cancelDateInFuture)
-      this.isValidEscrow = false;
-      
-    if(this.validFinishAfter && this.validCancelAfter && this.cancelDateBeforeFinishDate)
-        this.isValidEscrow = false
-
-    if(this.escrowYears > 10 && !this.checkBoxYears)
-      this.isValidEscrow = false;
-
-    if(!this.validFinishAfter && !this.validCancelAfter)
-      this.isValidEscrow = false;
-
-    this.validatingEscrow = false;
-
-    //console.log("isValidEscrow: " + this.isValidEscrow);
-  }
-
-  isFinishAfterDateSet(): boolean {
-    let date = new Date(this.finishAfterFormCtrl.value)
-    return date != null && date.getTime() > 0;
-  }
-
-  isCancelAfterDateSet(): boolean {
-    let date = new Date(this.cancelAfterFormCtrl.value)
-    return date != null && date.getTime() > 0;
-  }
-
-  async resetFinishAfter() {
-    this.finishAfterFormCtrl.reset();
-    this.finishafterTimeInput = null;
-    await this.checkChanges();
-  }
-
-  async resetCancelAfter() {
-    this.cancelAfterFormCtrl.reset();
-    this.cancelafterTimeInput = null;
-    await this.checkChanges();
-  }
-
-  isValidDate(dateToParse: any): boolean {
-    let datePicker = new Date(dateToParse);
-    console.log(datePicker);
-    return datePicker.getHours() >= 0;
-  }
-
-  async sendPayloadToXumm() {
-    this.loadingData = true;
-    //this.infoLabel = "sending payload";
-    try {
-      let xummPayload:XummTypes.XummPostPayloadBodyJson = {
-        txjson: {
-          TransactionType: "EscrowCreate",
-          Account: this.originalAccountInfo.Account
-        }, custom_meta: {
-          instruction: ""
-        }
-      }
-
-      if(this.escrowYears > 10) {
-        xummPayload.custom_meta.instruction += "ATTENTION: Your XRP will be inaccessible for " + this.escrowYears + "years!\n\n";
-      }
-
-      if(this.destinationInput && this.destinationInput.trim().length>0 && isValidXRPAddress(this.destinationInput)) {
-        xummPayload.txjson.Destination = this.destinationInput.trim();
-        xummPayload.custom_meta.instruction += "- Escrow Destination: " + this.destinationInput.trim();
-      }
-
-      
-      if(this.amountInput && parseFloat(this.amountInput) >= 0.000001) {
-        xummPayload.txjson.Amount = parseFloat(this.amountInput)*1000000+"";
-        xummPayload.custom_meta.instruction += "\n- Escrow Amount: " + this.amountInput;
-      }
-  
-      if(this.validCancelAfter) {
-        xummPayload.txjson.CancelAfter = normalizer.utcToRippleEpocheTime(this.cancelAfterDateTime.getTime());
-        xummPayload.custom_meta.instruction += "\n- Cancel After (UTC): " + this.cancelAfterDateTime.toUTCString();
-      }
-
-      if(this.validFinishAfter) {
-        xummPayload.txjson.FinishAfter = normalizer.utcToRippleEpocheTime(this.finishAfterDateTime.getTime());
-        xummPayload.custom_meta.instruction += "\n- Finish After (UTC): " + this.finishAfterDateTime.toUTCString();
-      }
-
-          
-      let backendRequest: GenericBackendPostRequest = {
-        options: {
-          web: false,
-          xrplAccount: this.originalAccountInfo.Account
-        },
-        payload: xummPayload
-      }
-
-      let message = await this.waitForTransactionSigning(backendRequest);
-      await this.handleEscrowCreateMessage(message);
-      this.loadingData = false;
-
-    } catch(err) {
-      this.handleError(err);
-      this.loadingData = false;
-    }
-  }
-
-  async handleEscrowCreateMessage(message: any): Promise<void> {
-    try {
-      if(message && message.signed && message.payload_uuidv4) {            
-        let transactionResult:TransactionValidation = null;
-        //check if we are an EscrowReleaser payment
-        transactionResult = await this.xummService.validateTransaction(message.payload_uuidv4);
-
-        console.log("trx result: " + JSON.stringify(transactionResult));
-
-        if(transactionResult && transactionResult.success) {
-            this.snackBar.open("Escrow created!", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
-            await this.loadCreatedEscrowData(transactionResult.txid);
-            this.moveNext();
-        } else {
-            this.snackBar.open("Escrow not created", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
-        }
-      } else {
-        this.snackBar.open("Escrow not created", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
-      }
-    } catch(err) {
-      this.handleError(err);
-    }
   }
 
   async waitForTransactionSigning(payloadRequest: GenericBackendPostRequest): Promise<any> {
@@ -466,24 +197,6 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
   }
 
-  getAvailableBalanceForEscrow(): number {
-    if(this.originalAccountInfo && this.originalAccountInfo.Balance) {
-      let balance:number = Number(this.originalAccountInfo.Balance);
-      balance = balance - (20*1000000); //deduct acc reserve
-      balance = balance - (this.originalAccountInfo.OwnerCount * 5 * 1000000); //deduct owner count
-      balance = balance - 5 * 1000000; //deduct account reserve for escrow
-      balance = balance/1000000;
-
-      if(balance >= 0.000001)
-        return balance
-      else
-        return 0;
-      
-    } else {
-      return 0;
-    }
-  }
-
   async signIn() {
     this.loadingData = true;
     //setting up xumm payload and waiting for websocket
@@ -529,101 +242,6 @@ export class VanityComponent implements OnInit, OnDestroy {
   
   }
 
-  escrowBiggerThanAvailable(): boolean {
-    return this.originalAccountInfo && this.amountInput && parseFloat(this.amountInput) > this.getAvailableBalanceForEscrow();
-  }
-
-  scanForDestination() {
-    if (typeof window.ReactNativeWebView !== 'undefined') {
-      this.loadingData = true;
-      window.ReactNativeWebView.postMessage(JSON.stringify({
-        command: 'scanQr'
-      }));
-    }
-  }
-
-  async handleOverlayEvent(event:any) {
-    let eventData = JSON.parse(event.data);
-
-    if(eventData) {
-      if(eventData.method == "scanQr") {
-        if(eventData.reason == "SCANNED" && isValidXRPAddress(eventData.qrContents)) {
-          this.destinationInput = eventData.qrContents;
-          await this.checkChanges(true);
-          this.loadingData = false;
-        } else if(eventData.reason == "USER_CLOSE") {
-          //do not do anything on user close
-          this.loadingData = false;
-        } else {
-          this.destinationInput = null;
-          this.snackBar.open("Invalid XRPL account", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
-          await this.checkChanges();
-          this.loadingData = false;
-        }
-      } else if(eventData.method == "payloadResolved" && eventData.reason == "DECLINED") {
-        //user closed without signing
-        this.loadingData = false;
-      }
-    }
-  }
-
-  async signInForDestination() {
-    //this.infoLabel = "signInForDestination";
-    this.loadingData = true;
-    //setting up xumm payload and waiting for websocket
-    let backendPayload:GenericBackendPostRequest = {
-      options: {
-          web: false,
-          signinToValidate: true
-      },
-      payload: {
-          txjson: {
-              TransactionType: "SignIn"
-          },
-          custom_meta: {
-            instruction: "Please choose the Escrow Destination account. This is the account where the XRP are sent to once the Escrow is finished.\n\nSign the request to confirm.",
-            blob: { source: "EscrowDestination"}
-          }
-      }
-    }
-
-    try {
-
-      let message:any = await this.waitForTransactionSigning(backendPayload);
-
-      if(message && message.payload_uuidv4 && message.signed) {
-              
-        let transactionResult:TransactionValidation = await this.xummService.checkSignIn(message.payload_uuidv4);
-
-        if(transactionResult && transactionResult.success) {
-          this.destinationInput = transactionResult.account;
-          this.snackBar.open("Destination account inserted!", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
-          await this.checkChanges(true, true);
-        } else {
-          this.snackBar.open("SignIn not successfull!", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
-        }
-      } else {
-        this.snackBar.open("SignIn not successfull!", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
-      }
-    } catch(err) {
-      this.handleError(err);
-    }
-
-    this.loadingData = false;
-  }
-
-  clearInputs() {
-    this.destinationInput = this.amountInput = null;
-    this.finishAfterFormCtrl.reset();
-    this.cancelAfterFormCtrl.reset();
-    this.cancelafterTimeInput = this.cancelAfterDateTime = null;
-    this.finishafterTimeInput = this.finishAfterDateTime = null;
-
-    this.cancelDateInFuture =  this.finishDateInFuture = this.cancelDateBeforeFinishDate = false;
-
-    this.isValidEscrow = this.validAddress = this.validAmount = this.validCancelAfter = this.validFinishAfter = false;
-  }
-
   async loadAccountData(xrplAccount: string) {
     //this.infoLabel = "loading " + xrplAccount;
     if(xrplAccount && isValidXRPAddress(xrplAccount)) {
@@ -636,7 +254,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       }
 
       let message_acc_info:any = await this.xrplWebSocket.getWebsocketMessage("xrpl-transactions", account_info_request, this.testMode);
-      //console.log("xrpl-transactions account info: " + JSON.stringify(message_acc_info));
+      console.log("xrpl-transactions account info: " + JSON.stringify(message_acc_info));
       //this.infoLabel = JSON.stringify(message_acc_info);
       if(message_acc_info && message_acc_info.status && message_acc_info.type && message_acc_info.type === 'response') {
         if(message_acc_info.status === 'success' && message_acc_info.result && message_acc_info.result.account_data) {
@@ -652,97 +270,78 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
   }
 
-  async checkIfDestinationAccountExists(xrplAccount: string): Promise<boolean> {
-    //this.infoLabel = "loading " + xrplAccount;
-    if(xrplAccount) {
-      let account_info_request:any = {
-        command: "account_info",
-        account: xrplAccount,
-        "strict": true,
-      }
+  async searchVanityAddress() {
+    console.log("searching for vanity address with search string: " + this.vanityWordInput);
+    this.loadingData = true;
+    this.selectedVanityAddress = null;
+    this.searchResult = null;
+    let searchResult:any = await this.xummService.findVanityAddress(this.vanityWordInput.trim());
 
-      let message_acc_info:any = await this.xrplWebSocket.getWebsocketMessage("xrpl-transactions", account_info_request, this.testMode);
-      //console.log("xrpl-transactions account info: " + JSON.stringify(message_acc_info));
-      //this.infoLabel = JSON.stringify(message_acc_info);
-      if(message_acc_info && message_acc_info.status && message_acc_info.type && message_acc_info.type === 'response') {
-        if(message_acc_info.status === 'success' && message_acc_info.result && message_acc_info.result.account_data) {
-          let accData:any = message_acc_info.result.account_data;
+    console.log("Search result: " + JSON.stringify(searchResult));
 
-          if(accData.Flags)
-            this.escrowDestinationHasDestTagEnabled = flagUtils.isRequireDestinationTagEnabled(accData.Flags);
+    this.searchResult = searchResult.result;
 
-          return Promise.resolve(accData.Account && isValidXRPAddress(accData.Account));
-        } else {
-          return Promise.resolve(false);
-        }
-      } else {
-        return Promise.resolve(false);;
-      }
+    this.loadingData = false;
+  }
+
+  getPurchaseAmount(): string {
+    if(this.vanityWordInput) {
+      let length = this.vanityWordInput.trim().length+"";
+
+      console.log("fix amounts: " + JSON.stringify(this.fixAmounts));
+      
+      if(this.fixAmounts[length])
+        return this.fixAmounts[length]
+      else
+        return "--"
     } else {
-      return Promise.resolve(false);;
+      return "--";
     }
   }
 
-  async loadCreatedEscrowData(txId: string): Promise<void> {
-    this.loadingData = true;
-    let txInfo:any = {
-        command: "tx",
-        transaction: txId,
-    }
-
-    let message:any = await this.xrplWebSocket.getWebsocketMessage("escrowListExecuter", txInfo, this.testMode);
-
-    //this.infoLabel = JSON.stringify(message);
-
-    if(message && message.status && message.status === 'success' && message.type && message.type === 'response') {
-        if(message.result && message.result.TransactionType === 'EscrowCreate') {
-            //console.log("Sequence: " + message.result.Sequence);
-            this.createdEscrow = message.result;
-            //this.infoLabel = JSON.stringify(this.createdEscrow);
-        }
-    }
+  selectVanityAddress(account:string) {
+    this.selectedVanityAddress = account;
   }
 
-  async addEscrowToAutoReleaser() {
+  async buyVanityAddress() {
     this.loadingData = true;
+
     let genericBackendRequest:GenericBackendPostRequest = {
-        options: {
-            xrplAccount: this.createdEscrow.Account
+      options: {
+        xrplAccount: this.originalAccountInfo.Acocunt
+      },
+      payload: {
+        txjson: {
+          Account: this.originalAccountInfo.Acocunt,
+          TransactionType: "Payment",
+          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Payment for buying vanity address: "+this.selectedVanityAddress+"'", 'utf8').toString('hex').toUpperCase()}}]
         },
-        payload: {
-          txjson: {
-              TransactionType: "Payment",
-              Account: this.createdEscrow.Account,
-              Memos : [{Memo: {MemoType: Buffer.from("[https://xumm.community]-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Payment for Auto Release of Escrow! Owner:" + this.createdEscrow.Account + " Sequence: " + this.createdEscrow.Sequence, 'utf8').toString('hex').toUpperCase()}}]
-          },
-          custom_meta: {
-              instruction: "SIGN WITH ESCROW OWNER ACCOUNT!!!\n\nEnable Auto Release for Escrow!\n\nEscrow-Owner: " + this.createdEscrow.Account + "\nSequence: " + this.createdEscrow.Sequence + "\nFinishAfter: " + new Date(normalizer.rippleEpocheTimeToUTC(this.createdEscrow.FinishAfter)).toLocaleString(),
-              blob: {account: this.createdEscrow.Account, sequence: this.createdEscrow.Sequence, finishafter: normalizer.rippleEpocheTimeToUTC(this.createdEscrow.FinishAfter), testnet: this.testMode}
-          },
+        custom_meta: {
+          instruction: "Please pay with the account which is already selected.\n\nThis account will be able to sign transactions for " + this.selectedVanityAddress,
+          blob: {
+            vanityAddress: this.selectedVanityAddress,
+            isPurchase: true
+          }
         }
+      }
     }
 
     try {
-
       let message:any = await this.waitForTransactionSigning(genericBackendRequest);
 
-      if(message && message.payload_uuidv4 && message.signed) {
-        let transactionResult:TransactionValidation = await this.xummService.validateEscrowPayment(message.payload_uuidv4);
+      if(message && message.payload_uuidv4) {
 
-        if(transactionResult && transactionResult.success) {
-          this.snackBar.open("Auto Release activated!", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
-          this.autoReleaseActivated = true;
+        let txInfo = await this.xummService.validateTransaction(message.payload_uuidv4);
+          //console.log('The generic dialog was closed: ' + JSON.stringify(info));
+
+        if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) {
+          if(isValidXRPAddress(txInfo.account) && txInfo.account == this.originalAccountInfo.Account)
+            this.purchaseSuccess = true;
+          else
+            this.purchaseSuccess = false;
         } else {
-            if(transactionResult && transactionResult.message)
-              this.snackBar.open(transactionResult.message, null, {panelClass: 'snackbar-failed', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
-            else
-              this.snackBar.open("Auto Release NOT activated!", null, {panelClass: 'snackbar-failed', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
-
-            this.autoReleaseActivated = false;
+          this.purchaseSuccess = false;
         }
-      } else {
-        this.snackBar.open("Auto Release NOT activated!", null, {panelClass: 'snackbar-failed', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
-        this.autoReleaseActivated = false;
       }
     } catch(err) {
       this.handleError(err);
@@ -751,25 +350,51 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.loadingData = false;
   }
 
-  isAbleToAutoRelease(): boolean {
-    return this.createdEscrow && this.createdEscrow.FinishAfter && !this.createdEscrow.Condition && (!this.createdEscrow.CancelAfter || (this.createdEscrow.CancelAfter - this.createdEscrow.FinishAfter) > 90*60)
-  }
+  async activateVanityAddress() {
+    this.loadingData = true;
 
-  getExpectedAutoReleaseTime(): string {
-    if(this.createdEscrow.FinishAfter) {
-        let expectedRelease:Date = new Date(normalizer.rippleEpocheTimeToUTC(this.createdEscrow.FinishAfter));
+    let genericBackendRequest:GenericBackendPostRequest = {
+      options: {
+        xrplAccount: this.originalAccountInfo.Acocunt
+      },
+      payload: {
+        txjson: {
+          Account: this.originalAccountInfo.Acocunt,
+          TransactionType: "Payment",
+          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Payment for buying vanity address: "+this.selectedVanityAddress+"'", 'utf8').toString('hex').toUpperCase()}}]
+        },
+        custom_meta: {
+          instruction: "Please pay with the account which is already selected.\n\nThis account will be able to sign transactions for " + this.selectedVanityAddress,
+          blob: {
+            vanityAddress: this.selectedVanityAddress,
+            isActivation: true
+          }
+        }
+      }
+    }
 
-        //set execution time to now + next hour + 5 min in case to enable auto release for already finishable escrows
-        if(expectedRelease.getTime() < Date.now())
-            expectedRelease.setTime(Date.now());
+    try {
+      let message:any = await this.waitForTransactionSigning(genericBackendRequest);
 
-        if(expectedRelease.getMinutes() >= 4 && expectedRelease.getMinutes() <= 59)
-          expectedRelease.setHours(expectedRelease.getHours()+1);
+      if(message && message.payload_uuidv4) {
 
-        expectedRelease.setMinutes(5,0,0);
-        return expectedRelease.toLocaleString();
-    } else
-        return "-";
+        let txInfo = await this.xummService.validateTransaction(message.payload_uuidv4);
+          //console.log('The generic dialog was closed: ' + JSON.stringify(info));
+
+        if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) {
+          if(isValidXRPAddress(txInfo.account) && txInfo.account == this.originalAccountInfo.Account)
+            this.purchaseSuccess = true;
+          else
+            this.purchaseSuccess = false;
+        } else {
+          this.purchaseSuccess = false;
+        }
+      }
+    } catch(err) {
+      this.handleError(err);
+    }
+
+    this.loadingData = false;
   }
 
   close() {

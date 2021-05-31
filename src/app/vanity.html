@@ -20,247 +20,188 @@
   <label *ngIf="infoLabel2" style="color: red">{{infoLabel2}}</label>
   <label *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label-->
 
-  <mat-vertical-stepper linear #escrowStepper class="theme-background">
-    <mat-step completed="false" editable="false" fxLayout="column" fxLayoutGap="0.5em">
-      <mat-card fxLayout="column" fxLayoutGap="0.5em">
-          <ng-template matStepLabel>Description</ng-template>
-          <label>A vanity address is a wallet address containing a few characters you like at the beginning or the end of the wallet address.</label>
-          <label>This xApp allows you to search for a vanity address. It will check your desired characters against our database and will show you suitable addresses we found.</label>
-          <label>You can select the address you like, make the payment to claim the address and we will transfer the address over to you, so you are the only one having access to it!</label>
-          <mat-card class="mat-card-orange" style="padding-top: 1em;">
-            To "transfer" the address to you, we use the XRP Ledger feature called "Regular Key".
-          </mat-card>
-          
-          <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
-            <button mat-raised-button color="primary" (click)="moveNext()">Next</button>
-        </div>
+  <div>
+    <div *ngIf="testMode">
+      <mat-card class="mat-card-red">
+        You can not choose a XRPL vanity address while connected to the XRP Ledger TEST net.
+        Please connect your XUMM app to the XRP Ledger MAIN net and open the xApp again.
+        
+        <div style="padding-top: 1em;" fxLayoutGap="0.5em" fxLayoutAlign="center center">
+          <button mat-raised-button class="xumm-grey-background" (click)="close()" [disabled]="loadingData">Close</button>
+      </div>
       </mat-card>
-    </mat-step>
-
-    <mat-step completed="false" editable="false">
-      <mat-card fxLayout="column" fxLayoutGap="0.5em">
-          <ng-template matStepLabel>Regular Key Account</ng-template>
-          <div fxLayout="column" fxLayoutGap="0.5em" *ngIf="originalAccountInfo">
-            <label class="description">Please choose the account which will be able to sign transactions for your new vanity address.</label>
-            <label *ngIf="originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account)">Currently selected:</label>
-            <label *ngIf="originalAccountInfo && originalAccountInfo.Account">{{originalAccountInfo.Account}}</label>
-            <label *ngIf="originalAccountInfo && originalAccountInfo.account">{{originalAccountInfo.account}}</label>
-
-            <div fxLayoutAlign="start center" style="padding-top: 0.5em;">
-              <button mat-raised-button color="primary" (click)="signIn()" [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account) ? 'Change Account' : 'Sign In' }}</button>
+    </div>
+    <div *ngIf="!testMode">
+      <mat-vertical-stepper linear #escrowStepper class="theme-background">
+        <mat-step completed="false" editable="false" fxLayout="column" fxLayoutGap="0.5em">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+              <ng-template matStepLabel>Description</ng-template>
+              <label>A vanity address is a wallet address containing a few characters you like at the beginning or the end of the wallet address.</label>
+              <label>This xApp allows you to search for a vanity address. It will check your desired characters against our database and will show you suitable addresses we found.</label>
+              <label>You can select the address you like, pay to make it your own and we will transfer the address over to you, so you are the only one having access to it!</label>
+              <mat-card class="mat-card-orange" style="padding-top: 1em;">
+                To "transfer" the address to you, we use the XRP Ledger feature called "Regular Key". This means once of your existing accounts can sign transactions in the name of you new vanity address.
+                The private key of the vanity address will be therefore disabled so we do not have access anymore. The only person having access is YOU!
+              </mat-card>
+              <label>To be able to claim your Vanity Address, you have to activate it with 20 XRP and make a payment equal to 20-50 USD, depending on the complexity of your address.</label>
+              <label>So please make sure to have enough XRP in your wallet.</label>
+              <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
+                <button mat-raised-button color="primary" (click)="moveNext()">Next</button>
             </div>
-          </div>
-
-          <div style="padding-top: 0.5em;">
-            <mat-card *ngIf="originalAccountInfo && originalAccountInfo.error && originalAccountInfo.error == 'actNotFound' && !loadingData" class="mat-card-red">
-              <label>Account not activated on {{testMode ? 'Testnet' : 'Mainnet'}}.</label>
-            </mat-card>
-          </div>
-
-          <div *ngIf="!originalAccountInfo || loadingData" fxLayoutAlign="start center">
-            <label>Loading...</label>
-            <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
-          </div>
-
-          <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
-              <button mat-raised-button color="primary" (click)="moveNext()" [disabled]="!originalAccountInfo || !originalAccountInfo.Account || loadingData">Next</button>
-              <button mat-raised-button class="xumm-grey-background" (click)="moveBack()" [disabled]="!originalAccountInfo || loadingData">Back</button>
-          </div>
-      </mat-card>
-    </mat-step>
-
-    <mat-step completed="false" editable="false">
-      <mat-card fxLayout="column" fxLayoutGap="0.5em">
-          <ng-template matStepLabel>Vanity words</ng-template>
-          <label class="description">Please enter the characters you want your address to start or end with.</label>
-          <mat-card class="mat-card-orange">
-            <label>Hint: An XRP Ledger account always starts with an 'r'. So if you look for 'Teddy', the account account name will start with 'rTeddy" but can end with only 'Teddy'!</label>
           </mat-card>
-          <form fxLayout="column" fxLayoutGap="0.5em" style="padding-top: 1em;">
-            <mat-form-field>
-              <input #inpvanityword matInput name="vanity word" placeholder="Vanity characters your address should start/end with" [(ngModel)]="vanityWordInput" (ngModelChange)="checkChanges()">
-              <mat-hint *ngIf="destinationInput && vanityWordInput.trim().length() < 3 && !loadingData">At least 3 characters are required</mat-hint>           
-            </mat-form-field>
-          </form>
-
-          <div *ngIf="destinationInput && vanityWordInput.trim().length() >= 3 && !loadingData">
-            <button mat-raised-button class="primary" (click)="searchVanityAddress()" [disabled]="loadingData">Search</button>
-          </div>
-
-          <div>
-            //header: "please select your vanity address and click next"
-            show vanity result table here
-
-          </div>
-
-          <div *ngIf="loadingData" fxLayoutAlign="center center">
-            <label>Loading...</label>
-            <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
-          </div>
-
-          <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
-              <button mat-raised-button color="primary" (click)="moveNext()" [disabled]="!validAddress || loadingData || escrowDestinationHasDestTagEnabled || !destinationAccountExists">Next</button>
-              <button mat-raised-button class="xumm-grey-background" (click)="moveBack()" [disabled]="loadingData">Back</button>
-          </div>
-      </mat-card>
-    </mat-step>
-
-    <mat-step completed="false" editable="false">
-      <mat-card fxLayout="column" fxLayoutGap="0.5em">
-          <ng-template matStepLabel>Escrow Amount</ng-template>
-          <label class="description">Please define the amount of XRP you want to lock in your Escrow.</label>
-          <form fxLayout="column" fxLayoutGap="0.5em" style="padding-top: 1em;">
-            <mat-form-field>
-              <input #inpamount matInput type="text" name="amount" placeholder="Escrow Amount in XRP" [(ngModel)]="amountInput" (ngModelChange)="checkChanges()">
-              <mat-hint *ngIf="amountInput && !validAmount && maxSixDigits">The XRP amount cannot have more than 6 decimals.</mat-hint>
-              <mat-hint *ngIf="amountInput && !validAmount && !maxSixDigits && amountInput.toString().includes(',')">Not a valid amount. Please use '.' as decimal operator.</mat-hint>
-              <mat-hint *ngIf="amountInput && !validAmount && !maxSixDigits && !amountInput.toString().includes(',') && !escrowBiggerThanAvailable()">Not a valid amount</mat-hint>
-            </mat-form-field>
-            <label *ngIf="originalAccountInfo && originalAccountInfo.Balance">Maximum: {{getAvailableBalanceForEscrow()}} XRP</label>
-          </form>
-
-          <mat-card *ngIf="amountInput && !validAmount && escrowBiggerThanAvailable()" class="mat-card-red">
-            <label>Your escrow amount is too big. Max amount is: {{getAvailableBalanceForEscrow()}} XRP. ('Available Balance' minus 5 XRP for account reserve) <a href="https://xrpl.org/reserves.html#owner-reserves" target="_blank"> (Reserve Info)</a></label>
+        </mat-step>
+    
+        <mat-step completed="false" editable="false">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+              <ng-template matStepLabel>Regular Key Account</ng-template>
+              <div fxLayout="column" fxLayoutGap="0.5em" *ngIf="originalAccountInfo">
+                <label class="description">Please choose the account which will be able to sign transactions for your new vanity address.</label>
+                <label>This account also needs to be used to activate the vanity address with 20 XRP and pay for your vanity address (10-50 USD - depending on your choosen vanity address)</label>
+                <label *ngIf="originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account)">Currently selected:</label>
+                <label *ngIf="originalAccountInfo && originalAccountInfo.Account">{{originalAccountInfo.Account}}</label>
+                <label *ngIf="originalAccountInfo && originalAccountInfo.account">{{originalAccountInfo.account}}</label>
+    
+                <div fxLayoutAlign="start center" style="padding-top: 0.5em;">
+                  <button mat-raised-button color="primary" (click)="signIn()" [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account) ? 'Change Account' : 'Sign In' }}</button>
+                </div>
+              </div>
+    
+              <div style="padding-top: 0.5em;">
+                <mat-card *ngIf="originalAccountInfo && originalAccountInfo.error && originalAccountInfo.error == 'actNotFound' && !loadingData" class="mat-card-red">
+                  <label>Account not activated on {{testMode ? 'Testnet' : 'Mainnet'}}.</label>
+                </mat-card>
+              </div>
+    
+              <div *ngIf="!originalAccountInfo || loadingData" fxLayoutAlign="start center">
+                <label>Loading...</label>
+                <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
+              </div>
+    
+              <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
+                  <button mat-raised-button color="primary" (click)="moveNext()" [disabled]="!originalAccountInfo || !originalAccountInfo.Account || loadingData">Next</button>
+                  <button mat-raised-button class="xumm-grey-background" (click)="moveBack()" [disabled]="!originalAccountInfo || loadingData">Back</button>
+              </div>
           </mat-card>
-
-          <div *ngIf="loadingData" fxLayoutAlign="center center">
-            <label>Loading...</label>
-            <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
-          </div>
-
-          <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
-              <button mat-raised-button color="primary" (click)="moveNext()" [disabled]="!validAmount || loadingData">Next</button>
-              <button mat-raised-button class="xumm-grey-background" (click)="moveBack()" [disabled]="loadingData">Back</button>
-          </div>
-      </mat-card>
-    </mat-step>
-
-    <mat-step completed="false" editable="false">
-      <mat-card fxLayout="column" fxLayoutGap="0.5em">
-          <ng-template matStepLabel>Escrow Details</ng-template>
-          <label>Finish After time</label>
-          <label class="description">Please define a time your Escrow can be finished earliest. If you do not provide this date then you have to define a CancelAfter time or condition.</label>
-          <form fxLayout="column" fxLayoutGap="0.5em" style="padding-top: 1em;">
-            <mat-form-field>
-              <mat-label>Choose a date</mat-label>
-              <input matInput name="finishafterdate" [matDatepicker]="picker" [formControl]="finishAfterFormCtrl" (focus)="picker.open()" (click)="picker.open()" (dateChange)="checkChanges()" readonly="true">
-              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker style="position:fixed;"></mat-datepicker>
-            </mat-form-field>
-            <div fxLayout="row" fxLayoutGap="0.5em">
-              <mat-form-field>
-                <input matInput name="finishaftertime" type="text" step="2" placeholder="HH:mm:ss (24h format)" [(ngModel)]="finishafterTimeInput" (ngModelChange)="checkChanges()">
-              </mat-form-field>
-              <button mat-icon-button color ="warn" (click)="resetFinishAfter()">
-                <mat-icon>highlight_off</mat-icon>
-              </button>
-            </div>
-          </form>
-          <mat-card class="mat-card-red" *ngIf="finishAfterFormCtrl && finishafterTimeInput && !validFinishAfter && !finishDateInFuture">Invalid date/time.</mat-card>
-          <mat-card class="mat-card-red" *ngIf="finishDateInFuture">Finish After needs to be in the future.</mat-card>
-          <mat-card class="mat-card-red" *ngIf="isFinishAfterDateSet() && !finishafterTimeInput">You have set a date. Please also set a time!</mat-card>
-          <mat-card class="mat-card-red" *ngIf="validFinishAfter && !finishDateInFuture" class="xumm-grey">UTC time: <b>{{finishAfterDateTime.toUTCString()}}</b></mat-card>
-
-          <mat-expansion-panel>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                <label>Advanced options</label>
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-
-            <div fxLayout="column" fxLayoutGap="0.3em">
-              <label>Cancel After time</label>
-              <label class="description">Here you can define a time at which your Escrow can only be cancelled. If this time has passed and the Escrow was not finished, the Escrow can only be cancelled and the funds can only be sent back to the Escrow Owner.</label>
+        </mat-step>
+    
+        <mat-step completed="false" editable="false">
+          <mat-card fxLayout="column" fxLayoutGap="1em">
+              <ng-template matStepLabel>Vanity words</ng-template>
+              <label class="description">Please enter the characters you want your address to start or end with.</label>
+              <mat-card class="mat-card-orange">
+                <label>Hint: An XRP Ledger account always starts with an 'r'. So if you look for 'Teddy', the account account name will start with 'rTeddy" but can end with only 'Teddy'!</label>
+              </mat-card>
               <form fxLayout="column" fxLayoutGap="0.5em" style="padding-top: 1em;">
                 <mat-form-field>
-                  <mat-label>Choose a date</mat-label>
-                  <input matInput name="cancelafterdate" [matDatepicker]="picker2" [formControl]="cancelAfterFormCtrl" (focus)="picker2.open()" (click)="picker2.open()" (dateChange)="checkChanges()" readonly="true">
-                  <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                  <mat-datepicker #picker2 style="position:fixed;"></mat-datepicker>
+                  <input #inpvanityword matInput name="vanity word" placeholder="Vanity characters your address should start/end with" [(ngModel)]="vanityWordInput">
+                  <mat-hint *ngIf="vanityWordInput && vanityWordInput.trim().length < 3 && !loadingData">At least 3 characters are required</mat-hint>           
                 </mat-form-field>
-                <div fxLayout="row" fxLayoutGap="0.5em">
-                  <mat-form-field>
-                    <input matInput name="cancelaftertime" step="2" placeholder="HH:mm:ss (24h format)" [(ngModel)]="cancelafterTimeInput" (ngModelChange)="checkChanges()">
-                  </mat-form-field>
-                  <button mat-icon-button color="warn" (click)="resetCancelAfter()">
+              </form>
+    
+              <div>
+                <button mat-raised-button color="primary" (click)="searchVanityAddress()" [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 3">Search</button>
+              </div>
+    
+              <div *ngIf="searchResult && !selectedVanityAddress" fxLayoutGap="0.5em">
+                <label>Please select one of the vanity addressses below:</label>
+                <mat-table [dataSource]="searchResult" class="mat-elevation-z8">
+
+                  <ng-container matColumnDef="account">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Vanity address </mat-header-cell>
+                    <mat-cell *matCellDef="let address">
+                        <span>
+                          <label>{{address}}</label>
+                        </span>
+                    </mat-cell>
+                  </ng-container>
+              
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row  *matRowDef="let row; columns: displayedColumns;" (click)="selectVanityAddress(row)"></mat-row>
+              
+                </mat-table>
+    
+              </div>
+
+              <div *ngIf="selectedVanityAddress">
+                <label>Your selected vanity address is:</label>
+                <div fxLayout="row" fxLayoutGap="0.5em" fxLayoutAlign="start center">
+                  <label>{{selectedVanityAddress}}</label>
+                  <button mat-icon-button color="warn" (click)="selectedVanityAddress = null">
                     <mat-icon>highlight_off</mat-icon>
                   </button>
                 </div>
-              </form>
-              <mat-card class="mat-card-red" *ngIf="cancelAfterFormCtrl && cancelafterTimeInput && !validCancelAfter">Invalid date/time.</mat-card>
-              <mat-card class="mat-card-red" *ngIf="validCancelAfter && cancelDateInFuture">Cancel After needs to be in the future.</mat-card>
-              <mat-card class="mat-card-red" *ngIf="isCancelAfterDateSet() && !cancelafterTimeInput">You have set a date. Please also set a time!</mat-card>
-              <mat-card class="mat-card-red" *ngIf="validCancelAfter && !cancelDateInFuture && cancelDateBeforeFinishDate">Cancel After needs to be after Finish After.</mat-card>
-              <mat-card class="mat-card-red" *ngIf="validCancelAfter && !cancelDateInFuture && !cancelDateBeforeFinishDate" class="xumm-grey">UTC time: <b>{{cancelAfterDateTime.toUTCString()}}</b></mat-card>
-            </div>
-          </mat-expansion-panel>
+                
+              </div>
 
-          <div style="padding-top: 0.5em;">
-            <mat-card *ngIf="validAddress && validAmount && !isCancelAfterDateSet() && !isFinishAfterDateSet()" class="mat-card-orange">
-              <label>Please provide a Finish After time.</label>
+              <div *ngIf="loadingData" fxLayoutAlign="center center">
+                <label>Loading...</label>
+                <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
+              </div>
+    
+              <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
+                  <button mat-raised-button color="primary" (click)="moveNext()" [disabled]="!selectedVanityAddress || loadingData">Next</button>
+                  <button mat-raised-button class="xumm-grey-background" (click)="moveBack()" [disabled]="loadingData">Back</button>
+              </div>
+          </mat-card>
+        </mat-step>
+    
+        <mat-step completed="false" editable="false">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+            <ng-template matStepLabel>Purchase of Vanity Address</ng-template>
+            <label class="description">To purchase your new address please click the button below.</label>
+            <mat-card class="mat-card-blue">
+              <label>You aggree to pay the XRP equivalent of ~ {{getPurchaseAmount()}} USD to buy your vanity address {{selectedVanityAddress}}</label>
             </mat-card>
+            <mat-card class="mat-card-orange">
+              <label>Funds can not be restorded. After successfully purchase and account activation, the account is YOURS and yours only! The account can not be returned to us!</label>
+            </mat-card>
+
+            <div *ngIf="!purchaseSuccess">
+              <button mat-raised-button color="primary" (click)="buyVanityAddress()" [disabled]="loadingData">Buy Vanity Address</button>
+            </div>
+
+            <div>
+              <mat-card *ngIf="!loadingData && !purchaseSuccess" class="mat-card-red">Your payment was not successfull on the XRP Ledger MAIN net.</mat-card>
+              <mat-card *ngIf="!loadingData && purchaseSuccess" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+                <i class="material-icons xumm-green" style="font-size: 3em;">
+                    check_circle_outline
+                </i>
+                <label>Congratulations. The address {{selectedVanityAddress}} is YOURS!!!</label>
+              </mat-card>
+            </div>
             
-            <div *ngIf="loadingData" fxLayoutAlign="center center">
-              <label>Preparing your Escrow...</label>
-              <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
-            </div>
-          </div>
 
-          <mat-card *ngIf="validFinishAfter && escrowYears > 10" class="mat-card-red">
-            <label >ATTENTION! You will make your XRP inaccessible for {{escrowYears}} Years!!!</label>
-          </mat-card>
-
-          <mat-card *ngIf="validFinishAfter && escrowYears > 10" [ngClass]="(checkBoxYears ? 'mat-card-green': 'mat-card-red')">
-            <mat-checkbox [(ngModel)]="checkBoxYears" (change)="checkChanges()">I understand that I won't have access to my escrowed XRP for {{escrowYears}} Years.</mat-checkbox>
-          </mat-card>
-
-          <div style="padding-top: 0.8em;" fxLayoutGap="0.5em">
-              <button mat-raised-button color="primary" (click)="sendPayloadToXumm()" [disabled]="!isValidEscrow || loadingData || validatingEscrow">Create Escrow</button>
+            <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
+              <button mat-raised-button color="primary" (click)="moveNext()" [disabled]="!purchaseSuccess || loadingData">Next</button>
               <button mat-raised-button class="xumm-grey-background" (click)="moveBack()" [disabled]="loadingData">Back</button>
-          </div>
-      </mat-card>
-    </mat-step>
-
-    <mat-step completed="false" editable="false">
-      <mat-card fxLayout="column" fxLayoutGap="0.5em">
-          <ng-template matStepLabel>Escrow Auto Release</ng-template>
-          <div *ngIf="!isAbleToAutoRelease() && !autoReleaseActivated" fxLayout="column" fxLayoutGap="0.5em">
-            <label class="description">You Escrow can not be added to the Escrow Releaser service since it does not fulfill the requirements.</label>
-            <label>Requirements are:</label>
-            <label> - FinishAfter time set</label>
-            <label> - no Condition (Password)</label>
-            <label> - no CancelAfter or CancelAfter > 90min past FinishAfter</label>
-          </div>
-          <div *ngIf="isAbleToAutoRelease() && !autoReleaseActivated" fxLayout="column" fxLayoutGap="0.5em">
-            <mat-card class="mat-card-green" fxLayoutAlign="center center">
-              <label>Yayyy! Your Escrow has been created!</label>
-            </mat-card>
-            <label class="description">Do you want to add your Escrow to the "Escrow Releaser" service of https://xumm.community?</label>
-            <label>Once an Escrow is finished, it has to be 'released'. This does not happen automatically - an EscrowFinish transaction is needed.</label>
-            <label>You can add your Escrow to our "Escrow Releaser" service and we will automatically release your Escrow for you at:</label>
-            <mat-card fxLayoutAlign="center center" class="mat-card-blue">
-              <label>{{getExpectedAutoReleaseTime()}}</label>
-            </mat-card>
-            <label class="xumm-red">Adding your Escrow to this service comes with a fee of 1 XRP.</label>
-            <div fxLayoutAlign="center center" stype="padding-top: 0.5em;">
-              <button mat-raised-button color="primary" (click)="addEscrowToAutoReleaser()" [disabled]="loadingData || autoReleaseActivated">Activate Auto Release</button>
             </div>
-
-            <div *ngIf="loadingData && !autoReleaseActivated" fxLayoutAlign="center center">
-              <label>Loading some things...</label>
-              <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
-            </div>
-          </div>
-
-          <mat-card class="mat-card-green" *ngIf="autoReleaseActivated" fxLayoutAlign="center center">
-            <label>Congratulations! You have activated the automatic "Escrow Releaser" service of your Escrow! Now you can lean back and forget about your Escrow - we will release it for you at {{getExpectedAutoReleaseTime()}} !</label>
           </mat-card>
+        </mat-step>
+    
+        <mat-step completed="false" editable="false">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+              <ng-template matStepLabel>Address activation</ng-template>
+              <mat-card class="mat-card-orange">
+                <label>For an XRPL account to be active and to be able to be used, it has to hold at least 20 XRP. Only when 20 XRP were sent there, the account is seen as "active".</label>
+              </mat-card>
+              <label>So next we will activate your account by sending 20 XRP + 0.001 XRP for some fees. The total will be 20.001 XRP.</label>
+              <label>Additionally, we will make your account {{originalAccountInfo.Account}} able to sign transactions for {{selectedVanityAddress}}</label>
 
-          <div style="padding-top: 1em;" fxLayoutGap="0.5em" fxLayoutAlign="center center">
-              <button mat-raised-button class="xumm-grey-background" (click)="close()" [disabled]="loadingData">Close</button>
-          </div>
-      </mat-card>
-    </mat-step>
+              <div *ngIf="!accountActivated && !loadingData">
+                <button mat-raised-button color="primary" (click)="activateVanityAddress()" [disabled]="loadingData">Activate Vanity Address</button>
+              </div>
 
-  </mat-vertical-stepper>
+              <mat-card *ngIf="purchaseSuccess && !loadingData" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+                <i class="material-icons xumm-green" style="font-size: 3em;">
+                    check_circle_outline
+                </i>
+                <label>Congratulations. The address {{selectedVanityAddress}} is YOURS!!!</label>
+              </mat-card>
+
+          </mat-card>
+        </mat-step>
+    
+      </mat-vertical-stepper>
+    </div>
+  </div>
 </div>

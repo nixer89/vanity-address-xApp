@@ -7,7 +7,7 @@ import { GenericBackendPostRequest, TransactionValidation } from '../utils/types
 export class XummService {
     constructor(private app: AppService) {}
 
-    isTestMode = false;
+    isTestMode = true;
     xummBackendURL = this.isTestMode ? 'http://localhost:4001' : 'https://api.xumm.community';
 
     async submitPayload(payload:GenericBackendPostRequest): Promise<XummTypes.XummPostPayloadResponse> {
@@ -87,6 +87,15 @@ export class XummService {
     async findVanityAddress(searchString: string): Promise<string[]> {
         try {
             return this.app.get(this.xummBackendURL+"/api/v1/vanity/search/"+searchString);
+        } catch(err) {
+            console.log(JSON.stringify(err))
+            return [];
+        }
+    }
+
+    async getFixAmounts(): Promise<any> {
+        try {
+            return this.app.get(this.xummBackendURL+"/api/v1/properties/amounts");
         } catch(err) {
             console.log(JSON.stringify(err))
             return [];
