@@ -78,6 +78,15 @@ body .snackbar-failed {
     font-weight: bold;
 }
 
+.mat-cell {
+    font-size: 0.9em !important;
+    padding: 10px !important;
+}
+
+.mat-raised-button {
+    font-weight: bold !important;
+  }
+
 @media (max-width:599px) {
     
     .mat-expansion-panel-header {
@@ -107,4 +116,5 @@ body .snackbar-failed {
     .mat-dialog-container {
         padding: 12px !important;
     }
+    
 }

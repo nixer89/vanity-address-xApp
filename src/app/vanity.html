@@ -21,9 +21,9 @@
   <label *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label-->
 
   <div>
-    <div *ngIf="testMode">
+    <!--div *ngIf="testMode">
       <mat-card class="mat-card-red">
-        You can not choose a XRPL vanity address while connected to the XRP Ledger TEST net.
+        You can not choose a XRPL vanity address while being connected to the XRP Ledger TEST net.
         Please connect your XUMM app to the XRP Ledger MAIN net and open the xApp again.
         
         <div style="padding-top: 1em;" fxLayoutGap="0.5em" fxLayoutAlign="center center">
@@ -31,7 +31,8 @@
       </div>
       </mat-card>
     </div>
-    <div *ngIf="!testMode">
+    <div *ngIf="!testMode"-->
+    <div>
       <mat-vertical-stepper linear #escrowStepper class="theme-background">
         <mat-step completed="false" editable="false" fxLayout="column" fxLayoutGap="0.5em">
           <mat-card fxLayout="column" fxLayoutGap="0.5em">
@@ -93,12 +94,12 @@
               </mat-card>
               <form fxLayout="column" fxLayoutGap="0.5em" style="padding-top: 1em;">
                 <mat-form-field>
-                  <input #inpvanityword matInput name="vanity word" placeholder="Vanity characters your address should start/end with" [(ngModel)]="vanityWordInput">
+                  <input #inpvanityword matInput name="vanity word" placeholder="Search string" [(ngModel)]="vanityWordInput">
                   <mat-hint *ngIf="vanityWordInput && vanityWordInput.trim().length < 3 && !loadingData">At least 3 characters are required</mat-hint>           
                 </mat-form-field>
               </form>
     
-              <div>
+              <div *ngIf="!selectedVanityAddress">
                 <button mat-raised-button color="primary" (click)="searchVanityAddress()" [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 3">Search</button>
               </div>
     
@@ -160,9 +161,14 @@
               <button mat-raised-button color="primary" (click)="buyVanityAddress()" [disabled]="loadingData">Buy Vanity Address</button>
             </div>
 
+            <div *ngIf="loadingData" fxLayoutAlign="center center">
+              <label>Loading...</label>
+              <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
+            </div>
+
             <div>
-              <mat-card *ngIf="!loadingData && !purchaseSuccess" class="mat-card-red">Your payment was not successfull on the XRP Ledger MAIN net.</mat-card>
-              <mat-card *ngIf="!loadingData && purchaseSuccess" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+              <mat-card *ngIf="!loadingData && purchaseStarted && !purchaseSuccess" class="mat-card-red">Your payment was not successfull on the XRP Ledger MAIN net.</mat-card>
+              <mat-card *ngIf="!loadingData && purchaseStarted && purchaseSuccess" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
                 <i class="material-icons xumm-green" style="font-size: 3em;">
                     check_circle_outline
                 </i>
@@ -173,7 +179,7 @@
 
             <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
               <button mat-raised-button color="primary" (click)="moveNext()" [disabled]="!purchaseSuccess || loadingData">Next</button>
-              <button mat-raised-button class="xumm-grey-background" (click)="moveBack()" [disabled]="loadingData">Back</button>
+              <button mat-raised-button class="xumm-grey-background" (click)="moveBack(); purchaseStarted = purchaseSuccess = false;" [disabled]="loadingData">Back</button>
             </div>
           </mat-card>
         </mat-step>
@@ -185,18 +191,46 @@
                 <label>For an XRPL account to be active and to be able to be used, it has to hold at least 20 XRP. Only when 20 XRP were sent there, the account is seen as "active".</label>
               </mat-card>
               <label>So next we will activate your account by sending 20 XRP + 0.001 XRP for some fees. The total will be 20.001 XRP.</label>
-              <label>Additionally, we will make your account {{originalAccountInfo.Account}} able to sign transactions for {{selectedVanityAddress}}</label>
+              <label>Additionally, we will make your account {{originalAccountInfo && originalAccountInfo.Account}} able to sign transactions for {{selectedVanityAddress}}</label>
 
               <div *ngIf="!accountActivated && !loadingData">
                 <button mat-raised-button color="primary" (click)="activateVanityAddress()" [disabled]="loadingData">Activate Vanity Address</button>
               </div>
 
-              <mat-card *ngIf="purchaseSuccess && !loadingData" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+              <mat-card *ngIf="accountActivated && loadingData" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
                 <i class="material-icons xumm-green" style="font-size: 3em;">
                     check_circle_outline
                 </i>
-                <label>Congratulations. The address {{selectedVanityAddress}} is YOURS!!!</label>
+                <label>The account {{selectedVanityAddress}} has been activated.</label>
               </mat-card>
+
+              <mat-card *ngIf="accountActivated && accountRekeyed && loadingData" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+                <i class="material-icons xumm-green" style="font-size: 3em;">
+                    check_circle_outline
+                </i>
+                <label>The account {{originalAccountInfo.Account}} can not sign transactions for {{selectedVanityAddress}}.</label>
+              </mat-card>
+
+              <mat-card *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled && !loadingData" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+                <i class="material-icons xumm-green" style="font-size: 3em;">
+                    check_circle_outline
+                </i>
+                <label>The master key for account {{selectedVanityAddress}} is disabled. We lost all access to your account. It is truly yours now, enjoy!</label>
+              </mat-card>
+
+              <div *ngIf="loadingData" fxLayoutAlign="center center">
+                <label *ngIf="!accountActivated">Waiting for account activation ...</label>
+                <label *ngIf="accountActivated && !accountRekeyed">Waiting for account transfer ...</label>
+                <label *ngIf="accountActivated && accountRekeyed && !accountMasterKeyDisabled">Waiting for disabling of master key ...</label>
+                <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
+              </div>
+
+              <div *ngIf="!loadingData && errorActivation">
+                <mat-card class="mat-card-red" fxLayoutGap="0.3em">
+                  <label>There was an error activating your new vanity address.</label>
+                  <label>Please contact @nixerFFM or @WietseWind on twitter or send a mail to xyz@gmail.com</label>
+                </mat-card>
+              </div>
 
           </mat-card>
         </mat-step>

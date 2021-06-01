@@ -12,10 +12,13 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { DateAdapter } from '@angular/material/core';
 import { TypeWriter } from './utils/TypeWriter';
 import * as clipboard from 'copy-to-clipboard';
+import * as flagutil from './utils/flagutils';
+import { i18nMetaToJSDoc } from '@angular/compiler/src/render3/view/i18n/meta';
 
 @Component({
   selector: 'vanity',
-  templateUrl: './vanity.html'
+  templateUrl: './vanity.html',
+  styleUrls: ['./vanity.css']
 })
 export class VanityComponent implements OnInit, OnDestroy {
 
@@ -45,12 +48,22 @@ export class VanityComponent implements OnInit, OnDestroy {
   originalAccountInfo:any;
   testMode:boolean = false;
   selectedVanityAddress:string = null;
+  vanityWordUsedForSearch:string = null;
   fixAmounts:any = null;
+
+  purchaseStarted:boolean = false;
   purchaseSuccess:boolean = false;
+
+  activationStarted:boolean = false;
+  activationAmountSent:boolean = false;
+
   accountActivated:boolean = false;
   accountRekeyed:boolean = false;
   accountMasterKeyDisabled:boolean = false;
 
+  intervalAccountStatus = null;
+  errorActivation:boolean = false;
+  
   private ottReceived: Subscription;
   private themeReceived: Subscription;
   loadingData:boolean = false;
@@ -67,16 +80,12 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
 
-    this.fixAmounts = await this.xummService.getFixAmounts();
-    this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
-    this.loadingData = false;
-
     this.ottReceived = this.ottChanged.subscribe(async ottData => {
       //console.log("ottReceived: " + JSON.stringify(ottData));
 
       if(ottData) {
 
-        //this.infoLabel = JSON.stringify(ottData);
+        this.infoLabel = JSON.stringify(ottData);
         
         this.testMode = ottData.nodetype == 'TESTNET';
 
@@ -86,19 +95,17 @@ export class VanityComponent implements OnInit, OnDestroy {
 
         if(ottData && ottData.account && ottData.accountaccess == 'FULL') {
 
-          //await this.loadAccountData(ottData.account);
-          //this.loadingData = false;
-
-          //await this.loadAccountData(ottData.account); //false = ottResponse.node == 'TESTNET' 
+          this.fixAmounts = await this.xummService.getFixAmounts();
+          await this.loadAccountData(ottData.account);
         } else {
-          //this.originalAccountInfo = "no account";
+          this.originalAccountInfo = "no account";
         }
       }
 
       //this.testMode = true;
       //await this.loadAccountData("rELeasERs3m4inA1UinRLTpXemqyStqzwh");
       //await this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
-      //this.loadingData = false;
+      this.loadingData = false;
     });
 
     this.themeReceived = this.themeChanged.subscribe(async appStyle => {
@@ -116,7 +123,7 @@ export class VanityComponent implements OnInit, OnDestroy {
     });
     //this.infoLabel = JSON.stringify(this.device.getDeviceInfo());
 
-    this.tw = new TypeWriter(["Vanity Address xApp", "created by nixerFFM and WietseWind", "Vanity Address xApp"], t => {
+    this.tw = new TypeWriter(["Vanity Address xApp", "by nixerFFM + WietseWind", "Vanity Address xApp"], t => {
       this.title = t;
     })
 
@@ -275,7 +282,9 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.loadingData = true;
     this.selectedVanityAddress = null;
     this.searchResult = null;
-    let searchResult:any = await this.xummService.findVanityAddress(this.vanityWordInput.trim());
+    this.vanityWordUsedForSearch = this.vanityWordInput.trim();
+
+    let searchResult:any = await this.xummService.findVanityAddress(this.vanityWordUsedForSearch);
 
     console.log("Search result: " + JSON.stringify(searchResult));
 
@@ -285,8 +294,8 @@ export class VanityComponent implements OnInit, OnDestroy {
   }
 
   getPurchaseAmount(): string {
-    if(this.vanityWordInput) {
-      let length = this.vanityWordInput.trim().length+"";
+    if(this.vanityWordUsedForSearch) {
+      let length = this.vanityWordUsedForSearch.length+"";
 
       console.log("fix amounts: " + JSON.stringify(this.fixAmounts));
       
@@ -306,6 +315,11 @@ export class VanityComponent implements OnInit, OnDestroy {
   async buyVanityAddress() {
     this.loadingData = true;
 
+    //limit purchase amount to 6
+    let vanityLength = this.vanityWordUsedForSearch.length;
+    if(vanityLength > 6)
+      vanityLength = 6;
+
     let genericBackendRequest:GenericBackendPostRequest = {
       options: {
         xrplAccount: this.originalAccountInfo.Acocunt
@@ -314,13 +328,14 @@ export class VanityComponent implements OnInit, OnDestroy {
         txjson: {
           Account: this.originalAccountInfo.Acocunt,
           TransactionType: "Payment",
-          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Payment for buying vanity address: "+this.selectedVanityAddress+"'", 'utf8').toString('hex').toUpperCase()}}]
+          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Payment for buying vanity address: "+this.selectedVanityAddress, 'utf8').toString('hex').toUpperCase()}}]
         },
         custom_meta: {
           instruction: "Please pay with the account which is already selected.\n\nThis account will be able to sign transactions for " + this.selectedVanityAddress,
           blob: {
             vanityAddress: this.selectedVanityAddress,
-            isPurchase: true
+            isPurchase: true,
+            vanityLength: vanityLength+""
           }
         }
       }
@@ -331,10 +346,13 @@ export class VanityComponent implements OnInit, OnDestroy {
 
       if(message && message.payload_uuidv4) {
 
+        this.purchaseStarted = true;
+
         let txInfo = await this.xummService.validateTransaction(message.payload_uuidv4);
           //console.log('The generic dialog was closed: ' + JSON.stringify(info));
 
-        if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) {
+        //if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) { <-------- ######## USE THIS IN PROD. CHECK THAT PAYMENT WAS ON MAIN NET!!
+        if(txInfo && txInfo.success && txInfo.account) {
           if(isValidXRPAddress(txInfo.account) && txInfo.account == this.originalAccountInfo.Account)
             this.purchaseSuccess = true;
           else
@@ -361,7 +379,7 @@ export class VanityComponent implements OnInit, OnDestroy {
         txjson: {
           Account: this.originalAccountInfo.Acocunt,
           TransactionType: "Payment",
-          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Payment for buying vanity address: "+this.selectedVanityAddress+"'", 'utf8').toString('hex').toUpperCase()}}]
+          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Activation of vanity address: "+this.selectedVanityAddress, 'utf8').toString('hex').toUpperCase()}}],
         },
         custom_meta: {
           instruction: "Please pay with the account which is already selected.\n\nThis account will be able to sign transactions for " + this.selectedVanityAddress,
@@ -378,23 +396,74 @@ export class VanityComponent implements OnInit, OnDestroy {
 
       if(message && message.payload_uuidv4) {
 
+        this.intervalAccountStatus = setInterval(() => this.checkVanityAccountStatus(this.selectedVanityAddress), 4000);
+        setTimeout(() => {
+          //something went wrong!
+          if(!this.accountActivated || !this.accountRekeyed || !this.accountMasterKeyDisabled) {
+            this.errorActivation = true;
+            this.loadingData = false;
+          }
+        }, 30000)
+
+        this.activationStarted = true;
+
         let txInfo = await this.xummService.validateTransaction(message.payload_uuidv4);
           //console.log('The generic dialog was closed: ' + JSON.stringify(info));
 
-        if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) {
+        //if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) {
+        if(txInfo && txInfo.success && txInfo.account) {
           if(isValidXRPAddress(txInfo.account) && txInfo.account == this.originalAccountInfo.Account)
-            this.purchaseSuccess = true;
+            this.activationAmountSent = true;
           else
-            this.purchaseSuccess = false;
+            this.activationAmountSent = false;
         } else {
-          this.purchaseSuccess = false;
+          this.activationAmountSent = false;
         }
       }
     } catch(err) {
       this.handleError(err);
     }
+  }
 
-    this.loadingData = false;
+  async checkVanityAccountStatus(xrplAccount: string) {
+    //this.infoLabel = "loading " + xrplAccount;
+    if(xrplAccount && isValidXRPAddress(xrplAccount)) {
+      
+      let account_info_request:any = {
+        command: "account_info",
+        account: xrplAccount,
+        "strict": true,
+      }
+
+      let message_acc_info:any = await this.xrplWebSocket.getWebsocketMessage("checkVanityAccountStatus", account_info_request, this.testMode);
+      console.log("checkVanityAccountStatus account info: " + JSON.stringify(message_acc_info));
+      //this.infoLabel = JSON.stringify(message_acc_info);
+      if(message_acc_info && message_acc_info.status && message_acc_info.type && message_acc_info.type === 'response') {
+        if(message_acc_info.status === 'success' && message_acc_info.result && message_acc_info.result.account_data) {
+          let accountInfo = message_acc_info.result.account_data;
+          this.accountActivated = accountInfo && accountInfo.Account && accountInfo.Account == xrplAccount;
+          this.accountRekeyed = accountInfo && accountInfo.RegularKey && accountInfo.RegularKey == this.originalAccountInfo.Account;
+          this.accountMasterKeyDisabled = accountInfo && accountInfo.Flags && flagutil.isMasterKeyDisabled(accountInfo.Flags);
+
+          if(this.accountActivated && this.accountRekeyed && this.accountMasterKeyDisabled) {
+            clearInterval(this.intervalAccountStatus);
+            this.loadingData = false;
+          }
+        } else {
+          this.accountActivated = false;
+          this.accountRekeyed = false;
+          this.accountMasterKeyDisabled = false;
+        }
+      } else {
+        this.accountActivated = false;
+        this.accountRekeyed = false;
+        this.accountMasterKeyDisabled = false;
+      }
+    } else {
+      this.accountActivated = false;
+      this.accountRekeyed = false;
+      this.accountMasterKeyDisabled = false;
+    }
   }
 
   close() {

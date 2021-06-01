@@ -7,8 +7,8 @@ import { GenericBackendPostRequest, TransactionValidation } from '../utils/types
 export class XummService {
     constructor(private app: AppService) {}
 
-    isTestMode = true;
-    xummBackendURL = this.isTestMode ? 'http://localhost:4001' : 'https://api.xumm.community';
+    isTestMode = false;
+    xummBackendURL = this.isTestMode ? 'http://localhost:4001' : 'https://api.xrpl-address.com';
 
     async submitPayload(payload:GenericBackendPostRequest): Promise<XummTypes.XummPostPayloadResponse> {
         try {

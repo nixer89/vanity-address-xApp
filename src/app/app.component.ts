@@ -87,7 +87,7 @@ export class AppComponent implements OnInit {
 
       if(xAppToken) {
         let ottResponse:any = await this.xummService.getxAppOTTData(xAppToken);
-        //console.log("ottResponse: " + JSON.stringify(ottResponse));
+        this.infoLabel = "ottResponse: " + JSON.stringify(ottResponse);
 
         this.alreadySent = true;
 

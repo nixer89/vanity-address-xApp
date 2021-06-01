@@ -186,7 +186,6 @@ a:active {
   background-color: rgb(59, 220, 150) !important;
 }
 
-
 .mat-step-icon.mat-step-icon-state-number.mat-step-icon-selected {
   background-color: rgb(48, 82, 255) !important;
 }
@@ -205,10 +204,6 @@ a:active {
 
 .mat-step-label {
   color: rgb(172, 177, 193) !important;
-}
-
-.mat-raised-button {
-  font-weight: bold !important;
 }
 
 .mat-raised-button.mat-button-disabled.mat-button-disabled {
@@ -244,6 +239,10 @@ a:active {
   }
 
   .mat-card {
+    background-color:rgb(248, 250, 253) !important;
+  }
+
+  .mat-table {
     background-color:rgb(248, 250, 253) !important;
   }
 
@@ -334,11 +333,11 @@ a:active {
     background-color:rgba(96, 104, 133, 0.25) !important;
   }
 
-  .mat-expansion-panel {
+  .mat-table {
     background-color:rgba(96, 104, 133, 0.25) !important;
   }
 
-  .mat-table {
+  .mat-expansion-panel {
     background-color:rgba(96, 104, 133, 0.25) !important;
   }
 
@@ -406,6 +405,10 @@ a:active {
   }
 
   .mat-card {
+    background-color:rgba(96, 104, 133, 0.19) !important;
+  }
+
+  .mat-table {
     background-color:rgba(96, 104, 133, 0.19) !important;
   }
 
@@ -477,6 +480,10 @@ a:active {
   }
 
   .mat-card {
+    background-color:rgba(96, 104, 133, 0.22) !important;
+  }
+
+  .mat-table {
     background-color:rgba(96, 104, 133, 0.22) !important;
   }
 
