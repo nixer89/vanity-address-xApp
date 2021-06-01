@@ -397,6 +397,11 @@ export class VanityComponent implements OnInit, OnDestroy {
       if(message && message.payload_uuidv4) {
 
         this.intervalAccountStatus = setInterval(() => this.checkVanityAccountStatus(this.selectedVanityAddress), 4000);
+        
+        this.activationStarted = true;
+
+        let txInfo = await this.xummService.validateTransaction(message.payload_uuidv4);
+
         setTimeout(() => {
           //something went wrong!
           if(!this.accountActivated || !this.accountRekeyed || !this.accountMasterKeyDisabled) {
@@ -404,10 +409,6 @@ export class VanityComponent implements OnInit, OnDestroy {
             this.loadingData = false;
           }
         }, 30000)
-
-        this.activationStarted = true;
-
-        let txInfo = await this.xummService.validateTransaction(message.payload_uuidv4);
           //console.log('The generic dialog was closed: ' + JSON.stringify(info));
 
         //if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) {
@@ -463,6 +464,14 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.accountActivated = false;
       this.accountRekeyed = false;
       this.accountMasterKeyDisabled = false;
+    }
+  }
+
+  copyAddress() {
+    if(this.selectedVanityAddress) {
+      clipboard(this.selectedVanityAddress);
+      this.snackBar.dismiss();
+      this.snackBar.open("Vanity Address copied to clipboard!", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'bottom'});
     }
   }
 

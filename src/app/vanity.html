@@ -197,25 +197,33 @@
                 <button mat-raised-button color="primary" (click)="activateVanityAddress()" [disabled]="loadingData">Activate Vanity Address</button>
               </div>
 
-              <mat-card *ngIf="accountActivated && loadingData" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+              <mat-card *ngIf="accountActivated" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
                 <i class="material-icons xumm-green" style="font-size: 3em;">
                     check_circle_outline
                 </i>
                 <label>The account {{selectedVanityAddress}} has been activated.</label>
               </mat-card>
 
-              <mat-card *ngIf="accountActivated && accountRekeyed && loadingData" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+              <mat-card *ngIf="accountActivated && accountRekeyed" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
                 <i class="material-icons xumm-green" style="font-size: 3em;">
                     check_circle_outline
                 </i>
-                <label>The account {{originalAccountInfo.Account}} can not sign transactions for {{selectedVanityAddress}}.</label>
+                <label>The account {{originalAccountInfo.Account}} can now sign transactions for {{selectedVanityAddress}}. That means YOU have access to the account now.</label>
               </mat-card>
 
-              <mat-card *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled && !loadingData" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+              <mat-card *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
                 <i class="material-icons xumm-green" style="font-size: 3em;">
                     check_circle_outline
                 </i>
-                <label>The master key for account {{selectedVanityAddress}} is disabled. We lost all access to your account. It is truly yours now, enjoy!</label>
+                <label>The master key for account {{selectedVanityAddress}} is disabled. That is the key WE had for this account. Therefore WE lost all access to your account. It is truly yours now, enjoy!</label>
+              </mat-card>
+
+              <mat-card *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+                <label>To use your account, copy the following address (via the button) and add it as "Read only" account to your XUMM app:</label>
+                <label (click)="copyAddress()">{{selectedVanityAddress}}</label>
+                <button mat-icon-button aria-label="Copy Address" (click)="copyAddress()">
+                  <mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
+                </button>
               </mat-card>
 
               <div *ngIf="loadingData" fxLayoutAlign="center center">
