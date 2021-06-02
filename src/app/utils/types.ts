@@ -29,62 +29,6 @@ export interface TransactionValidation {
     payloadId?: string
 }
 
-export interface AccountInfoChanged {
-    info: any,
-    mode: boolean
-}
-
-export interface AccountObjectsChanged {
-    object: any,
-    mode: boolean
-}
-
-export interface XrplAccountChanged {
-    account: string,
-    mode: boolean
-}
-
-export interface Token {
-    currency: string,
-    amount: string,
-    trustlines?: string
-}
-
-export interface TrustLine {
-    account:string,
-    balance: string,
-    currency: string,
-    limit: string,
-    limit_peer: string,
-    no_ripple: boolean,
-    balanceN?: number,
-    limitN?: number
-}
-
-export interface TransactionTemplate {
-    transactionType: string,
-    docLink: string,
-    requiresAmendment: boolean,
-    codeSamples: any[]
-}
-
-export interface TokenIssuer {
-    account: string,
-    currency: string,
-    amount: string,
-    trustlines: string,
-    verified: boolean,
-    username?: string,
-    resolvedBy?: string
-    twitter?: string,
-    domain?: string
-}
-
-export interface IssuerVerification {
-    resolvedBy: string,
-    account: string,
-    verified: boolean
-    domain?: string,
-    username?: string,
-    twitter?: string
+export interface AddressResult {
+    addresses: string[]
 }

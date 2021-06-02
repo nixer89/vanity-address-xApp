@@ -11,8 +11,8 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 })
 export class AppComponent implements OnInit {
   title = 'vanity-address-xApp';
-  themeClass:string = "dark-theme";
-  backgroundColor: string = "#000000";
+  themeClass:string = "royal-theme";
+  backgroundColor: string = "#030B36";
   
   receivedParams = false;
   alreadySent = false;
@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe(async params => {
-      this.infoLabel = JSON.stringify(params);
+      //this.infoLabel = JSON.stringify(params);
       if(this.timeout1) {
         //console.log("clearing timeout1");
         clearTimeout(this.timeout1)
@@ -68,8 +68,8 @@ export class AppComponent implements OnInit {
             this.backgroundColor = '#030B36';
             break;
           default:
-            this.themeClass = 'dark-theme';
-            this.backgroundColor = '#000000';
+            this.themeClass = 'royal-theme';
+            this.backgroundColor = '#030B36';
             break;
         }
       }
@@ -87,7 +87,7 @@ export class AppComponent implements OnInit {
 
       if(xAppToken) {
         let ottResponse:any = await this.xummService.getxAppOTTData(xAppToken);
-        this.infoLabel = "ottResponse: " + JSON.stringify(ottResponse);
+        //this.infoLabel = "ottResponse: " + JSON.stringify(ottResponse);
 
         this.alreadySent = true;
 
