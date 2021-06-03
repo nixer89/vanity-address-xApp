@@ -92,7 +92,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   async ngOnInit() {
 
     if(this.debugMode) {
-      await this.loadAccountData("rNixerUVPwrhxGDt4UooDu6FJ7zuofvjCF");
+      await this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
       this.fixAmounts = await this.xummService.getFixAmounts();
       this.testMode = true;
       this.loadingData = false;
@@ -103,6 +103,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       console.log("ottReceived: " + JSON.stringify(ottData));
 
       this.fixAmounts = await this.xummService.getFixAmounts();
+      this.getPurchasedAddresses();
 
       if(ottData) {
 
@@ -613,7 +614,7 @@ export class VanityComponent implements OnInit, OnDestroy {
     if(address) {
       clipboard(address);
       this.snackBar.dismiss();
-      this.snackBar.open("Vanity Address copied to clipboard!", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'bottom'});
+      this.snackBar.open("Address " +address+ " copied to clipboard!", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'bottom'});
     }
   }
 

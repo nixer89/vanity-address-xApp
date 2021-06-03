@@ -21,17 +21,17 @@
   <label class="break-words" *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label-->
 
   <div>
-    <!--div *ngIf="testMode">
+    <div *ngIf="!testMode">
       <mat-card class="mat-card-red">
-        You can not choose a XRPL vanity address while being connected to the XRP Ledger TEST net.
-        Please connect your XUMM app to the XRP Ledger MAIN net and open the xApp again.
+        You can not choose a XRPL vanity address while being connected to the XRP Ledger {{testMode ? 'TEST' : 'MAIN'}} net.
+        Please connect your XUMM app to the XRP Ledger {{testMode ? 'MAIN' : 'TEST'}} net and open the xApp again.
         
         <div style="padding-top: 1em;" fxLayoutGap="0.5em" fxLayoutAlign="center center">
           <button mat-raised-button class="xumm-grey-background" (click)="close()" [disabled]="loadingData">Close</button>
       </div>
       </mat-card>
     </div>
-    <div *ngIf="!testMode"-->
+    <div *ngIf="testMode">
     <div>
       <mat-vertical-stepper linear #escrowStepper class="theme-background">
         <mat-step completed="false" editable="false" fxLayout="column" fxLayoutGap="0.5em">
@@ -118,8 +118,8 @@
 
                     <ng-container matColumnDef="account">
                       <mat-cell *matCellDef="let address">
-                        <label style="font-size: 0.9em;">{{address}}</label>
-                        <button mat-icon-button aria-label="Copy Address">
+                        <label>{{address}}</label>
+                        <button mat-icon-button aria-label="Copy Address" style="width: 24px; height:24px; line-height: 24px; padding-left: 10px;">
                           <mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
                         </button>
                       </mat-cell>
@@ -225,7 +225,7 @@
             <div>
               <mat-card *ngIf="!loadingData && purchaseStarted && !purchaseSuccess" class="mat-card-red">Your payment was not successfull on the XRP Ledger MAIN net.</mat-card>
               <mat-card *ngIf="!loadingData && purchaseStarted && purchaseSuccess" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
-                <i class="material-icons xumm-green" style="font-size: 3em;">
+                <i class="material-icons xumm-green" style="font-size: 2em;">
                     check_circle_outline
                 </i>
                 <label>Congratulations. You bought the address {{selectedVanityAddress}}</label>
@@ -243,7 +243,7 @@
         <mat-step completed="false" editable="false">
           <mat-card fxLayout="column" fxLayoutGap="0.5em">
               <ng-template matStepLabel>Account activation</ng-template>
-              <mat-card class="mat-card-orange">
+              <mat-card class="mat-card-orange" *ngIf="!accountActivated || !accountRekeyed || !!accountMasterKeyDisabled">
                 <label>In order to use your new address, it has to hold at least 20 XRP. Only when 20 XRP were sent there, the account is "active" on the XRP Ledger.</label>
               </mat-card>
 
