@@ -10,6 +10,7 @@ import { VanityComponent } from './vanity';
 import { AppService } from './services/app.service';
 import { XummService } from './services/xumm.service';
 import { XRPLWebsocket } from './services/xrplWebSocket';
+import { HighlightSearchPipe } from './utils/searchHighlight';
 
 //Angular Material
 import { MatCardModule } from '@angular/material/card';
@@ -34,7 +35,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   declarations: [
     AppComponent,
     FooterComponent,
-    VanityComponent
+    VanityComponent,
+    HighlightSearchPipe
   ],
   imports: [
     BrowserModule,

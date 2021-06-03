@@ -324,6 +324,9 @@ export class VanityComponent implements OnInit, OnDestroy {
           xrplAccount: this.originalAccountInfo.Account
       },
       payload: {
+          options: {
+            forceAccount: true
+          },
           txjson: {
             Account: this.originalAccountInfo.Account,
             TransactionType: "SignIn"
@@ -446,11 +449,14 @@ export class VanityComponent implements OnInit, OnDestroy {
 
     let genericBackendRequest:GenericBackendPostRequest = {
       options: {
-        xrplAccount: this.originalAccountInfo.Acocunt
+        xrplAccount: this.originalAccountInfo.Account
       },
       payload: {
+        options: {
+          forceAccount: true
+        },
         txjson: {
-          Account: this.originalAccountInfo.Acocunt,
+          Account: this.originalAccountInfo.Account,
           TransactionType: "Payment",
           Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Payment for buying vanity address: "+this.selectedVanityAddress, 'utf8').toString('hex').toUpperCase()}}]
         },
@@ -506,16 +512,19 @@ export class VanityComponent implements OnInit, OnDestroy {
 
     let genericBackendRequest:GenericBackendPostRequest = {
       options: {
-        xrplAccount: this.originalAccountInfo.Acocunt
+        xrplAccount: this.originalAccountInfo.Account
       },
       payload: {
+        options: {
+          forceAccount: true
+        },
         txjson: {
-          Account: this.originalAccountInfo.Acocunt,
+          Account: this.originalAccountInfo.Account,
           TransactionType: "Payment",
           Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Activation of vanity address: "+this.selectedVanityAddress, 'utf8').toString('hex').toUpperCase()}}],
         },
         custom_meta: {
-          instruction: "Please pay with the account which is already selected.\n\nThis account will be able to sign transactions for " + this.selectedVanityAddress,
+          instruction: "Please send with the account which is already selected.\n\nThis account will be able to sign transactions for " + this.selectedVanityAddress,
           blob: {
             vanityAddress: this.selectedVanityAddress,
             isActivation: true

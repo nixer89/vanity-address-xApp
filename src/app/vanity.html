@@ -1,4 +1,4 @@
-<div [class]="themeClass" fxFlex fxLayout="column">
+<div [class]="themeClass" fxFlex fxLayout="column" fxLayoutGap="0.3em">
   <mat-toolbar fxLayout="row" color="primary" style="background-color: rgb(48, 82, 255);"class="mat-elevation-z4">  
     <mat-toolbar-row>
       <div fxLayout="row" fxLayoutGap="0.5em" fxLayoutAlign="start center">
@@ -8,8 +8,8 @@
     </mat-toolbar-row>
   </mat-toolbar>
   
-  <mat-card class="mat-card-red" *ngIf="errorLabel" fxLayout="column" fxLayoutGap="0.5em;">
-    <label>Sorry that this error happened! Please copy the following error and contact @nixerFFM or @WietseWind on twitter or send a mail to: XummCommunity@gmail.com . Thanks for your help!</label><br>
+  <mat-card class="mat-card-red" *ngIf="errorLabel" fxLayout="column" fxLayoutGap="0.5em">
+    <label>Sorry that this error happened! Please copy the following error and send it to @nixerFFM or @WietseWind on twitter or via a mail to: XummCommunity@gmail.com . Thanks for your help!</label><br>
     <label class="break-words" (click)="copyError()">{{errorLabel}}</label>
     <button mat-button class="xumm-grey-background" aria-label="Copy Error" (click)="copyError()">
       Copy&nbsp;<mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
@@ -30,7 +30,7 @@
         Please connect your XUMM app to the XRP Ledger {{testMode ? 'MAIN' : 'TEST'}} net and open the xApp again.
         
         <div style="padding-top: 1em;" fxLayoutGap="0.5em" fxLayoutAlign="center center">
-          <button mat-raised-button class="xumm-grey-background" (click)="close()" [disabled]="loadingData">Close</button>
+          <button mat-raised-button class="xumm-grey-background" (click)="close()">Close</button>
       </div>
       </mat-card>
     </div>
@@ -41,14 +41,8 @@
           <mat-card fxLayout="column" fxLayoutGap="0.5em">
               <ng-template matStepLabel>Description</ng-template>
               <label>A vanity address is a wallet address containing a few characters you like at the beginning or the end of the wallet address.</label>
-              <label>This xApp allows you to search for a vanity address. It will check your desired characters against our database and will show you suitable addresses we found.</label>
-              <label>You can select the address you like, pay to make it your own and we will transfer the address over to you, so you are the only one having access to it!</label>
-              <mat-card class="mat-card-orange" style="padding-top: 1em;">
-                To "transfer" the address to you, we use the XRP Ledger feature called "Regular Key". This means, one of your existing accounts can sign transactions in the name of you new vanity address.
-                The private key of the vanity address will be disabled, so we do not have access anymore. The only person having access is YOU!
-              </mat-card>
-              <label>To be able to claim your Vanity Address, you have to activate it with 20 XRP and make a payment equal to 20-50 USD, depending on the complexity of your address.</label>
-              <label>So please make sure to have enough XRP in your wallet.</label>
+              <label>This xApp allows you to search for a vanity address of your choice. We will check for suitable addresses and show it to you, if found.</label>
+              <label>You can select an address and pay for it to make it your own. We will transfer the address over to you, so you are the only one having access to it!</label>
               <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
                 <button mat-raised-button color="primary" (click)="moveNext()">Next</button>
             </div>
@@ -127,9 +121,7 @@
                         </button>
                       </mat-cell>
                     </ng-container>
-                
                     <mat-row  *matRowDef="let row; columns: ['account'];" (click)="copyAddress(row)"></mat-row>
-                
                   </mat-table>
                 </div>
                 <div *ngIf="purchasedAddresses.length <= 0">
@@ -146,12 +138,10 @@
 
                     <ng-container matColumnDef="account">
                       <mat-cell *matCellDef="let address">
-                          <label>{{address}}</label>
+                        <label [innerHTML]="address | highlightSearch: vanityWordInput"></label>
                       </mat-cell>
                     </ng-container>
-                
                     <mat-row  *matRowDef="let row; columns: ['account'];" (click)="selectVanityAddress(row)"></mat-row>
-                
                   </mat-table>
                 </div>
                 <div *ngIf="searchResult.length <= 0">
