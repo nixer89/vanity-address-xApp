@@ -45,7 +45,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   purchasedAddresses:string[] = null;
 
   originalAccountInfo:any;
-  testMode:boolean = false;
+  testMode:boolean = null;
   selectedVanityAddress:string = null;
   vanityWordUsedForSearch:string = null;
   fixAmounts:any = null;

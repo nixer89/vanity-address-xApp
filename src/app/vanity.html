@@ -21,7 +21,10 @@
   <label class="break-words" *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label-->
 
   <div>
-    <div *ngIf="!testMode">
+    <div *ngIf="testMode == null" fxLayoutAlign="center center">
+      <mat-progress-spinner color="primary" mode="indeterminate" diameter=50></mat-progress-spinner>
+    </div>
+    <div *ngIf="testMode != null && !testMode">
       <mat-card class="mat-card-red">
         You can not choose a XRPL vanity address while being connected to the XRP Ledger {{testMode ? 'TEST' : 'MAIN'}} net.
         Please connect your XUMM app to the XRP Ledger {{testMode ? 'MAIN' : 'TEST'}} net and open the xApp again.
@@ -31,7 +34,7 @@
       </div>
       </mat-card>
     </div>
-    <div *ngIf="testMode">
+    <div *ngIf="testMode != null && testMode">
     <div>
       <mat-vertical-stepper linear #escrowStepper class="theme-background">
         <mat-step completed="false" editable="false" fxLayout="column" fxLayoutGap="0.5em">
