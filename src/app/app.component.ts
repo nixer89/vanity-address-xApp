@@ -75,7 +75,7 @@ export class AppComponent implements OnInit {
       }
 
       var bodyStyles = document.body.style;
-      console.log("setting style :" + this.themeClass);
+      console.log("setting style: " + this.themeClass);
       bodyStyles.setProperty('--background-color', this.backgroundColor);
       this.overlayContainer.getContainerElement().classList.remove('dark-theme');
       this.overlayContainer.getContainerElement().classList.remove('light-theme');

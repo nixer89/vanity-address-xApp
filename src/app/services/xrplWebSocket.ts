@@ -51,7 +51,7 @@ export class XRPLWebsocket {
                 
                 if(!retry) {
                     console.log("could not connect websocket! changing node!");
-                    resolve(await this.connectToSecondWS(command));
+                    resolve(await this.connectToSecondWS(componentname, command));
                 } else {
                     resolve({error: true, message: "No node connection possible"});
                 }
@@ -62,13 +62,13 @@ export class XRPLWebsocket {
         });        
     }
 
-    connectToSecondWS(command): Promise<any> {
+    connectToSecondWS(componentName, command): Promise<any> {
         if(this.originalTestModeValue)
             this.testFirst = !this.testFirst;
         else
             this.mainFirst = !this.mainFirst;
 
-        return this.getWebsocketMessage(command, this.originalTestModeValue, true);
+        return this.getWebsocketMessage(componentName, command, this.originalTestModeValue, true);
     }
 }
 

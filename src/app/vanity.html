@@ -1,9 +1,15 @@
 <div [class]="themeClass" fxFlex fxLayout="column" fxLayoutGap="0.3em">
   <mat-toolbar fxLayout="row" color="primary" style="background-color: rgb(48, 82, 255);"class="mat-elevation-z4">  
-    <mat-toolbar-row>
-      <div fxLayout="row" fxLayoutGap="0.5em" fxLayoutAlign="start center">
+    <mat-toolbar-row style="padding: 0;">
+      <div fxLayout="row" fxLayoutAlign="start center">
         <img src="../assets/topbar_logo.png" width="50px" height="50px" alt="Vanity Address xApp Logo">
-        <label class="title">{{title}}</label>  
+        <label class="title">{{title}}</label>
+      </div>
+      <span style="flex: 1 1 auto;"></span>
+      <div fxLayout="row" fxLayoutAlign="end center">
+        <button mat-icon-button aria-label="Open Help" (click)="showHelp = true;">
+          <mat-icon style="font-size: 24px; width: fit-content; height: fit-content;">help_outline</mat-icon>
+        </button>
       </div>
     </mat-toolbar-row>
   </mat-toolbar>
@@ -15,6 +21,15 @@
       Copy&nbsp;<mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
     </button>
   </mat-card>
+
+  <div *ngIf="showHelp" fxLayout="column" fxLayoutGap="0.5em">
+    <mat-card>
+      <label>Here will be some help shown, as FAQ in an accordion model?</label>
+      <div style="padding-top: 1em;" fxLayoutGap="0.5em" fxLayoutAlign="center center">
+        <button mat-raised-button color="primary" (click)="showHelp = false">Close Help</button>
+      </div>
+    </mat-card>
+  </div>
 
   <!--label class="break-words" *ngIf="infoLabel" style="color: red">{{infoLabel}}</label><br><br>
   <label class="break-words" *ngIf="infoLabel2" style="color: red">{{infoLabel2}}</label>
@@ -31,12 +46,12 @@
         
         <div style="padding-top: 1em;" fxLayoutGap="0.5em" fxLayoutAlign="center center">
           <button mat-raised-button class="xumm-grey-background" (click)="close()">Close</button>
-      </div>
+        </div>
       </mat-card>
     </div>
     <div *ngIf="testMode != null && testMode">
     <div>
-      <mat-vertical-stepper linear #escrowStepper class="theme-background">
+      <mat-vertical-stepper linear #vanityStepper class="theme-background">
         <mat-step completed="false" editable="false">
           <mat-card fxLayout="column" fxLayoutGap="1em">
               <ng-template matStepLabel>Vanity search</ng-template>
@@ -46,38 +61,41 @@
               <label class="description">Please enter the characters you want your address to start or end with.</label>
               <form fxLayout="column" fxLayoutGap="0.5em" style="padding-top: 1em;">
                 <mat-form-field>
-                  <input #inpvanityword matInput name="vanity word" placeholder="Search string" [(ngModel)]="vanityWordInput">
-                  <mat-hint *ngIf="vanityWordInput && vanityWordInput.trim().length < 3 && !loadingData">At least 3 characters are required</mat-hint>           
+                  <input #inpvanityword matInput name="vanity word" placeholder="Search string" [(ngModel)]="vanityWordInput" (ngModelChange)="checkVanitySearchChange()">
+                  <mat-hint *ngIf="vanityWordInput && vanityWordInput.trim().length < 3 && !loadingData">At least 3 characters are required</mat-hint>
+                  <mat-hint *ngIf="vanityWordInput && vanityWordInput.trim().length > 2 && !vanityWordValid && !loadingData">Invalid input. Only a-Z and numbers allowed!</mat-hint>
                 </mat-form-field>
               </form>
     
               <div *ngIf="!selectedVanityAddress">
-                <button mat-raised-button color="primary" (click)="searchVanityAddress()" [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 3">Search</button>
+                <button mat-raised-button color="primary" (click)="searchVanityAddress()" [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 3 || !vanityWordValid">Search</button>
               </div>
     
               <div *ngIf="searchResult && !selectedVanityAddress" fxLayout="column" fxLayoutGap="0.5em">
                 <label>Please select one of the vanity addresses below:</label>
-                <div *ngIf="searchResult.length > 0">
+                <div *ngIf="searchResult.length > 0" fxLayout="column" fxLayoutGap="0.5em">
                   <mat-table [dataSource]="searchResult" class="mat-elevation-z8">
 
                     <ng-container matColumnDef="account">
                       <mat-cell *matCellDef="let address">
-                        <label [innerHTML]="address | highlightSearch: vanityWordInput"></label>
+                        <label class="break-words" [innerHTML]="address | highlightSearch: vanityWordInput"></label>
                       </mat-cell>
                     </ng-container>
                     <mat-row  *matRowDef="let row; columns: ['account'];" (click)="selectVanityAddress(row)"></mat-row>
                   </mat-table>
+                  <label class="description">The above vanity addresses can be purchased for ~ {{getPurchaseAmount()}} USD each.</label>
                 </div>
                 <div *ngIf="searchResult.length <= 0">
                   <mat-card class="mat-card-orange">
                     <label>No vanity addresses found for your search. Please try a different word!</label>
+                    <label>Try changing your search word slightly!</label>
                   </mat-card>
                 </div>
               </div>
 
               <div *ngIf="selectedVanityAddress">
                 <label>Your selected vanity address is:</label>
-                <div fxLayout="row" fxLayoutGap="0.5em" fxLayoutAlign="start center">
+                <div class="break-words" fxLayout="row" fxLayoutGap="0.5em" fxLayoutAlign="start center">
                   <label style="font-size: 0.9em;">{{selectedVanityAddress}}</label>
                   <button mat-icon-button color="warn" (click)="selectedVanityAddress = null">
                     <mat-icon>highlight_off</mat-icon>
@@ -93,7 +111,6 @@
     
               <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
                   <button mat-raised-button color="primary" (click)="moveNext()" [disabled]="!selectedVanityAddress || loadingData">Next</button>
-                  <button mat-raised-button class="xumm-grey-background" (click)="moveBack()" [disabled]="loadingData">Back</button>
               </div>
           </mat-card>
         </mat-step>
@@ -105,14 +122,13 @@
                 <label class="description">Please choose the account which will be able to sign transactions for your new vanity address.</label>
                 <label>This account also needs to be used to activate the vanity address with 20 XRP and pay for your vanity address (10-50 USD - depending on your choosen vanity address)</label>
                 <label *ngIf="originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account)">Currently selected:</label>
-                <label *ngIf="originalAccountInfo && originalAccountInfo.Account">{{originalAccountInfo.Account}}</label>
+                <label style="font-size: 0.9em;" *ngIf="originalAccountInfo && originalAccountInfo.Account">{{originalAccountInfo.Account}}</label>
                 <label *ngIf="originalAccountInfo && originalAccountInfo.account">{{originalAccountInfo.account}}</label>
     
-                <div fxLayout="row" fxLayoutGap="0.5em">
-                  <div fxLayoutAlign="start center" style="padding-top: 0.5em;">
+                <div fxLayout="column" fxLayoutGap="1em" style="padding-top: 0.5em;">
+                  <div fxLayoutAlign="start center">
                     <button mat-raised-button color="primary" (click)="signIn()" [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account) ? 'Change Account' : 'Sign In' }}</button>
                   </div>
-                  <span style="flex: 1 1 auto;"></span>
 
                   <div *ngIf="originalAccountInfo && originalAccountInfo.Account">
                     <button mat-raised-button color="primary" (click)="getPurchasedAddresses()" [disabled]="loadingData">Show Purchases</button>
@@ -166,14 +182,18 @@
             <ng-template matStepLabel>Confirmation</ng-template>
             <label class="description">Please read the information below carefully and sign the request to accept.</label>
             <mat-checkbox [(ngModel)]="checkBoxPurchaseAmount" (change)="informationConfirmed = false;" [ngClass]="(checkBoxPurchaseAmount ? 'xumm-green': 'xumm-red')">You aggree to pay the XRP equivalent of ~ {{getPurchaseAmount()}} USD to buy your vanity address {{selectedVanityAddress}}</mat-checkbox>
-            <mat-checkbox [(ngModel)]="checkBoxActivation" (change)="informationConfirmed = false;" [ngClass]="(checkBoxActivation ? 'xumm-green': 'xumm-red')">In the process of transfering the vanity address to you, you will have to fund your new vanity address with the 20 XRP reserve fee of the XRP Ledger.</mat-checkbox>
-            <mat-checkbox [(ngModel)]="checkBoxSignInfo" (change)="informationConfirmed = false;" [ngClass]="(checkBoxSignInfo ? 'xumm-green': 'xumm-red')">The signing account {{originalAccountInfo && originalAccountInfo.Account}} will be the only one able to sign transactions for {{selectedVanityAddress}} !</mat-checkbox>
+            <mat-checkbox [(ngModel)]="checkBoxActivation" (change)="informationConfirmed = false;" [ngClass]="(checkBoxActivation ? 'xumm-green': 'xumm-red')">You need to fund your new vanity address with the 20 XRP reserve fee of the XRP Ledger.</mat-checkbox>
+            <!--mat-checkbox [(ngModel)]="checkBoxSignInfo" (change)="informationConfirmed = false;" [ngClass]="(checkBoxSignInfo ? 'xumm-green': 'xumm-red')">The signing account {{originalAccountInfo && originalAccountInfo.Account}} will be the only one able to sign transactions for {{selectedVanityAddress}} !</mat-checkbox>
             <mat-checkbox [(ngModel)]="checkBoxAccess" (change)="informationConfirmed = false;" [ngClass]="(checkBoxAccess ? 'xumm-green': 'xumm-red')">If you loose access to {{originalAccountInfo && originalAccountInfo.Account}}, you also loose access to {{selectedVanityAddress}} !</mat-checkbox>
-            <mat-checkbox [(ngModel)]="checkBoxSignAccFull" (change)="informationConfirmed = false;" [ngClass]="(checkBoxSignAccFull ? 'xumm-green': 'xumm-red')">The signing account {{originalAccountInfo && originalAccountInfo.Account}} needs always to be imported as "Full Access" in the XUMM app!</mat-checkbox>
+            <mat-checkbox [(ngModel)]="checkBoxSignAccFull" (change)="informationConfirmed = false;" [ngClass]="(checkBoxSignAccFull ? 'xumm-green': 'xumm-red')">The signing account {{originalAccountInfo && originalAccountInfo.Account}} needs always to be imported as "Full Access" in the XUMM app!</mat-checkbox-->
             <mat-checkbox [(ngModel)]="checkBoxVanityAccReadOnly" (change)="informationConfirmed = false;" [ngClass]="(checkBoxVanityAccReadOnly ? 'xumm-green': 'xumm-red')">Vanity Account {{selectedVanityAddress}} needs to be imported as "Read only" in the XUMM app!</mat-checkbox>
-
             <div fxLayoutAlign="start center" style="padding-top: 0.5em;">
-              <button mat-raised-button color="primary" (click)="signToConfirm()" [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxSignInfo || !checkBoxAccess || !checkBoxSignAccFull || !checkBoxVanityAccReadOnly || informationConfirmed">Sign to confirm</button>
+              <button mat-raised-button color="primary" (click)="signToConfirm()" [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || informationConfirmed">Sign to confirm</button>
+            </div>
+
+            <div *ngIf="loadingData" fxLayoutAlign="start center">
+              <label>Loading...</label>
+              <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
             </div>
 
             <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
@@ -187,10 +207,9 @@
         <mat-step completed="false" editable="false">
           <mat-card fxLayout="column" fxLayoutGap="0.5em">
             <ng-template matStepLabel>Purchase of Vanity Address</ng-template>
-            <label class="description">To purchase your new address please sign the transaction.</label>
-            <label>You will have to pay the XRP equivalent of ~ {{getPurchaseAmount()}} USD to buy your vanity address {{selectedVanityAddress}}</label>
+            <label class="description">You will have to pay the XRP equivalent of ~ {{getPurchaseAmount()}} USD to buy your vanity address {{selectedVanityAddress}}</label>
             <mat-card class="mat-card-orange">
-              <label>Funds can not be restorded. After successfully purchase and account activation, the account is yours and YOURS only! The account can not be returned to us!</label>
+              <label>Funds can not be returned. After successfully purchase and account activation, the account is yours and YOURS only! The account can not be returned to us!</label>
             </mat-card>
 
             <div *ngIf="!purchaseSuccess">
@@ -224,13 +243,8 @@
           <mat-card fxLayout="column" fxLayoutGap="0.5em">
               <ng-template matStepLabel>Account activation</ng-template>
               <mat-card class="mat-card-orange" *ngIf="!accountActivated || !accountRekeyed || !!accountMasterKeyDisabled">
-                <label>In order to use your new address, it has to hold at least 20 XRP. Only when 20 XRP were sent there, the account is "active" on the XRP Ledger.</label>
+                <label>In order to use your new address, it has to hold at least 20 XRP. This is required by the XRP Ledger.</label>
               </mat-card>
-
-              <div *ngIf="!accountActivated && !loadingData">
-                <label>So we will activate your account by sending 20 XRP + 0.001 XRP for some fees. The total will be 20.001 XRP.</label>
-                <label>We will automatically transfer the account to you after the initial activation.</label>
-              </div>
 
               <div *ngIf="!accountActivated && !loadingData">
                 <button mat-raised-button color="primary" (click)="activateVanityAddress()" [disabled]="loadingData">Activate Vanity Address</button>

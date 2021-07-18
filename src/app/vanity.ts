@@ -13,6 +13,7 @@ import { DateAdapter } from '@angular/material/core';
 import { TypeWriter } from './utils/TypeWriter';
 import * as clipboard from 'copy-to-clipboard';
 import * as flagutil from './utils/flagutils';
+import { ɵNullViewportScroller } from '@angular/common';
 
 @Component({
   selector: 'vanity',
@@ -31,7 +32,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   @ViewChild('inpvanityword') inpvanityword;
   vanityWordInput: string;
 
-  @ViewChild('escrowStepper') stepper: MatStepper;
+  @ViewChild('vanityStepper') stepper: MatStepper;
 
   @Input()
   ottChanged: Observable<any>;
@@ -39,10 +40,14 @@ export class VanityComponent implements OnInit, OnDestroy {
   @Input()
   themeChanged: Observable<any>;
 
+  vanityWordValid:boolean = false;
+
   websocket: WebSocketSubject<any>;
 
   searchResult:string[] = null;
   purchasedAddresses:string[] = null;
+
+  xummVersion:string = null;
 
   originalAccountInfo:any;
   testMode:boolean = null;
@@ -86,8 +91,10 @@ export class VanityComponent implements OnInit, OnDestroy {
   backgroundColor = '#030B36';
 
   errorLabel:string = null;
+  showHelp:boolean = false;
+  indexBeforeHelp:number = -1;
 
-  debugMode:boolean = false;
+  debugMode:boolean = true;
 
   async ngOnInit() {
 
@@ -96,6 +103,13 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.fixAmounts = await this.xummService.getFixAmounts();
       this.testMode = true;
       this.loadingData = false;
+
+      this.tw = new TypeWriter(["Vanity Address xApp", "by nixerFFM + WietseWind", "Vanity Address xApp"], t => {
+        this.title = t;
+      })
+  
+      this.tw.start();
+      
       return;
     }
 
@@ -112,6 +126,7 @@ export class VanityComponent implements OnInit, OnDestroy {
         try {
         
           this.testMode = ottData.nodetype == 'TESTNET';
+          this.xummVersion = ottData.version;
 
           if(ottData.locale)
             this.dateAdapter.setLocale(ottData.locale);
@@ -228,6 +243,13 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.loadingData = false;
       //this.infoLabel = JSON.stringify(err);
     }
+  }
+
+  checkVanitySearchChange() {
+    if(this.vanityWordInput)
+      this.vanityWordValid = /^[a-zA-Z\d]{1,}$/.test(this.vanityWordInput)
+    else
+      this.vanityWordValid = false;
   }
 
   async signIn() {
