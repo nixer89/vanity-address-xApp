@@ -13,7 +13,7 @@ import { DateAdapter } from '@angular/material/core';
 import { TypeWriter } from './utils/TypeWriter';
 import * as clipboard from 'copy-to-clipboard';
 import * as flagutil from './utils/flagutils';
-import { ɵNullViewportScroller } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'vanity',
@@ -26,7 +26,8 @@ export class VanityComponent implements OnInit, OnDestroy {
               private xrplWebSocket: XRPLWebsocket,
               private snackBar: MatSnackBar,
               private overlayContainer: OverlayContainer,
-              private dateAdapter: DateAdapter<any>) { }
+              private dateAdapter: DateAdapter<any>,
+              private route: ActivatedRoute) { }
 
 
   @ViewChild('inpvanityword') inpvanityword;
@@ -162,6 +163,13 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.overlayContainer.getContainerElement().classList.add(this.themeClass);
     });
     //this.infoLabel = JSON.stringify(this.device.getDeviceInfo());
+
+    this.route.queryParams.subscribe(async params => {
+      if(params.found) {
+        this.vanityWordInput = params.found;
+        this.searchVanityAddress();
+      }
+    });
 
     this.tw = new TypeWriter(["Vanity Address xApp", "by nixerFFM + WietseWind", "Vanity Address xApp"], t => {
       this.title = t;
