@@ -59,6 +59,9 @@ export class VanityComponent implements OnInit, OnDestroy {
   purchaseStarted:boolean = false;
   purchaseSuccess:boolean = false;
 
+  backendSaveStarted:boolean = false;
+  backendSaveSuccess:boolean = false;
+
   activationStarted:boolean = false;
   activationAmountSent:boolean = false;
 
@@ -458,6 +461,18 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
   }
 
+  getBackendFeeAmount(): string {
+    if(this.vanityWordUsedForSearch) {
+      
+      if(this.fixAmounts['backendFee'])
+        return this.fixAmounts['backendFee']
+      else
+        return "--"
+    } else {
+      return "--";
+    }
+  }
+
   selectVanityAddress(account:string) {
     this.selectedVanityAddress = account;
   }
@@ -644,9 +659,69 @@ export class VanityComponent implements OnInit, OnDestroy {
       }
     } else {
       this.accountActivated = false;
-      this.accountRekeyed = false;
+      this.accountRekeyed = false; 
       this.accountMasterKeyDisabled = false;
     }
+  }
+
+  async addVanityWordToBackend() {
+    this.loadingData = true;
+
+    if(this.debugMode) {
+      this.backendSaveStarted = true;
+      this.backendSaveSuccess = true;
+      this.loadingData = false;
+      return;
+    }
+
+    let genericBackendRequest:GenericBackendPostRequest = {
+      options: {
+        xrplAccount: this.originalAccountInfo.Account
+      },
+      payload: {
+        options: {
+          forceAccount: true
+        },
+        txjson: {
+          Account: this.originalAccountInfo.Account,
+          TransactionType: "Payment",
+          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Adding vanity word for explicit search: "+this.vanityWordInput.trim(), 'utf8').toString('hex').toUpperCase()}}]
+        },
+        custom_meta: {
+          instruction: "This payment will add your vanity search word '" + this.vanityWordInput.trim() + "' to our backend to search for it explicitly.",
+          blob: {
+            isSaveWord: true,
+            searchWord: this.vanityWordInput.trim()
+          }
+        }
+      }
+    }
+
+    try {
+      let message:any = await this.waitForTransactionSigning(genericBackendRequest);
+
+      if(message && message.payload_uuidv4) {
+
+        this.backendSaveStarted = true;
+
+        let txInfo = await this.xummService.validateTransaction(message.payload_uuidv4);
+          //console.log('The generic dialog was closed: ' + JSON.stringify(info));
+
+        //if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) { <-------- ######## USE THIS IN PROD. CHECK THAT PAYMENT WAS ON MAIN NET!!
+        if(txInfo && txInfo.success && txInfo.account) {
+          if(isValidXRPAddress(txInfo.account))
+            this.backendSaveSuccess = true;
+          else
+            this.backendSaveSuccess = false;
+        } else {
+          this.backendSaveSuccess = false;
+        }
+      }
+    } catch(err) {
+      this.handleError(err);
+    }
+
+    this.loadingData = false;
   }
 
   copyAddress(address) {

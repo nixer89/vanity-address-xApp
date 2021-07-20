@@ -89,6 +89,9 @@
                   <mat-card class="mat-card-orange">
                     <label>No vanity addresses found for your search. Please try a different word!</label>
                     <label>Try changing your search word slightly!</label>
+                    <label class="xumm-orange">Alternnatively you can add the search word '{{vanityWordInput}}' to our backend to explicitly looking for it.</label>
+                    <label class="xumm-orange">Adding your vanity word to our backend will come with a fee of {{getBackendFeeAmount}} XRP.</label>
+                    <button mat-raised-button color="primary" (click)="buyVanityAddress()" [disabled]="loadingData">Pay for explict search</button>
                   </mat-card>
                 </div>
               </div>
