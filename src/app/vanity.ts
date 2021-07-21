@@ -448,7 +448,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   getPurchaseAmount(): string {
     if(this.vanityWordUsedForSearch) {
-      let length = this.vanityWordUsedForSearch.length+"";
+      let length:string = (this.vanityWordUsedForSearch.length > 6 ? 6 : this.vanityWordUsedForSearch.length) + ""
 
       console.log("fix amounts: " + JSON.stringify(this.fixAmounts));
       
