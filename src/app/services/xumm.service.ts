@@ -86,7 +86,7 @@ export class XummService {
 
     async findVanityAddress(searchString: string): Promise<AddressResult> {
         try {
-            return this.app.get(this.xummBackendURL+"/api/v1/vanity/search/"+searchString);
+            return this.app.post(this.xummBackendURL+"/api/v1/vanity/search", {searchWord: searchString});
         } catch(err) {
             console.log(JSON.stringify(err))
             return { addresses: []};
@@ -95,7 +95,7 @@ export class XummService {
     
     async getPurchasedAddresses(account: string): Promise<AddressResult> {
         try {
-            return this.app.get(this.xummBackendURL+"/api/v1/vanity/purchased/"+account);
+            return this.app.post(this.xummBackendURL+"/api/v1/vanity/purchased", {account: account});
         } catch(err) {
             console.log(JSON.stringify(err))
             return { addresses: []};
