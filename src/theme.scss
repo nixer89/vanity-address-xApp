@@ -187,6 +187,7 @@ a:active {
   background-color: rgb(59, 220, 150) !important;
 }
 
+
 .mat-step-icon.mat-step-icon-state-number.mat-step-icon-selected {
   background-color: rgb(48, 82, 255) !important;
 }
@@ -205,6 +206,10 @@ a:active {
 
 .mat-step-label {
   color: rgb(172, 177, 193) !important;
+}
+
+.mat-raised-button {
+  font-weight: bold !important;
 }
 
 .mat-raised-button.mat-button-disabled.mat-button-disabled {
@@ -243,30 +248,29 @@ a:active {
     background-color:rgb(248, 250, 253) !important;
   }
 
-  .mat-table {
-    background-color:rgb(248, 250, 253) !important;
-  }
-
   .mat-expansion-panel {
     background-color:rgb(248, 250, 253) !important;
   }
 
-  .mat-expansion-panel-header:focus {
+  .mat-expansion-panel.expansion-panel-light {
     background-color:rgb(248, 250, 253) !important;
   }
 
-  .mat-expansion-panel-header:hover {
+  .mat-expansion-panel-header.expansion-panel-light {
     background-color:rgb(248, 250, 253) !important;
   }
 
-  .mat-calendar {
-    background-color:#FFFFFF !important;
-    color: #000000 !important;
+  .mat-expansion-panel.expansion-panel-darker {
+    background-color:rgb(248, 250, 253) !important;
+  }
+
+  .mat-expansion-panel-header.expansion-panel-darker {
+    background-color:rgb(248, 250, 253) !important;
   }
 
   .theme-background {
     background-color:#FFFFFF !important;
-    color: #000000 !important;
+    color: #000000;
   }
 
   .snackbar-success {
@@ -334,30 +338,29 @@ a:active {
     background-color:rgba(96, 104, 133, 0.25) !important;
   }
 
-  .mat-table {
-    background-color:rgba(96, 104, 133, 0.25) !important;
-  }
-
   .mat-expansion-panel {
     background-color:rgba(96, 104, 133, 0.25) !important;
   }
 
-  .mat-expansion-panel-header:focus {
+  .mat-expansion-panel.expansion-panel-light {
     background-color:rgba(96, 104, 133, 0.25) !important;
   }
 
-  .mat-expansion-panel-header:hover {
+  .mat-expansion-panel-header.expansion-panel-light {
     background-color:rgba(96, 104, 133, 0.25) !important;
   }
 
-  .mat-calendar {
-    background-color:#000000 !important;
-    color: #FFFFFF !important;
+  .mat-expansion-panel.expansion-panel-darker {
+    background-color:rgba(96, 104, 133, 0.25) !important;
+  }
+
+  .mat-expansion-panel-header.expansion-panel-darker {
+    background-color:rgba(96, 104, 133, 0.25) !important;
   }
 
   .theme-background {
     background-color:#000000 !important;
-    color: #FFFFFF !important;
+    color: #FFFFFF;
   }
 
   .snackbar-success {
@@ -409,30 +412,29 @@ a:active {
     background-color:rgba(96, 104, 133, 0.19) !important;
   }
 
-  .mat-table {
-    background-color:rgba(96, 104, 133, 0.19) !important;
-  }
-
   .mat-expansion-panel {
     background-color:rgba(96, 104, 133, 0.19) !important;
   }
 
-  .mat-expansion-panel-header:focus {
+  .mat-expansion-panel.expansion-panel-light {
     background-color:rgba(96, 104, 133, 0.19) !important;
   }
 
-  .mat-expansion-panel-header:hover {
+  .mat-expansion-panel-header.expansion-panel-light {
     background-color:rgba(96, 104, 133, 0.19) !important;
   }
 
-  .mat-calendar {
-    background-color:rgb(24, 26, 33) !important;
-    color: #FFFFFF !important;
+  .mat-expansion-panel.expansion-panel-darker {
+    background-color:rgba(96, 104, 133, 0.19) !important;
+  }
+
+  .mat-expansion-panel-header.expansion-panel-darker {
+    background-color:rgba(96, 104, 133, 0.19) !important;
   }
 
   .theme-background {
     background-color:rgb(24, 26, 33) !important;
-    color: #FFFFFF !important;
+    color: #FFFFFF;
   }
 
   .snackbar-success {
@@ -484,30 +486,29 @@ a:active {
     background-color:rgba(96, 104, 133, 0.22) !important;
   }
 
-  .mat-table {
-    background-color:rgba(96, 104, 133, 0.22) !important;
-  }
-
   .mat-expansion-panel {
     background-color:rgba(96, 104, 133, 0.22) !important;
   }
 
-  .mat-expansion-panel-header:focus {
+  .mat-expansion-panel.expansion-panel-light {
     background-color:rgba(96, 104, 133, 0.22) !important;
   }
 
-  .mat-expansion-panel-header:hover {
+  .mat-expansion-panel-header.expansion-panel-light {
     background-color:rgba(96, 104, 133, 0.22) !important;
   }
 
-  .mat-calendar {
-    background-color:rgb(3, 11, 54) !important;
-    color: #FFFFFF !important;
+  .mat-expansion-panel.expansion-panel-darker {
+    background-color:rgba(96, 104, 133, 0.22) !important;
+  }
+
+  .mat-expansion-panel-header.expansion-panel-darker {
+    background-color:rgba(96, 104, 133, 0.22) !important;
   }
 
   .theme-background {
     background-color:rgb(3, 11, 54) !important;
-    color: #FFFFFF !important;
+    color: #FFFFFF;
   }
 
   .snackbar-success {

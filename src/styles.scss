@@ -25,6 +25,20 @@ a.footerlink {
     vertical-align: middle;
 }
 
+.mat-expansion-panel-header-title {
+    width: 20%;
+    align-items: center;
+}
+
+.mat-expansion-panel-header-description {
+    width: 80%;
+    align-items: center;
+}
+
+.mat-expansion-panel-body {
+    padding-top: 6px !important;
+}
+
 body .snackbar-success {
     display: flex;
     justify-content: center;
@@ -46,10 +60,6 @@ body .snackbar-failed {
     font-weight: 600;
 }
 
-.mat-hint {
-    color: rgb(255, 91, 91) !important;
-}
-
 // adds breaks to the mat-checkboxes with long labels
 .mat-checkbox-layout {
     white-space: normal !important;
@@ -60,72 +70,45 @@ body .snackbar-failed {
     margin-top: 3px !important;
 }
 
+.title {
+    font-weight: bold;
+}
+
 .mat-checkbox-layout .mat-checkbox-label {
     line-height: 20px !important;
 }
 
-.title {
-    font-size: 0.9em !important;
-    font-weight: bold;
-    padding-left: 0.5em;
+.mat-hint {
+    color: rgb(255, 91, 91) !important;
 }
 
-.mat-row {
-    min-height: 24px;
-    padding: 10px 1px 5px 0px !important;
-}
-
-.mat-cell {
-    padding-left: 0px;
-    padding-right: 0px;
-    font-size: 0.9em !important;
-}
-
-.mat-raised-button {
-    font-weight: bold !important;
-}
-
+@media (max-width:599px) {
     
-.mat-expansion-panel-header {
-    padding: 0 12px !important;
+    .mat-expansion-panel-header {
+        padding: 0 12px !important;
+    }
+
+    .mat-expansion-panel-header-title {
+        width: 40%;
+        margin-right: 8px !important;
+        padding: 0px !important;
+    }
+
+    .mat-expansion-panel-header-description {
+        width: 60%;
+    }
+
+    .mat-expansion-panel-body {
+        padding-right: 12px !important;
+        padding-left: 12px !important;
+        padding-top: 6px !important;
+    }
+
+    .mat-card {
+        padding: 12px 8px 12px !important;
+    }
+
+    .mat-dialog-container {
+        padding: 12px !important;
+    }
 }
-
-.mat-expansion-panel-header-title {
-    width: 40% !important;
-    margin-right: 8px !important;
-    padding: 0px !important;
-    align-items: center !important;
-}
-
-.mat-expansion-panel-header-description {
-    width: 60%  !important;
-    align-items: center !important;
-}
-
-.mat-expansion-panel-body {
-    padding-right: 12px !important;
-    padding-left: 12px !important;
-    padding-top: 6px !important;
-}
-
-.mat-card {
-    padding: 12px 8px 12px !important;
-}
-
-.mat-dialog-container {
-    padding: 12px !important;
-}
-
-.break-words {
-    word-wrap: break-word !important;
-    white-space: unset !important;
-    overflow-wrap: break-word;
-
-    word-break: break-word;
-
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-}
-    

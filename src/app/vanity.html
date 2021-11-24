@@ -1,21 +1,16 @@
-<div [class]="themeClass" fxFlex fxLayout="column" fxLayoutGap="0.3em">
+<div [class]="themeClass">
   <mat-toolbar fxLayout="row" color="primary" style="background-color: rgb(48, 82, 255);"class="mat-elevation-z4">  
-    <mat-toolbar-row style="padding: 0;">
-      <div fxLayout="row" fxLayoutAlign="start center">
-        <img src="../assets/topbar_logo.png" width="50px" height="50px" alt="Vanity Address xApp Logo">
-        <label class="title">{{title}}</label>
-      </div>
-      <span style="flex: 1 1 auto;"></span>
-      <div fxLayout="row" fxLayoutAlign="end center">
-        <button mat-icon-button aria-label="Open Help" (click)="showHelp = true;">
-          <mat-icon style="font-size: 24px; width: fit-content; height: fit-content;">help_outline</mat-icon>
-        </button>
+    <mat-toolbar-row>
+      <div fxLayout="row" fxLayoutGap="0.5em" fxLayoutAlign="start center">
+        <img src="../assets/topbar_logo.png" width="50px" height="50px" alt="Xumm Community Logo">
+        <label style="font-weight: bold;">{{title}}</label>  
       </div>
     </mat-toolbar-row>
   </mat-toolbar>
-  
-  <mat-card class="mat-card-red" *ngIf="errorLabel" fxLayout="column" fxLayoutGap="0.5em">
-    <label>Sorry that this error happened! Please copy the following error and send it to @nixerFFM or @WietseWind on twitter or via a mail to: XummCommunity@gmail.com . Thanks for your help!</label><br>
+
+  <mat-card class="mat-card-red" *ngIf="errorLabel" fxLayout="column" fxLayoutGap="0.5em;">
+    <label>Sorry that this error happened! Please copy the following error and send it to @XummCommunity on twitter or via mail to: XummCommunity@gmail.com . Thanks for your help!</label>
+    <label>&nbsp;</label>
     <label class="break-words" (click)="copyError()">{{errorLabel}}</label>
     <button mat-button class="xumm-grey-background" aria-label="Copy Error" (click)="copyError()">
       Copy&nbsp;<mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
@@ -31,9 +26,9 @@
     </mat-card>
   </div>
 
-  <!--label class="break-words" *ngIf="infoLabel" style="color: red">{{infoLabel}}</label><br><br>
+  <label class="break-words" *ngIf="infoLabel" style="color: red">{{infoLabel}}</label><br><br>
   <label class="break-words" *ngIf="infoLabel2" style="color: red">{{infoLabel2}}</label>
-  <label class="break-words" *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label-->
+  <label class="break-words" *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label>
 
   <div>
     <div *ngIf="testMode == null" fxLayoutAlign="center center">
@@ -113,7 +108,7 @@
               </div>
     
               <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
-                  <button mat-raised-button color="primary" (click)="moveNext()" [disabled]="!selectedVanityAddress || loadingData">Next</button>
+                  <button mat-raised-button color="primary" (click)="moveNext(true)" [disabled]="!selectedVanityAddress || loadingData">Next</button>
               </div>
           </mat-card>
         </mat-step>

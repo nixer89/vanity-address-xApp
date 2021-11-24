@@ -87,6 +87,8 @@ export class VanityComponent implements OnInit, OnDestroy {
   informationConfirmed:boolean = false;
 
   infoLabel:string = null;
+  infoLabel2:string = null;
+  infoLabel3:string = null;
 
   title: string = "Vanity Address xApp";
   tw: TypeWriter
@@ -98,7 +100,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   showHelp:boolean = false;
   indexBeforeHelp:number = -1;
 
-  debugMode:boolean = true;
+  debugMode:boolean = false;
 
   async ngOnInit() {
 
@@ -118,37 +120,34 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
 
     this.ottReceived = this.ottChanged.subscribe(async ottData => {
-      console.log("ottReceived: " + JSON.stringify(ottData));
+      this.infoLabel = "ott received: " + JSON.stringify(ottData);
+      //console.log("ottReceived: " + JSON.stringify(ottData));
 
       this.fixAmounts = await this.xummService.getFixAmounts();
 
       if(ottData) {
 
+        this.loadingData = true;
+
         this.infoLabel = JSON.stringify(ottData);
-
-        try {
         
-          this.testMode = ottData.nodetype == 'TESTNET';
-          this.xummVersion = ottData.version;
+        this.testMode = ottData.nodetype === 'TESTNET';
+        //this.isTestMode = true;
 
-          if(ottData.locale)
-            this.dateAdapter.setLocale(ottData.locale);
-          //this.infoLabel = "changed mode to testnet: " + this.testMode;
+        this.infoLabel2 = "changed mode to testnet: " + this.testMode;
 
-          if(ottData && ottData.account && ottData.accountaccess == 'FULL') {
-            await this.loadAccountData(ottData.account);
-          } else {
-            this.originalAccountInfo = "no account";
-          }
-        } catch(e) {
-          await this.handleError(e);
+        if(ottData && ottData.account && ottData.accountaccess == 'FULL') {
+          await this.loadAccountData(ottData.account);
+
+          //await this.loadAccountData(ottData.account); //false = ottResponse.node == 'TESTNET' 
+        } else {
+          //this.issuer_account_info = "no account";
         }
-      }
 
-      //this.testMode = true;
-      //await this.loadAccountData("rELeasERs3m4inA1UinRLTpXemqyStqzwh");
-      //await this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
-      this.loadingData = false;
+        this.infoLabel = JSON.stringify(this.originalAccountInfo);
+
+        this.loadingData = false;
+      }
     });
 
     this.themeReceived = this.themeChanged.subscribe(async appStyle => {
@@ -409,7 +408,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.purchasedAddresses = null;
       this.vanityWordUsedForSearch = this.vanityWordInput.trim();
 
-      let searchResultApi:VanitySearchResponse = await this.xummService.searchVanityAddress(this.vanityWordUsedForSearch);
+      let searchResultApi:VanitySearchResponse = await this.xummService.searchVanityAddress(this.vanityWordUsedForSearch, this.testMode);
 
       console.log("Search result: " + JSON.stringify(searchResultApi));
 
@@ -718,7 +717,10 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
   }
 
-  moveNext() {
+  moveNext(reserveAddress?:boolean) {
+    
+    if(reserveAddress)
+      this.xummService.reserveVanityAddress(this.selectedVanityAddress.address, this.selectedVanityAddress.identifier, this.testMode);
     // complete the current step
     this.stepper.selected.completed = true;
     this.stepper.selected.editable = false;

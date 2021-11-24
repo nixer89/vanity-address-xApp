@@ -10,9 +10,9 @@ import { OverlayContainer } from '@angular/cdk/overlay';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'vanity-address-xApp';
-  themeClass:string = "royal-theme";
-  backgroundColor: string = "#030B36";
+  title = 'xumm-xapp-token-create';
+  themeClass:string = "dark-theme";
+  backgroundColor: string = "#000000";
   
   receivedParams = false;
   alreadySent = false;
@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe(async params => {
-      //this.infoLabel = JSON.stringify(params);
+      this.infoLabel = JSON.stringify(params);
       if(this.timeout1) {
         //console.log("clearing timeout1");
         clearTimeout(this.timeout1)
@@ -43,7 +43,7 @@ export class AppComponent implements OnInit {
       let xAppToken = params.xAppToken;
       let xAppStyle = params.xAppStyle;
 
-      this.receivedParams = !(xAppToken == null && xAppStyle == null);
+      this.receivedParams = xAppToken != null || xAppStyle != null;
       //console.log("has params received: " + this.receivedParams)
 
       //console.log("received pararms: " + JSON.stringify(params));
@@ -68,14 +68,14 @@ export class AppComponent implements OnInit {
             this.backgroundColor = '#030B36';
             break;
           default:
-            this.themeClass = 'royal-theme';
-            this.backgroundColor = '#030B36';
+            this.themeClass = 'dark-theme';
+            this.backgroundColor = '#000000';
             break;
         }
       }
 
       var bodyStyles = document.body.style;
-      console.log("setting style: " + this.themeClass);
+      console.log("setting style :" + this.themeClass);
       bodyStyles.setProperty('--background-color', this.backgroundColor);
       this.overlayContainer.getContainerElement().classList.remove('dark-theme');
       this.overlayContainer.getContainerElement().classList.remove('light-theme');
@@ -86,18 +86,25 @@ export class AppComponent implements OnInit {
       this.appStyleChanged.next({theme: this.themeClass, color: this.backgroundColor});
 
       if(xAppToken) {
-        let ottResponse:any = await this.xummService.getxAppOTTData(xAppToken);
-        //this.infoLabel = "ottResponse: " + JSON.stringify(ottResponse);
-
-        this.alreadySent = true;
-
-        if(ottResponse && ottResponse.error) {
-          //console.log("error OTT, only sending app style");
-          this.ottReceived.next({style: xAppStyle});
-        } else {
-          this.ottReceived.next(ottResponse);
+        try {
+          this.infoLabel = "calling backend";
+          let ottResponse:any = await this.xummService.getxAppOTTData(xAppToken);
+          //console.log("ottResponse: " + JSON.stringify(ottResponse));
+          this.infoLabel = "ott from backend: " + JSON.stringify(ottResponse);
+  
           this.alreadySent = true;
-        }      
+  
+          if(ottResponse && ottResponse.error) {
+            //console.log("error OTT, only sending app style");
+            this.ottReceived.next({style: xAppStyle});
+          } else {
+            this.ottReceived.next(ottResponse);
+            this.alreadySent = true;
+          }      
+        } catch(err) {
+          this.infoLabel = "error: " + JSON.stringify(err);
+        }
+        
       } else {
         //didn't got an ott. Just send over the app style (even if not available)
         this.timeout1 = setTimeout(() => {

@@ -84,18 +84,18 @@ export class XummService {
         }
     }
 
-    async searchVanityAddress(searchString: string): Promise<VanitySearchResponse> {
+    async searchVanityAddress(searchString: string, testnet: boolean): Promise<VanitySearchResponse> {
         try {
-            return this.app.post(this.xummBackendURL+"/api/v1/vanity/search", {searchWord: searchString});
+            return this.app.post(this.xummBackendURL+"/api/v1/vanity/search", {searchWord: searchString, testnet: testnet});
         } catch(err) {
             console.log(JSON.stringify(err))
             return null;
         }
     }
     
-    async reserveVanityAddress(account: string, identifier): Promise<VanityReserveResponse> {
+    async reserveVanityAddress(account: string, identifier:string, testnet: boolean): Promise<VanityReserveResponse> {
         try {
-            return this.app.post(this.xummBackendURL+"/api/v1/vanity/reserve", {prospect: account, identifier: identifier});
+            return this.app.post(this.xummBackendURL+"/api/v1/vanity/reserve", {prospect: account, identifier: identifier, testnet: testnet});
         } catch(err) {
             console.log(JSON.stringify(err))
             return null;
@@ -104,7 +104,7 @@ export class XummService {
 
     async getFixAmounts(): Promise<any> {
         try {
-            return this.app.get(this.xummBackendURL+"/api/v1/properties/amounts");
+            return this.app.get(this.xummBackendURL+"/api/v1/payment/amounts");
         } catch(err) {
             console.log(JSON.stringify(err))
             return [];
