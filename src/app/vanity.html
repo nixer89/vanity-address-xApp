@@ -55,8 +55,8 @@
         <mat-step completed="false" editable="false">
           <mat-card fxLayout="column" fxLayoutGap="1em">
               <ng-template matStepLabel>Vanity search</ng-template>
-              <label>A vanity address is a wallet address containing a few characters you like at the beginning or the end of the wallet address.</label>
-              <label>This xApp allows you to search for a vanity address of your choice. We will check for suitable addresses and show it to you, if found.</label>
+              <label>A vanity address is a wallet address containing a few characters you like at the beginning of the wallet address.</label>
+              <label>This xApp allows you to search for a vanity address of your choice. We will check for suitable addresses and show it to you if find any.</label>
               <br/>
               <label class="description">Please enter the characters you want your address to start or end with.</label>
               <form fxLayout="column" fxLayoutGap="0.5em" style="padding-top: 1em;">
@@ -78,7 +78,7 @@
 
                     <ng-container matColumnDef="account">
                       <mat-cell *matCellDef="let address">
-                        <label class="break-words" [innerHTML]="address | highlightSearch: vanityWordInput"></label>
+                        <label class="break-words" [innerHTML]="address.address | highlightSearch: vanityWordInput"></label>
                       </mat-cell>
                     </ng-container>
                     <mat-row  *matRowDef="let row; columns: ['account'];" (click)="selectVanityAddress(row)"></mat-row>

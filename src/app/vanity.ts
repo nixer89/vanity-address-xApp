@@ -4,7 +4,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { XummService } from './services/xumm.service';
 import { XRPLWebsocket } from './services/xrplWebSocket';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AddressResult, GenericBackendPostRequest, TransactionValidation } from './utils/types';
+import { GenericBackendPostRequest, TransactionValidation, VanitySearchResponse, VanitySearchResult } from './utils/types';
 import { XummTypes } from 'xumm-sdk';
 import { webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import { Subscription, Observable } from 'rxjs';
@@ -45,14 +45,14 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   websocket: WebSocketSubject<any>;
 
-  searchResult:string[] = null;
+  searchResult:VanitySearchResult[] = null;
   purchasedAddresses:string[] = null;
 
   xummVersion:string = null;
 
   originalAccountInfo:any;
   testMode:boolean = null;
-  selectedVanityAddress:string = null;
+  selectedVanityAddress:VanitySearchResult = null;
   vanityWordUsedForSearch:string = null;
   fixAmounts:any = null;
 
@@ -121,7 +121,6 @@ export class VanityComponent implements OnInit, OnDestroy {
       console.log("ottReceived: " + JSON.stringify(ottData));
 
       this.fixAmounts = await this.xummService.getFixAmounts();
-      this.getPurchasedAddresses();
 
       if(ottData) {
 
@@ -410,35 +409,13 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.purchasedAddresses = null;
       this.vanityWordUsedForSearch = this.vanityWordInput.trim();
 
-      let searchResultApi:AddressResult = await this.xummService.findVanityAddress(this.vanityWordUsedForSearch);
+      let searchResultApi:VanitySearchResponse = await this.xummService.searchVanityAddress(this.vanityWordUsedForSearch);
 
       console.log("Search result: " + JSON.stringify(searchResultApi));
 
-      this.searchResult = searchResultApi.addresses;
+      this.searchResult = searchResultApi.results;
 
       this.infoLabel = "search result: " +JSON.stringify(this.searchResult);
-    } catch(e) {
-      await this.handleError(e);
-    }
-
-    this.loadingData = false;
-  }
-
-  async getPurchasedAddresses() {
-    console.log("getting purchased vanity addresses for account: " + this.originalAccountInfo.Account);
-    this.loadingData = true;
-    try {
-      this.selectedVanityAddress = null;
-      this.searchResult = null;
-      this.purchasedAddresses = null;
-
-      let purchaseResult:AddressResult = await this.xummService.getPurchasedAddresses(this.originalAccountInfo.Account);
-
-      console.log("Purchase result: " + JSON.stringify(purchaseResult));
-
-      this.purchasedAddresses = purchaseResult.addresses;
-
-      this.infoLabel = "Purchase result: " +JSON.stringify(this.purchasedAddresses);
     } catch(e) {
       await this.handleError(e);
     }
@@ -473,7 +450,7 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectVanityAddress(account:string) {
+  selectVanityAddress(account:VanitySearchResult) {
     this.selectedVanityAddress = account;
   }
 
@@ -583,7 +560,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
       if(message && message.payload_uuidv4) {
 
-        this.intervalAccountStatus = setInterval(() => this.checkVanityAccountStatus(this.selectedVanityAddress), 1000);
+        this.intervalAccountStatus = setInterval(() => this.checkVanityAccountStatus(this.selectedVanityAddress.address), 1000);
         
         this.activationStarted = true;
 

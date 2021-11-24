@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AppService } from './app.service';
 import { XummTypes } from 'xumm-sdk';
-import { AddressResult, GenericBackendPostRequest, TransactionValidation } from '../utils/types';
+import { GenericBackendPostRequest, TransactionValidation, VanityReserveResponse, VanitySearchResponse } from '../utils/types';
 
 @Injectable()
 export class XummService {
@@ -84,21 +84,21 @@ export class XummService {
         }
     }
 
-    async findVanityAddress(searchString: string): Promise<AddressResult> {
+    async searchVanityAddress(searchString: string): Promise<VanitySearchResponse> {
         try {
             return this.app.post(this.xummBackendURL+"/api/v1/vanity/search", {searchWord: searchString});
         } catch(err) {
             console.log(JSON.stringify(err))
-            return { addresses: []};
+            return null;
         }
     }
     
-    async getPurchasedAddresses(account: string): Promise<AddressResult> {
+    async reserveVanityAddress(account: string, identifier): Promise<VanityReserveResponse> {
         try {
-            return this.app.post(this.xummBackendURL+"/api/v1/vanity/purchased", {account: account});
+            return this.app.post(this.xummBackendURL+"/api/v1/vanity/reserve", {prospect: account, identifier: identifier});
         } catch(err) {
             console.log(JSON.stringify(err))
-            return { addresses: []};
+            return null;
         }
     }
 

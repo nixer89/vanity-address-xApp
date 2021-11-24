@@ -29,6 +29,33 @@ export interface TransactionValidation {
     payloadId?: string
 }
 
-export interface AddressResult {
-    addresses: string[]
+export interface VanitySearchResult {
+    address:string,
+    identifier:string
+}
+
+export interface VanitySearchRequest {
+    search: string
+}
+
+export interface VanitySearchResponse {
+    query: string,
+    testnet: boolean,
+    results: VanitySearchResult[]
+}
+
+export interface VanityReserveRequest {
+    prospect: string,
+    identifier: string
+}
+
+export interface VanityReserveResponse {
+    reserved: string,
+    testnet: boolean
+}
+
+export interface VanityPurchaseRequest {
+    address: string,
+    identifier: string,
+    regularKey: string
 }
