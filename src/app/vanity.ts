@@ -363,7 +363,7 @@ export class VanityComponent implements OnInit, OnDestroy {
             TransactionType: "SignIn"
           },
           custom_meta: {
-            instruction: "Please confirm that you have understood the previous information and that you want to purchase the XRPL account " + this.selectedVanityAddress
+            instruction: "Please confirm that you have understood the previous information and that you want to purchase the XRPL account " + this.selectedVanityAddress.address
           }
       }
     }
@@ -430,8 +430,11 @@ export class VanityComponent implements OnInit, OnDestroy {
       
       if(this.fixAmounts[length])
         return this.fixAmounts[length]
+      else if(this.fixAmounts["*"])
+        return this.fixAmounts["*"]
       else
         return "--"
+
     } else {
       return "--";
     }
@@ -479,10 +482,10 @@ export class VanityComponent implements OnInit, OnDestroy {
         txjson: {
           Account: this.originalAccountInfo.Account,
           TransactionType: "Payment",
-          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Payment for buying vanity address: "+this.selectedVanityAddress, 'utf8').toString('hex').toUpperCase()}}]
+          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Payment for buying vanity address: "+this.selectedVanityAddress.address, 'utf8').toString('hex').toUpperCase()}}]
         },
         custom_meta: {
-          instruction: "Please pay with the account which is already selected.\n\nThis account will be able to sign transactions for " + this.selectedVanityAddress,
+          instruction: "Please pay with the account which is already selected.\n\nThis account will be able to sign transactions for " + this.selectedVanityAddress.address,
           blob: {
             vanityAddress: this.selectedVanityAddress,
             isPurchase: true,
@@ -542,10 +545,10 @@ export class VanityComponent implements OnInit, OnDestroy {
         txjson: {
           Account: this.originalAccountInfo.Account,
           TransactionType: "Payment",
-          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Activation of vanity address: "+this.selectedVanityAddress, 'utf8').toString('hex').toUpperCase()}}],
+          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Activation of vanity address: "+this.selectedVanityAddress.address, 'utf8').toString('hex').toUpperCase()}}],
         },
         custom_meta: {
-          instruction: "Please send with the account which is already selected.\n\nThis account will be able to sign transactions for " + this.selectedVanityAddress,
+          instruction: "Please send with the account which is already selected.\n\nThis account will be able to sign transactions for " + this.selectedVanityAddress.address,
           blob: {
             vanityAddress: this.selectedVanityAddress,
             isActivation: true
