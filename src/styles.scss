@@ -82,6 +82,11 @@ body .snackbar-failed {
     color: rgb(255, 91, 91) !important;
 }
 
+.mat-toolbar.second-toolbar {
+    height: 36px;
+    font-size: 0.8em;
+}
+
 @media (max-width:599px) {
     
     .mat-expansion-panel-header {

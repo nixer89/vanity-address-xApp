@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AppService } from './app.service';
 import { XummTypes } from 'xumm-sdk';
-import { GenericBackendPostRequest, TransactionValidation, VanityReserveResponse, VanitySearchResponse } from '../utils/types';
+import { GenericBackendPostRequest, PurchasedVanityAddresses, TransactionValidation, VanityReserveResponse, VanitySearchResponse } from '../utils/types';
 
 @Injectable()
 export class XummService {
@@ -96,6 +96,15 @@ export class XummService {
     async reserveVanityAddress(account: string, identifier:string, testnet: boolean): Promise<VanityReserveResponse> {
         try {
             return this.app.post(this.xummBackendURL+"/api/v1/vanity/reserve", {prospect: account, identifier: identifier, testnet: testnet});
+        } catch(err) {
+            console.log(JSON.stringify(err))
+            return null;
+        }
+    }
+
+    async getPurchases(account: string): Promise<PurchasedVanityAddresses[]> {
+        try {
+            return this.app.post(this.xummBackendURL+"/api/v1/vanity/purchases", {account: account});
         } catch(err) {
             console.log(JSON.stringify(err))
             return null;

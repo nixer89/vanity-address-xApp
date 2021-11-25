@@ -4,16 +4,16 @@ import { MatStepper } from '@angular/material/stepper';
 import { XummService } from './services/xumm.service';
 import { XRPLWebsocket } from './services/xrplWebSocket';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { GenericBackendPostRequest, TransactionValidation, VanitySearchResponse, VanitySearchResult } from './utils/types';
+import { GenericBackendPostRequest, PurchasedVanityAddresses, TransactionValidation, VanitySearchResponse, VanitySearchResult } from './utils/types';
 import { XummTypes } from 'xumm-sdk';
 import { webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import { Subscription, Observable } from 'rxjs';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { DateAdapter } from '@angular/material/core';
-import { TypeWriter } from './utils/TypeWriter';
 import * as clipboard from 'copy-to-clipboard';
 import * as flagutil from './utils/flagutils';
 import { ActivatedRoute } from '@angular/router';
+import { TypeWriter } from './utils/TypeWriter';
 
 @Component({
   selector: 'vanity',
@@ -46,7 +46,6 @@ export class VanityComponent implements OnInit, OnDestroy {
   websocket: WebSocketSubject<any>;
 
   searchResult:VanitySearchResult[] = null;
-  purchasedAddresses:string[] = null;
 
   xummVersion:string = null;
 
@@ -55,6 +54,8 @@ export class VanityComponent implements OnInit, OnDestroy {
   selectedVanityAddress:VanitySearchResult = null;
   vanityWordUsedForSearch:string = null;
   fixAmounts:any = null;
+
+  openSearch:boolean = true;
 
   purchaseStarted:boolean = false;
   purchaseSuccess:boolean = false;
@@ -68,6 +69,8 @@ export class VanityComponent implements OnInit, OnDestroy {
   accountActivated:boolean = false;
   accountRekeyed:boolean = false;
   accountMasterKeyDisabled:boolean = false;
+
+  rekeyAccount:string = null;
 
   intervalAccountStatus = null;
   errorTimeout = null;
@@ -90,9 +93,6 @@ export class VanityComponent implements OnInit, OnDestroy {
   infoLabel2:string = null;
   infoLabel3:string = null;
 
-  title: string = "Vanity Address xApp";
-  tw: TypeWriter
-
   themeClass = 'royal-theme';
   backgroundColor = '#030B36';
 
@@ -100,22 +100,29 @@ export class VanityComponent implements OnInit, OnDestroy {
   showHelp:boolean = false;
   indexBeforeHelp:number = -1;
 
+  purchasedAddresses:PurchasedVanityAddresses[] = null;
+  loadingPurchases:boolean = false;
+
+  displayedColumns: string[] = ['account', 'network', 'activated', 'rekeyed', 'regularkey'];
+
   debugMode:boolean = false;
 
+  title: string = "Vanity Address xApp";
+  tw: TypeWriter;
+
   async ngOnInit() {
+
+    this.tw = new TypeWriter(["Vanity Address xApp", "by nixerFFM + WietseWind", "Vanity Address xApp"], t => {
+      this.title = t;
+    })
+
+    this.tw.start();
 
     if(this.debugMode) {
       await this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
       this.fixAmounts = await this.xummService.getFixAmounts();
       this.testMode = true;
-      this.loadingData = false;
-
-      this.tw = new TypeWriter(["Vanity Address xApp", "by nixerFFM + WietseWind", "Vanity Address xApp"], t => {
-        this.title = t;
-      })
-  
-      this.tw.start();
-      
+      this.loadingData = false;      
       return;
     }
 
@@ -137,6 +144,7 @@ export class VanityComponent implements OnInit, OnDestroy {
         this.infoLabel2 = "changed mode to testnet: " + this.testMode;
 
         if(ottData && ottData.account && ottData.accountaccess == 'FULL') {
+          this.loadPurchases(ottData.account);
           await this.loadAccountData(ottData.account);
 
           //await this.loadAccountData(ottData.account); //false = ottResponse.node == 'TESTNET' 
@@ -171,12 +179,6 @@ export class VanityComponent implements OnInit, OnDestroy {
         this.searchVanityAddress();
       }
     });
-
-    this.tw = new TypeWriter(["Vanity Address xApp", "by nixerFFM + WietseWind", "Vanity Address xApp"], t => {
-      this.title = t;
-    })
-
-    this.tw.start();
   }
 
   ngOnDestroy() {
@@ -186,6 +188,26 @@ export class VanityComponent implements OnInit, OnDestroy {
     if(this.themeReceived)
       this.themeReceived.unsubscribe();
   }
+
+  openSearchClick() {
+    this.openSearch = true;
+  }
+
+  openPurchaseClick() {
+    this.openSearch = false;
+  }
+
+  async loadPurchases(account:string) {
+    try {
+      this.loadingPurchases = true;
+      this.purchasedAddresses = await this.xummService.getPurchases(account);
+      console.log(JSON.stringify(this.purchasedAddresses));
+      this.loadingPurchases = false;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
 
   async waitForTransactionSigning(payloadRequest: GenericBackendPostRequest): Promise<any> {
     this.loadingData = true;
@@ -352,7 +374,8 @@ export class VanityComponent implements OnInit, OnDestroy {
       options: {
           web: false,
           signinToValidate: true,
-          xrplAccount: this.originalAccountInfo.Account
+          xrplAccount: this.originalAccountInfo.Account,
+          pushDisabled: true
       },
       payload: {
           options: {
@@ -405,7 +428,6 @@ export class VanityComponent implements OnInit, OnDestroy {
     try {
       this.selectedVanityAddress = null;
       this.searchResult = null;
-      this.purchasedAddresses = null;
       this.vanityWordUsedForSearch = this.vanityWordInput.trim();
 
       let searchResultApi:VanitySearchResponse = await this.xummService.searchVanityAddress(this.vanityWordUsedForSearch, this.testMode);
@@ -425,8 +447,6 @@ export class VanityComponent implements OnInit, OnDestroy {
   getPurchaseAmount(): string {
     if(this.vanityWordUsedForSearch) {
       let length:string = (this.vanityWordUsedForSearch.length > 6 ? 6 : this.vanityWordUsedForSearch.length) + ""
-
-      console.log("fix amounts: " + JSON.stringify(this.fixAmounts));
       
       if(this.fixAmounts[length])
         return this.fixAmounts[length]
@@ -473,7 +493,8 @@ export class VanityComponent implements OnInit, OnDestroy {
 
     let genericBackendRequest:GenericBackendPostRequest = {
       options: {
-        xrplAccount: this.originalAccountInfo.Account
+        xrplAccount: this.originalAccountInfo.Account,
+        pushDisabled: true
       },
       payload: {
         options: {
@@ -522,6 +543,22 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.loadingData = false;
   }
 
+  async selectPurchasedAddressAndActivate(account:PurchasedVanityAddresses) {
+    this.selectedVanityAddress = {
+      address: account.vanityAddress,
+      identifier: account.identifier
+    }
+    this.purchaseStarted = true;
+    this.purchaseSuccess = true;
+    this.informationConfirmed = true;
+    //silly but does what I need!
+    this.moveNext();
+    this.moveNext();
+    this.moveNext();
+    this.moveNext();
+    this.openSearch = true;
+  }
+
   async activateVanityAddress() {
     this.loadingData = true;
 
@@ -536,7 +573,8 @@ export class VanityComponent implements OnInit, OnDestroy {
 
     let genericBackendRequest:GenericBackendPostRequest = {
       options: {
-        xrplAccount: this.originalAccountInfo.Account
+        xrplAccount: this.originalAccountInfo.Account,
+        pushDisabled: true
       },
       payload: {
         options: {
@@ -572,6 +610,7 @@ export class VanityComponent implements OnInit, OnDestroy {
           //something went wrong!
           if(!this.accountActivated || !this.accountRekeyed || !this.accountMasterKeyDisabled) {
             this.errorActivation = true;
+            clearInterval(this.intervalAccountStatus);
             this.loadingData = false;
           }
         }, 30000)
@@ -616,7 +655,8 @@ export class VanityComponent implements OnInit, OnDestroy {
         if(message_acc_info.status === 'success' && message_acc_info.result && message_acc_info.result.account_data) {
           let accountInfo = message_acc_info.result.account_data;
           this.accountActivated = accountInfo && accountInfo.Account && accountInfo.Account == xrplAccount;
-          this.accountRekeyed = accountInfo && accountInfo.RegularKey && accountInfo.RegularKey == this.originalAccountInfo.Account;
+          this.accountRekeyed = accountInfo && accountInfo.RegularKey != null;
+          this.rekeyAccount = accountInfo && accountInfo.RegularKey;
           this.accountMasterKeyDisabled = accountInfo && accountInfo.Flags && flagutil.isMasterKeyDisabled(accountInfo.Flags);
 
           //scroll down because more elements are loaded

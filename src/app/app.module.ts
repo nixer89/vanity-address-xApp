@@ -30,6 +30,7 @@ import { MatTableModule } from '@angular/material/table';
 
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppRoutes } from './app.routes';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     HighlightSearchPipe
   ],
   imports: [
+    AppRoutes,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,

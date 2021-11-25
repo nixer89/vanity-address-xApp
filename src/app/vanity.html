@@ -1,12 +1,26 @@
 <div [class]="themeClass">
-  <mat-toolbar fxLayout="row" color="primary" style="background-color: rgb(48, 82, 255);"class="mat-elevation-z4">  
-    <mat-toolbar-row>
-      <div fxLayout="row" fxLayoutGap="0.5em" fxLayoutAlign="start center">
-        <img src="../assets/topbar_logo.png" width="50px" height="50px" alt="Xumm Community Logo">
-        <label style="font-weight: bold;">{{title}}</label>  
+  <div id="topbar">
+    <mat-toolbar fxLayout="row" color="primary" style="background-color: rgb(48, 82, 255);" class="mat-elevation-z4">  
+      <mat-toolbar-row>
+        <div fxLayout="row" fxLayoutGap="0.5em" fxLayoutAlign="start center">
+          <img src="../assets/topbar_logo.png" width="50px" height="50px" alt="Xumm Community Logo">
+          <label style="font-weight: bold;">{{title}}</label>  
+        </div>
+      </mat-toolbar-row>
+    </mat-toolbar>
+  
+    <mat-toolbar class="second-toolbar" color="primary" fxLayout="row" style="background-color: rgb(35, 71, 255);" ngStyle.xs="padding:0px; font-size: 0.5em;">
+      <!-- normal menu -->
+      <div>
+        <button mat-button (click)="openSearchClick()" matTooltip="Buy Address">
+          <i class="material-icons topbar-menu-icon">mobile_friendly</i> Buy Address
+        </button>
+        <button mat-button (click)="openPurchaseClick()" matTooltip="Show Purchases">
+          <i class="material-icons topbar-menu-icon">attach_money</i> Show Purchases
+        </button>
       </div>
-    </mat-toolbar-row>
-  </mat-toolbar>
+    </mat-toolbar>
+  </div>
 
   <mat-card class="mat-card-red" *ngIf="errorLabel" fxLayout="column" fxLayoutGap="0.5em;">
     <label>Sorry that this error happened! Please copy the following error and send it to @XummCommunity on twitter or via mail to: XummCommunity@gmail.com . Thanks for your help!</label>
@@ -30,7 +44,7 @@
   <label class="break-words" *ngIf="infoLabel2" style="color: red">{{infoLabel2}}</label>
   <label class="break-words" *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label>
 
-  <div>
+  <div *ngIf="openSearch">
     <div *ngIf="testMode == null" fxLayoutAlign="center center">
       <mat-progress-spinner color="primary" mode="indeterminate" diameter=50></mat-progress-spinner>
     </div>
@@ -73,20 +87,20 @@
 
                     <ng-container matColumnDef="account">
                       <mat-cell *matCellDef="let address">
-                        <label class="break-words" [innerHTML]="address.address | highlightSearch: vanityWordInput"></label>
+                        <label class="break-words">{{address.address}}</label>
                       </mat-cell>
                     </ng-container>
                     <mat-row  *matRowDef="let row; columns: ['account'];" (click)="selectVanityAddress(row)"></mat-row>
                   </mat-table>
-                  <label class="description">The above vanity addresses can be purchased for the XRP equivalent of around {{getPurchaseAmount()}} USD each.</label>
+                  <label class="description">The above vanity addresses can be purchased for the XRP equivalent of ~ {{getPurchaseAmount()}} USD each.</label>
                 </div>
                 <div *ngIf="searchResult.length <= 0">
                   <mat-card class="mat-card-orange">
                     <label>No vanity addresses found for your search. Please try a different word!</label>
                     <label>Try changing your search word slightly!</label>
-                    <label class="xumm-orange">Alternnatively you can add the search word '{{vanityWordInput}}' to our backend to explicitly looking for it.</label>
-                    <label class="xumm-orange">Adding your vanity word to our backend will come with a fee of {{getBackendFeeAmount}} XRP.</label>
-                    <button mat-raised-button color="primary" (click)="addVanityWordToBackend()" [disabled]="loadingData">Pay for explict search</button>
+                    <!--label class="xumm-orange">Alternnatively you can add the search word '{{vanityWordInput}}' to our backend to explicitly looking for it.</label>
+                    <label class="xumm-orange">Adding your vanity word to our backend will come with a fee of {{getBackendFeeAmount}} XRP.</label-->
+                    <!--button mat-raised-button color="primary" (click)="addVanityWordToBackend()" [disabled]="loadingData">Pay for explict search</button-->
                   </mat-card>
                 </div>
               </div>
@@ -127,34 +141,7 @@
                   <div fxLayoutAlign="start center">
                     <button mat-raised-button color="primary" (click)="signIn()" [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account) ? 'Change Account' : 'Sign In' }}</button>
                   </div>
-
-                  <div *ngIf="originalAccountInfo && originalAccountInfo.Account">
-                    <button mat-raised-button color="primary" (click)="getPurchasedAddresses()" [disabled]="loadingData">Show Purchases</button>
-                  </div>
                 </div>
-              </div>
-
-              <div *ngIf="purchasedAddresses && originalAccountInfo && originalAccountInfo.Account && !loadingData" fxLayout="column" fxLayoutGap="0.5em">
-                <label>Your current purchased addresses:</label>
-                <div *ngIf="purchasedAddresses.length > 0">
-                  <mat-table [dataSource]="purchasedAddresses" class="mat-elevation-z8">
-
-                    <ng-container matColumnDef="account">
-                      <mat-cell *matCellDef="let address">
-                        <label>{{address}}</label>
-                        <button mat-icon-button aria-label="Copy Address" style="width: 24px; height:24px; line-height: 24px; padding-left: 10px;">
-                          <mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
-                        </button>
-                      </mat-cell>
-                    </ng-container>
-                    <mat-row  *matRowDef="let row; columns: ['account'];" (click)="copyAddress(row)"></mat-row>
-                  </mat-table>
-                </div>
-                <div *ngIf="purchasedAddresses.length <= 0">
-                  <mat-card class="mat-card-orange">
-                    <label>No purchased addresses found!</label>
-                  </mat-card>
-                </div>    
               </div>
     
               <div style="padding-top: 0.5em;">
@@ -176,7 +163,7 @@
         </mat-step>
 
         <mat-step completed="false" editable="false">
-          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em" *ngIf="selectedVanityAddress">
             <ng-template matStepLabel>Confirmation</ng-template>
             <label class="description">Please read the information below carefully and sign the request to accept.</label>
             <mat-checkbox [(ngModel)]="checkBoxPurchaseAmount" (change)="informationConfirmed = false;" [ngClass]="(checkBoxPurchaseAmount ? 'xumm-green': 'xumm-red')">You aggree to pay the XRP equivalent of ~ {{getPurchaseAmount()}} USD to buy your vanity address {{selectedVanityAddress.address}}</mat-checkbox>
@@ -203,7 +190,7 @@
         </mat-step>
     
         <mat-step completed="false" editable="false">
-          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em" *ngIf="selectedVanityAddress">
             <ng-template matStepLabel>Purchase of Vanity Address</ng-template>
             <label class="description">You will have to pay the XRP equivalent of ~ {{getPurchaseAmount()}} USD to buy your vanity address {{selectedVanityAddress.address}}</label>
             <mat-card class="mat-card-orange">
@@ -232,13 +219,13 @@
 
             <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
               <button mat-raised-button color="primary" (click)="moveNext()" [disabled]="!purchaseSuccess || loadingData">Next</button>
-              <button mat-raised-button class="xumm-grey-background" (click)="moveBack(); purchaseStarted = purchaseSuccess = false;" [disabled]="loadingData">Back</button>
+              <button mat-raised-button class="xumm-grey-background" (click)="moveBack();" [disabled]="loadingData">Back</button>
             </div>
           </mat-card>
         </mat-step>
     
         <mat-step completed="false" editable="false">
-          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em" *ngIf="selectedVanityAddress">
               <ng-template matStepLabel>Account activation</ng-template>
               <mat-card class="mat-card-orange" *ngIf="!accountActivated || !accountRekeyed || !!accountMasterKeyDisabled">
                 <label>In order to use your new address, it has to hold at least 10 XRP. This is a requirement by the XRP Ledger.</label>
@@ -278,9 +265,13 @@
               </div>
 
               <mat-card *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" class="mat-card-orange" fxLayout="column" fxLayoutGap="0.5em">
+                <mat-card class="mat-card-red" *ngIf="rekeyAccount != originalAccountInfo.Account" fxLayout="column">
+                  <label>You have send the activation payment with a different account than the one you used for the payment and sign in earlier.</label>
+                  <label>We have now set {{rekeyAccount}} as "RegularKey". This account will now be able to sign transactions for {{selectedVanityAddress.address}}</label>
+                </mat-card>
                 <label>To use your account, copy the following address (via the button) and add it as "Read only" account to your XUMM app:</label>
-                <div fxLayout="row" fxLayoutGap="0.2em" fxLayoutAlign="start center">
-                  <label style="font-size: 0.9em;" (click)="copyAddress(selectedVanityAddress.address)">{{selectedVanityAddres.addresss}}</label>
+                <div fxLayout="row" fxLayoutGap="0.2em" fxLayoutAlign="start center" *ngIf="selectedVanityAddress">
+                  <label style="font-size: 0.9em;" (click)="copyAddress(selectedVanityAddress.address)">{{selectedVanityAddress.addresss}}</label>
                   <button mat-icon-button aria-label="Copy Address" (click)="copyAddress(selectedVanityAddress.address)">
                     <mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
                   </button>
@@ -293,11 +284,88 @@
                   <label>Please contact @nixerFFM or @WietseWind on twitter or send a mail to xyz@gmail.com</label>
                 </mat-card>
               </div>
-
           </mat-card>
         </mat-step>
-    
       </mat-vertical-stepper>
     </div>
+  </div>
+  <div *ngIf="!openSearch">
+    <mat-card class="mat-card-red">
+      <div *ngIf="loadingPurchases" fxLayout="row" fxLayoutGap="0.5em">
+        <label class="warning">Loading purchases ...&nbsp;</label>
+        <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
+      </div>
+      <div *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )" fxLayout="column">
+        <mat-card class="mat-card-orage">
+          <label>No purchases found.</label>
+        </mat-card>
+      </div>
+      <div *ngIf="!loadingPurchases && purchasedAddresses && purchasedAddresses.length > 0" fxLayout="column">
+
+        <mat-table [dataSource]="purchasedAddresses" class="mat-elevation-z8" matSort matSortActive="rekeyed" matSortDirection="desc">
+  
+          <ng-container matColumnDef="account">
+            <mat-cell *matCellDef="let row">
+              <b>Issuer Account:</b>&nbsp;
+              <label>{{row.account}}</label>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="network">
+            <mat-cell *matCellDef="let row">
+              <b>Network:</b>&nbsp;
+              <label>{{row.testnet ? 'Testnet' : 'Mainnet'}}</label>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="activated">
+            <mat-cell *matCellDef="let row">
+              <b>Activated:</b>&nbsp;
+              <div *ngIf="row.activated" fxLayout="row" fxLayoutAlign="center center">
+                <i class="material-icons" style="color: green; font-size: 1.4em;">
+                  check_circle
+                </i>
+              </div>
+
+              <div *ngIf="!row.activated" fxLayout="row" fxLayoutAlign="center center">
+                <i class="material-icons" style="color: red; font-size: 1.4em;">
+                  highlight_off
+                </i>
+                <button mat-raised-button color="primary" (click)="selectPurchasedAddressAndActivate(row)" [disabled]="loadingData">Activate now</button>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="rekeyed">
+            <mat-cell *matCellDef="let row">
+              <b>Rekeyed:</b>&nbsp;
+              <div *ngIf="row.rekeyed" fxLayout="row" fxLayoutAlign="center center">
+                <i class="material-icons" style="color: green; font-size: 1.4em;">
+                  check_circle
+                </i>
+              </div>
+
+              <div *ngIf="!row.rekeyed" fxLayout="row" fxLayoutAlign="center center">
+                <i class="material-icons" style="color: red; font-size: 1.4em;">
+                  highlight_off
+                </i>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="regularkey">
+            <mat-cell *matCellDef="let row">
+              <b>RegularKey:</b>&nbsp;
+              <label>{{row.regularKey}}</label>
+            </mat-cell>
+          </ng-container>
+  
+          <mat-header-row fxShow fxHide.xs *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row fxLayout.xs="column" *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          <mat-footer-row fxShow fxHide.xs *matFooterRowDef="displayedColumns"></mat-footer-row>
+        </mat-table>
+        <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 50, 100]"></mat-paginator>
+      </div>
+    </mat-card>
   </div>
 </div>
