@@ -23,10 +23,18 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "src/theme.scss"
+              "src/scss/main.scss",
+              "src/scss/vanity.scss",
+              "src/scss/xapp.scss",
+              "src/css/main.css",
+              "src/css/vanity.css",
+              "src/css/xapp.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js"
+            ],
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,
@@ -94,10 +102,18 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "src/theme.scss"
+              "src/scss/main.scss",
+              "src/scss/vanity.scss",
+              "src/scss/xapp.scss",
+              "src/css/main.css",
+              "src/css/vanity.css",
+              "src/css/xapp.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js"
+            ]
           }
         },
         "lint": {

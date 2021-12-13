@@ -1,0 +1,115 @@
+// XUMM Custom styles
+
+$blue: #3052ff;
+$orange: #f8bf4c;
+$green: #3bdc96;
+$red: #ff5b5b;
+$gray: #606885;
+$cyan: #606885;
+$secondary: #606885;
+
+$primary: $blue !default;
+$secondary: $gray !default;
+$success: $green !default;
+$info: $cyan !default;
+$warning: $orange !default;
+$danger: $red !default;
+
+// import the functions & variables
+@import '../../node_modules/bootstrap/scss/functions';
+@import '../../node_modules/bootstrap/scss/variables';
+
+// Custom
+$custom-xumm-colors: (
+  'altlight': #ffcfff,
+  'altdark': #994599,
+  'xummblue': #3052ff,
+  'xummorange': #f8bf4c,
+  'xummgreen': #3bdc96,
+  'xummred': #ff5b5b,
+  'xummgray': #606885
+);
+
+$h1-font-size: 1rem * 2.75;
+$h2-font-size: 1rem * 2.25;
+$h3-font-size: 1rem * 1.75;
+$h4-font-size: 1rem * 1.5;
+$h5-font-size: 1rem * 1.25;
+$h6-font-size: 1rem;
+
+// General border radius
+$border-radius: 0.5rem;
+$border-radius-sm: 0.6rem;
+$border-radius-lg: 0.7rem;
+
+// Button border radius
+$btn-border-radius: 0.8rem;
+$btn-border-radius-sm: 5rem;
+$btn-border-radius-lg: 1rem;
+
+$headings-font-weight: 700;
+
+// Xapp structure styles
+@import 'xapp.scss';
+
+// Enable if demo page
+// @import 'demo.scss';
+
+// Enable if vanity page
+@import 'vanity.scss';
+
+$theme-colors: map-merge(map-merge($theme-colors, $custom-xumm-colors), $custom-xapp-colors);
+
+// import all
+@import '../../node_modules/bootstrap/scss/bootstrap';
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css');
+
+body {
+  font-family: 'Proxima Nova', sans-serif;
+  color: white !important;
+}
+
+.btn {
+  font-weight: 700;
+  font-family: 'Proxima Nova', sans-serif;
+}
+
+// XUMM Styles example styling
+#hero {
+  background: $blue;
+  padding: 5rem 0;
+  color: white;
+}
+section {
+  padding: 2rem 0;
+  > h2 {
+    padding-bottom: 2rem;
+    color: $blue;
+    border-bottom: 2px solid $blue;
+  }
+  h3:first-of-type {
+    margin: 2rem 0;
+    padding-left: 1rem;
+    color: $secondary;
+    border-left: 8px solid $secondary;
+  }
+}
+
+.no-wrap-at-all {
+  flex-wrap: nowrap !important;
+}
+
+input.ng-pristine {
+  border: 0 !important;
+  width: 90% !important;
+}
+
+input.ng-touched {
+  border: 0 !important;
+  width: 90% !important;
+}
+
+input.ng-valid {
+  border: 0 !important;
+  width: 90% !important;
+}

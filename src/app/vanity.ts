@@ -17,8 +17,7 @@ import { TypeWriter } from './utils/TypeWriter';
 
 @Component({
   selector: 'vanity',
-  templateUrl: './vanity.html',
-  styleUrls: ['./vanity.css']
+  templateUrl: './vanity.html'
 })
 export class VanityComponent implements OnInit, OnDestroy {
 
@@ -105,18 +104,11 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   displayedColumns: string[] = ['account', 'network', 'activated', 'rekeyed', 'regularkey'];
 
-  debugMode:boolean = false;
+  debugMode:boolean = true;
 
-  title: string = "Vanity Address xApp";
-  tw: TypeWriter;
+  title: string = "XRPL Vanity";
 
   async ngOnInit() {
-
-    this.tw = new TypeWriter(["Vanity Address xApp", "by nixerFFM + WietseWind", "Vanity Address xApp"], t => {
-      this.title = t;
-    })
-
-    this.tw.start();
 
     if(this.debugMode) {
       await this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
