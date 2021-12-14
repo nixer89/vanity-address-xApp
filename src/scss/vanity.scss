@@ -1,3 +1,9 @@
+//some angular material things
+@use '@angular/material' as mat;
+@import '@angular/material/theming';
+
+@include mat.core();
+
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap');
 
 $primary: #5a34c6;
@@ -45,6 +51,11 @@ body.vanity {
     line-height: 1.2rem;
   }
 
+  .btn {
+    padding: 0.15rem 1.5rem !important;
+    color: white !important;
+  }
+
   div.sticky {
     position: -webkit-sticky; /* Safari */
     position: sticky;
@@ -83,7 +94,7 @@ body.vanity {
     }
     .btn.search {
       width: 100%;
-      color: white;
+      color: white !important;
     }
     ul.notes {
       padding: 0.25rem 0.75rem 0.25rem 0.75rem;
@@ -127,8 +138,8 @@ body.vanity {
         > div {
           text-align: right;
           .btn {
-            padding: 0.15rem 1.5rem;
-            color: white;
+            padding: 0.15rem 1.5rem !important;
+            color: white !important;
           }
         }
       }

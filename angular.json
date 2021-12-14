@@ -24,12 +24,7 @@
             ],
             "styles": [
               "src/scss/main.scss",
-              "src/scss/vanity.scss",
-              "src/scss/xapp.scss",
-              "src/css/main.css",
-              "src/css/vanity.css",
-              "src/css/xapp.css",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css"
+              "src/scss/vanity.scss"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
@@ -103,12 +98,7 @@
             ],
             "styles": [
               "src/scss/main.scss",
-              "src/scss/vanity.scss",
-              "src/scss/xapp.scss",
-              "src/css/main.css",
-              "src/css/vanity.css",
-              "src/css/xapp.css",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css"
+              "src/scss/vanity.scss"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",

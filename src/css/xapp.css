@@ -1,7 +1,0 @@
-div.view {
-  height: 100vh;
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-rows: 3rem auto 3rem;
-  grid-template-rows: 3rem auto 3rem;
-}

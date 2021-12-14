@@ -49,9 +49,6 @@ $btn-border-radius-lg: 1rem;
 
 $headings-font-weight: 700;
 
-// Xapp structure styles
-@import 'xapp.scss';
-
 // Enable if demo page
 // @import 'demo.scss';
 
@@ -112,4 +109,61 @@ input.ng-touched {
 input.ng-valid {
   border: 0 !important;
   width: 90% !important;
+}
+
+.mat-step-icon.mat-step-icon-state-done {
+  background-color: $green !important;
+  font-weight: bold;
+}
+
+
+.mat-step-icon.mat-step-icon-state-number.mat-step-icon-selected {
+  background-color: $green !important;
+  font-weight: bold;
+}
+
+.mat-step-icon.mat-step-icon-state-number {
+  background-color:  $secondary !important;
+  font-weight: bold;
+}
+
+.mat-stepper-vertical-line::before {
+  background-color: greenyellow !important;
+  border-left-style: solid !important;
+  border-left-width: 1px !important;
+}
+
+.mat-step-label.mat-step-label-active {
+  color: white !important;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.mat-step-label {
+  color: white !important;
+  font-size: 1.2em;
+}
+
+.mat-vertical-content-container {
+  border-left-style: solid !important;
+  border-left-width: 1px !important;
+}
+
+.xumm-green-cb {
+  color: #3bdc96 !important;
+}
+
+.xumm-red-cb {
+  color: #ff5b5b !important;
+}
+
+.mat-checkbox-inner-container {
+  margin: 0 !important;
+  margin-right: 8px !important;
+  top: 4px !important;
+}
+
+.mat-checkbox-layout {
+  cursor: inherit;
+  white-space: unset !important;
 }

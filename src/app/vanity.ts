@@ -13,11 +13,11 @@ import { DateAdapter } from '@angular/material/core';
 import * as clipboard from 'copy-to-clipboard';
 import * as flagutil from './utils/flagutils';
 import { ActivatedRoute } from '@angular/router';
-import { TypeWriter } from './utils/TypeWriter';
 
 @Component({
   selector: 'vanity',
-  templateUrl: './vanity.html'
+  templateUrl: './vanity.html',
+  styleUrls: ['./vanity.css', '../scss/vanity.scss', '../scss/main.scss']
 })
 export class VanityComponent implements OnInit, OnDestroy {
 
@@ -25,7 +25,6 @@ export class VanityComponent implements OnInit, OnDestroy {
               private xrplWebSocket: XRPLWebsocket,
               private snackBar: MatSnackBar,
               private overlayContainer: OverlayContainer,
-              private dateAdapter: DateAdapter<any>,
               private route: ActivatedRoute) { }
 
 
