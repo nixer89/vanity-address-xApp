@@ -9,21 +9,20 @@
       </mat-toolbar-row>
     </mat-toolbar>
   
-    <!--mat-toolbar class="second-toolbar" color="primary" fxLayout="row" ngStyle.xs="padding:5px; font-size: 0.5em;">
-      <normal menu >
-      <div fxLayoutAlign="start start" style="width: 50%; padding-left: 1em;">
-        <button (click)="openSearchClick()" matTooltip="Buy Address">
+    <mat-toolbar color="secondary" fxLayout="row" style="padding: 5px;">
+      <div fxLayoutAlign="start start" style="width: 50%;">
+        <button class="topbar-button-left btn btn-md btn-primarylight" (click)="openSearchClick()" matTooltip="Buy Address">
           <i class="material-icons topbar-menu-icon">mobile_friendly</i>
-          <label style="font-size: 2em;">&nbsp;Buy Address</label>
+          <label>&nbsp;Buy Address</label>
         </button>
       </div>
-      <div fxLayoutAlign="end end"  style="width: 50%; padding-right: 1em;">
-        <button (click)="openPurchaseClick()" matTooltip="Show Purchases">
+      <div fxLayoutAlign="end end" style="width: 50%;">
+        <button class="topbar-button-right btn btn-md btn-primarylight" (click)="openPurchaseClick()" matTooltip="Show Purchases">
           <i class="material-icons topbar-menu-icon">attach_money</i>
-          <label style="font-size: 2em;">&nbsp;Show Purchases</label>
+          <label>&nbsp;Show Purchases</label>
         </button>
       </div>
-    </mat-toolbar-->
+    </mat-toolbar>
   </div>
 
   <mat-card class="mat-card-red" *ngIf="errorLabel" fxLayout="column" fxLayoutGap="0.5em;">
@@ -48,11 +47,10 @@
   <label class="break-words" *ngIf="infoLabel2" style="color: red">{{infoLabel2}}</label>
   <label class="break-words" *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label-->
 
-  <div *ngIf="openSearch">
-    <div *ngIf="testMode == null" fxLayoutAlign="center center">
-      <div class="spinner-border" role="status" style="padding-top: 0.5em;">
-        <span>Loading...</span>
-      </div>
+  <div *ngIf="openSearch" fxLayout="column" fxLayoutGap="0.5em">
+    <div *ngIf="testMode == null" fxLayoutAlign="center center" fxLayoutGap="0.5em" style="padding-top: 10px;">
+      <label>Loading...</label>
+      <div class="spinner-border" role="status" style="padding-top: 0.5em;"></div>
     </div>
     <div *ngIf="testMode != null && !testMode">
       <mat-card class="mat-card-red">
@@ -65,9 +63,9 @@
       </mat-card>
     </div>
     <div *ngIf="testMode != null && testMode">
-    <mat-vertical-stepper linear #vanityStepper>
-      <mat-step completed="false" editable="false">
-        <mat-card fxLayout="column" fxLayoutGap="1em">
+      <mat-vertical-stepper linear #vanityStepper>
+        <mat-step completed="false" editable="false">
+          <mat-card fxLayout="column" fxLayoutGap="1em">
             <ng-template matStepLabel>Vanity search</ng-template>
             <h3>Find yourself a beautiful XRPL vanity Address</h3>
             <!--label>A vanity address is a wallet address containing a few characters you like at the beginning of the wallet address.</label>
@@ -79,16 +77,17 @@
                 <ul class="notes">
                   <li>Always starts with r</li>
                   <li>You don't need to type the r</li>
-                  <li>Max.8 characters</li>
+                  <li>Min. 3 characters</li>
+                  <li>Max. 8 characters</li>
                 </ul>
-                  <div class="input-group mb-2 no-wrap-at-all">
-                      <span class="input-group-text"><i class="bi-search"></i></span>
-                      <input #inpvanityword class="form-control form-control-lg" maxlength="8"  name="vanity word" placeholder="Look for your name / brand" [(ngModel)]="vanityWordInput" (ngModelChange)="checkVanitySearchChange()">
-                  </div>
-                  <button class="btn btn-lg btn-primarylight search" (click)="searchVanityAddress()" [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 2 || !vanityWordValid">Search</button>
+                <div class="input-group mb-2 no-wrap-at-all">
+                    <span class="input-group-text"><i class="bi-search"></i></span>
+                    <input #inpvanityword class="form-control form-control-lg" minlength="3" maxlength="8"  name="vanity word" placeholder="Look for your name / brand" [(ngModel)]="vanityWordInput" (ngModelChange)="checkVanitySearchChange()">
+                </div>
+                <button class="btn btn-lg btn-primarylight search" (click)="searchVanityAddress()" [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 3 || !vanityWordValid">Search</button>
               </form>
             </div>
-  
+
             <div *ngIf="searchResult && !selectedVanityAddress" fxLayout="column" fxLayoutGap="0.5em">
               <div *ngIf="searchResult.length > 0" fxLayout="column" fxLayoutGap="0.5em">
                 <label>Please select one of the vanity addresses below:</label>
@@ -98,7 +97,7 @@
                       <li class="p-2">
                           <code>r<b>{{address.address.substring(1,vanityWordInput.length+1)}}</b>{{address.address.substring(vanityWordInput.length+1)}}</code>
                           <div>
-                            <button class="btn btn-sm btn-success" style="width: 5em;" (click)="selectVanityAddress(address); moveNext()">Buy</button>
+                            <button class="btn btn-sm btn-success" (click)="selectVanityAddress(address); moveNext()">Buy</button>
                           </div>
                       </li>
                   </ul>
@@ -115,252 +114,242 @@
               </div>
             </div>
 
-            <div *ngIf="loadingData" fxLayoutAlign="center center">
-              <label>Loading...</label>
-              <mat-progress-spinner color="primary" mode="indeterminate" diameter=25></mat-progress-spinner>
+            <div *ngIf="loadingData" fxLayoutAlign="center center" fxLayoutGap="0.5em">
+              <label>Searching addresses ...</label>
+              <div class="spinner-border" role="status" style="padding-top: 0.5em;"></div>
             </div>
-        </mat-card>
-      </mat-step >
-  
-      <mat-step completed="false" editable="false">
-        <mat-card fxLayout="column" fxLayoutGap="0.5em">
-            <ng-template matStepLabel>Payment Account</ng-template>
-            <div fxLayout="column" fxLayoutGap="0.5em" *ngIf="originalAccountInfo">
-              <label class="description">Please choose the account which will be able to sign transactions for your new vanity address.</label>
-              <label>This account also needs to be used to activate the vanity address with 10 XRP and pay for your vanity address (100 USD in XRP)</label>
-              <label *ngIf="originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account)">Currently selected:</label>
-              <label style="font-size: 0.9em; color: #17ebb8;" *ngIf="originalAccountInfo && originalAccountInfo.Account"><b>{{originalAccountInfo.Account}}</b></label>
-              <label *ngIf="originalAccountInfo && originalAccountInfo.account">{{originalAccountInfo.account}}</label>
-  
-              <div fxLayout="column" fxLayoutGap="1em" style="padding-top: 0.5em;">
-                <div fxLayoutAlign="start center">
-                  <button class="btn btn-md btn-primarylight search" (click)="signIn()" [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account) ? 'Change Account' : 'Sign In' }}</button>
+          </mat-card>
+        </mat-step >
+    
+        <mat-step completed="false" editable="false">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+              <ng-template matStepLabel>Payment Account</ng-template>
+              <div fxLayout="column" fxLayoutGap="0.5em" *ngIf="originalAccountInfo">
+                <label class="description">Please choose the account which will be able to sign transactions for your new vanity address.</label>
+                <label>This account also needs to be used to activate the vanity address with <b>10 XRP</b> and pay for your vanity address (<b>100 USD in XRP</b>)</label>
+                <label *ngIf="originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account)">Currently selected:</label>
+                <label style="font-size: 0.9em; color: #17ebb8;" *ngIf="originalAccountInfo && originalAccountInfo.Account"><b>{{originalAccountInfo.Account}}</b></label>
+                <label *ngIf="originalAccountInfo && originalAccountInfo.account">{{originalAccountInfo.account}}</label>
+    
+                <div fxLayout="column" fxLayoutGap="1em" style="padding-top: 0.5em;">
+                  <div fxLayoutAlign="start center">
+                    <button class="btn btn-md btn-primarylight search" (click)="signIn()" [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account) ? 'Change Account' : 'Sign In' }}</button>
+                  </div>
                 </div>
               </div>
+    
+              <div style="padding-top: 0.5em;">
+                <mat-card *ngIf="originalAccountInfo && originalAccountInfo.error && originalAccountInfo.error == 'actNotFound' && !loadingData" class="mat-card-red">
+                  <label>Account not activated on {{testMode ? 'Testnet' : 'Mainnet'}}.</label>
+                </mat-card>
+
+                <mat-card *ngIf="originalAccountInfo && balanceTooLow && !loadingData" class="mat-card-red">
+                  <label>The balance of this account is too low!</label>
+                  <label>You should have at least {{(amountXrpNeeded/1000000)}} XRP in your account!</label>
+                </mat-card>
+              </div>
+    
+              <div *ngIf="!originalAccountInfo || loadingData" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+                <label>Loading ...</label>
+                <div class="spinner-border" role="status" style="padding-top: 0.5em;"></div>
+              </div>
+    
+              <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
+                  <button class="btn btn-sm btn-success" (click)="moveNext()" [disabled]="!originalAccountInfo || !originalAccountInfo.Account || loadingData">Next</button>
+                  <button class="btn btn-sm btn-primarylight" (click)="moveBack()" [disabled]="!originalAccountInfo || loadingData">Back</button>
+              </div>
+          </mat-card>
+        </mat-step>
+
+        <mat-step completed="false" editable="false">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+            <ng-template matStepLabel>Confirmation</ng-template>
+            <label class="description">Please read the information below carefully and sign the request to accept.</label>
+            <div fxLayout="column" fxLayoutGap="1em" style="margin-right: 10px;">
+              <mat-checkbox [(ngModel)]="checkBoxPurchaseAmount" (change)="informationConfirmed = false;" [ngClass]="(checkBoxPurchaseAmount ? 'xumm-green': 'xumm-red')">You aggree to pay the XRP equivalent of ~ <b>{{getPurchaseAmountUSD()}} USD</b> to buy your vanity address <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></mat-checkbox>
+              <mat-checkbox [(ngModel)]="checkBoxActivation" (change)="informationConfirmed = false;" [ngClass]="(checkBoxActivation ? 'xumm-green': 'xumm-red')">You need to fund your new vanity address with the <b>10 XRP</b> reserve fee of the XRP Ledger.</mat-checkbox>
+              <!--mat-checkbox [(ngModel)]="checkBoxSignInfo" (change)="informationConfirmed = false;" [ngClass]="(checkBoxSignInfo ? 'xumm-green': 'xumm-red')">The signing account {{originalAccountInfo && originalAccountInfo.Account}} will be the only one able to sign transactions for {{selectedVanityAddress}} !</mat-checkbox>
+              <mat-checkbox [(ngModel)]="checkBoxAccess" (change)="informationConfirmed = false;" [ngClass]="(checkBoxAccess ? 'xumm-green': 'xumm-red')">If you loose access to {{originalAccountInfo && originalAccountInfo.Account}}, you also loose access to {{selectedVanityAddress}} !</mat-checkbox>
+              <mat-checkbox [(ngModel)]="checkBoxSignAccFull" (change)="informationConfirmed = false;" [ngClass]="(checkBoxSignAccFull ? 'xumm-green': 'xumm-red')">The signing account {{originalAccountInfo && originalAccountInfo.Account}} needs always to be imported as "Full Access" in the XUMM app!</mat-checkbox-->
+              <mat-checkbox [(ngModel)]="checkBoxVanityAccReadOnly" (change)="informationConfirmed = false;" [ngClass]="(checkBoxVanityAccReadOnly ? 'xumm-green': 'xumm-red')">Vanity Account <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b> needs to be imported as "Read only" in the XUMM app!</mat-checkbox>
             </div>
-  
-            <div style="padding-top: 0.5em;">
-              <mat-card *ngIf="originalAccountInfo && originalAccountInfo.error && originalAccountInfo.error == 'actNotFound' && !loadingData" class="mat-card-red">
-                <label>Account not activated on {{testMode ? 'Testnet' : 'Mainnet'}}.</label>
-              </mat-card>
+            <div fxLayoutAlign="start center" style="padding-top: 0.5em;">
+              <button class="btn btn-md btn-primarylight search" (click)="signToConfirm()" [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || informationConfirmed">Sign to confirm</button>
             </div>
-  
-            <div *ngIf="!originalAccountInfo || loadingData" fxLayoutAlign="start center">
+
+            <div *ngIf="loadingData" fxLayoutAlign="start center">
               <label>Loading...</label>
               <mat-progress-spinner color="primarylight" mode="indeterminate" diameter=25></mat-progress-spinner>
             </div>
-  
+
             <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
-                <button class="btn btn-sm btn-success" (click)="moveNext()" [disabled]="!originalAccountInfo || !originalAccountInfo.Account || loadingData">Next</button>
-                <button class="btn btn-sm btn-primarylight" (click)="moveBack()" [disabled]="!originalAccountInfo || loadingData">Back</button>
+              <button *ngIf="informationConfirmed" class="btn btn-sm btn-success" (click)="moveNext()" [disabled]="!informationConfirmed || loadingData">Next</button>
+              <button class="btn btn-sm btn-primarylight" (click)="moveBack();" [disabled]="loadingData">Back</button>
             </div>
-        </mat-card>
-      </mat-step>
 
-      <mat-step completed="false" editable="false">
-        <mat-card fxLayout="column" fxLayoutGap="0.5em">
-          <ng-template matStepLabel>Confirmation</ng-template>
-          <label class="description">Please read the information below carefully and sign the request to accept.</label>
-          <div fxLayout="column" fxLayoutGap="1em">
-            <mat-checkbox [(ngModel)]="checkBoxPurchaseAmount" (change)="informationConfirmed = false;" [ngClass]="(checkBoxPurchaseAmount ? 'xumm-green-cb': 'xumm-red-cb')">You aggree to pay the XRP equivalent of ~ {{getPurchaseAmount()}} USD to buy your vanity address {{selectedVanityAddress && selectedVanityAddress.address}}</mat-checkbox>
-            <mat-checkbox [(ngModel)]="checkBoxActivation" (change)="informationConfirmed = false;" [ngClass]="(checkBoxActivation ? 'xumm-green-cb': 'xumm-red-cb')">You need to fund your new vanity address with the 10 XRP reserve fee of the XRP Ledger.</mat-checkbox>
-            <!--mat-checkbox [(ngModel)]="checkBoxSignInfo" (change)="informationConfirmed = false;" [ngClass]="(checkBoxSignInfo ? 'xumm-green': 'xumm-red')">The signing account {{originalAccountInfo && originalAccountInfo.Account}} will be the only one able to sign transactions for {{selectedVanityAddress}} !</mat-checkbox>
-            <mat-checkbox [(ngModel)]="checkBoxAccess" (change)="informationConfirmed = false;" [ngClass]="(checkBoxAccess ? 'xumm-green': 'xumm-red')">If you loose access to {{originalAccountInfo && originalAccountInfo.Account}}, you also loose access to {{selectedVanityAddress}} !</mat-checkbox>
-            <mat-checkbox [(ngModel)]="checkBoxSignAccFull" (change)="informationConfirmed = false;" [ngClass]="(checkBoxSignAccFull ? 'xumm-green': 'xumm-red')">The signing account {{originalAccountInfo && originalAccountInfo.Account}} needs always to be imported as "Full Access" in the XUMM app!</mat-checkbox-->
-            <mat-checkbox [(ngModel)]="checkBoxVanityAccReadOnly" (change)="informationConfirmed = false;" [ngClass]="(checkBoxVanityAccReadOnly ? 'xumm-green-cb': 'xumm-red-cb')">Vanity Account {{selectedVanityAddress && selectedVanityAddress.address}} needs to be imported as "Read only" in the XUMM app!</mat-checkbox>
-          </div>
-          <div fxLayoutAlign="start center" style="padding-top: 0.5em;">
-            <button class="btn btn-md btn-primarylight search" (click)="signToConfirm()" [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || informationConfirmed">Sign to confirm</button>
-          </div>
-
-          <div *ngIf="loadingData" fxLayoutAlign="start center">
-            <label>Loading...</label>
-            <mat-progress-spinner color="primarylight" mode="indeterminate" diameter=25></mat-progress-spinner>
-          </div>
-
-          <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
-            <button class="btn btn-sm btn-success" (click)="moveNext()" [disabled]="!informationConfirmed || loadingData">Next</button>
-            <button class="btn btn-sm btn-primarylight" (click)="moveBack();" [disabled]="loadingData">Back</button>
-          </div>
-
-        </mat-card>
-      </mat-step>
-  
-      <mat-step completed="false" editable="false">
-        <mat-card fxLayout="column" fxLayoutGap="0.5em">
-          <ng-template matStepLabel>Purchase of Vanity Address</ng-template>
-          <label class="description">You will have to pay the XRP equivalent of ~ {{getPurchaseAmount()}} USD to buy your vanity address {{selectedVanityAddress && selectedVanityAddress.address}}</label>
-          <mat-card class="mat-card-orange">
-            <label>Funds can not be returned. After successfully purchase and account activation, the account is yours and YOURS only! The account can not be returned to us!</label>
           </mat-card>
-
-          <div *ngIf="!purchaseSuccess">
-            <button class="btn btn-lg btn-success" (click)="buyVanityAddress()" [disabled]="loadingData">Buy Vanity Address</button>
-          </div>
-
-          <div *ngIf="loadingData" fxLayoutAlign="center center">
-            <label>Loading...</label>
-            <mat-progress-spinner color="primarylight" mode="indeterminate" diameter=25></mat-progress-spinner>
-          </div>
-
-          <div>
-            <mat-card *ngIf="!loadingData && purchaseStarted && !purchaseSuccess" class="mat-card-red">Your payment was not successfull on the XRP Ledger MAIN net.</mat-card>
-            <mat-card *ngIf="!loadingData && purchaseStarted && purchaseSuccess" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
-              <i class="material-icons xumm-green" style="font-size: 2em;">
-                  check_circle_outline
-              </i>
-              <label>Congratulations. You bought the address {{selectedVanityAddress && selectedVanityAddress.address}}</label>
-            </mat-card>
-          </div>
-          
-
-          <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
-            <button class="btn btn-sm btn-success" (click)="moveNext()" [disabled]="!purchaseSuccess || loadingData">Next</button>
-            <button class="btn btn-sm btn-primarylight" (click)="moveBack();" [disabled]="loadingData">Back</button>
-          </div>
-        </mat-card>
-      </mat-step>
-  
-      <mat-step completed="false" editable="false">
-        <mat-card fxLayout="column" fxLayoutGap="0.5em">
-            <ng-template matStepLabel>Account activation</ng-template>
-            <mat-card class="mat-card-orange" *ngIf="!accountActivated || !accountRekeyed || !!accountMasterKeyDisabled">
-              <label>In order to use your new address, it has to hold at least 10 XRP. This is a requirement by the XRP Ledger.</label>
-              <label>After you have activated your new account, we will change the porperties of that account that only YOU will have access to it!</label>
+        </mat-step>
+    
+        <mat-step completed="false" editable="false">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+            <ng-template matStepLabel>Purchase of Vanity Address</ng-template>
+            <label class="description">You will have to pay the XRP equivalent of ~ <b>{{getPurchaseAmountUSD()}} USD</b> to buy your vanity address <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
+            <mat-card class="mat-card-orange">
+              <label>Funds can not be returned. After successfully purchase and account activation, the account is yours and YOURS only! The account can not be returned to us!</label>
             </mat-card>
 
-            <div *ngIf="!accountActivated && !loadingData">
-              <button class="btn btn-lg btn-success" (click)="activateVanityAddress()" [disabled]="loadingData">Activate Vanity Address</button>
+            <div *ngIf="!purchaseSuccess">
+              <button class="btn btn-lg btn-success" (click)="buyVanityAddress()" [disabled]="loadingData">Buy Vanity Address</button>
             </div>
-
-            <mat-card *ngIf="accountActivated" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
-              <i class="material-icons xumm-green" style="font-size: 2em;">
-                  check_circle_outline
-              </i>
-              <label>The account {{selectedVanityAddress && selectedVanityAddress.address}} has been activated.</label>
-            </mat-card>
-
-            <mat-card *ngIf="accountActivated && accountRekeyed" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
-              <i class="material-icons xumm-green" style="font-size: 2em;">
-                  check_circle_outline
-              </i>
-              <label>Your account {{originalAccountInfo.Account}} can now sign transactions for {{selectedVanityAddress && selectedVanityAddress.address}}. That means YOU have access to the account now.</label>
-            </mat-card>
-
-            <mat-card *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
-              <i class="material-icons xumm-green" style="font-size: 2em;">
-                  check_circle_outline
-              </i>
-              <label>The master key for the vanity account {{selectedVanityAddress && selectedVanityAddress.address}} is disabled. That means WE can not access this account anymore. It is truly yours now, enjoy!</label>
-            </mat-card>
 
             <div *ngIf="loadingData" fxLayoutAlign="center center">
-              <label *ngIf="!accountActivated">Waiting for account activation ...</label>
-              <label *ngIf="accountActivated && !accountRekeyed">Waiting for account transfer ...</label>
-              <label *ngIf="accountActivated && accountRekeyed && !accountMasterKeyDisabled">Waiting for master key to be disabled ...</label>
+              <label>Loading...</label>
               <mat-progress-spinner color="primarylight" mode="indeterminate" diameter=25></mat-progress-spinner>
             </div>
 
-            <mat-card *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" class="mat-card-orange" fxLayout="column" fxLayoutGap="0.5em">
-              <mat-card class="mat-card-red" *ngIf="rekeyAccount != originalAccountInfo.Account" fxLayout="column">
-                <label>You have send the activation payment with a different account than the one you used for the payment and sign in earlier.</label>
-                <label>We have now set {{rekeyAccount}} as "RegularKey". This account will now be able to sign transactions for {{selectedVanityAddress && selectedVanityAddress.address}}</label>
-              </mat-card>
-              <label>To use your account, copy the following address (via the button) and add it as "Read only" account to your XUMM app:</label>
-              <div fxLayout="row" fxLayoutGap="0.2em" fxLayoutAlign="start center" *ngIf="selectedVanityAddress">
-                <label style="font-size: 0.9em;" (click)="copyAddress(selectedVanityAddress.address)">{{selectedVanityAddress && selectedVanityAddress.addresss}}</label>
-                <button mat-icon-button aria-label="Copy Address" (click)="copyAddress(selectedVanityAddress.address)">
-                  <mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
-                </button>
-              </div>
-            </mat-card>
-
-            <div *ngIf="!loadingData && errorActivation">
-              <mat-card class="mat-card-red" fxLayoutGap="0.3em">
-                <label>There was an error activating your new vanity address.</label>
-                <label>Please contact @nixerFFM or @WietseWind on twitter or send a mail to xyz@gmail.com</label>
+            <div>
+              <mat-card *ngIf="!loadingData && purchaseStarted && !purchaseSuccess" class="mat-card-red">Your payment was not successfull on the XRP Ledger MAIN net.</mat-card>
+              <mat-card *ngIf="!loadingData && purchaseStarted && purchaseSuccess" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+                <i class="material-icons xumm-green" style="font-size: 2em;">
+                    check_circle_outline
+                </i>
+                <label class="break-words"><b>Congratulations!!!</b><br>You bought the address:<br><br><b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
               </mat-card>
             </div>
-        </mat-card>
-      </mat-step>
-    </mat-vertical-stepper>
+            
+
+            <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
+              <button *ngIf="purchaseSuccess" class="btn btn-sm btn-success" (click)="moveNext()" [disabled]="!purchaseSuccess || loadingData">Next</button>
+              <button class="btn btn-sm btn-primarylight" (click)="moveBack();" [disabled]="loadingData">Back</button>
+            </div>
+          </mat-card>
+        </mat-step>
+    
+        <mat-step completed="false" editable="false">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+              <ng-template matStepLabel>Account activation</ng-template>
+              <mat-card class="mat-card-orange" *ngIf="!accountActivated || !accountRekeyed || !!accountMasterKeyDisabled">
+                <label>In order to use your new address, it has to hold at least <b>10 XRP</b>. This is a requirement by the XRP Ledger.</label>
+                <label>After you have activated your new account, we will change the porperties of that account that only YOU will have access to it!</label>
+              </mat-card>
+
+              <div *ngIf="!accountActivated && !loadingData">
+                <button class="btn btn-lg btn-success" (click)="activateVanityAddress()" [disabled]="loadingData">Activate Vanity Address</button>
+              </div>
+
+              <mat-card *ngIf="accountActivated" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+                <i class="material-icons xumm-green" style="font-size: 2em;">
+                    check_circle_outline
+                </i>
+                <label>The account <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b> has been activated.</label>
+              </mat-card>
+
+              <mat-card *ngIf="accountActivated && accountRekeyed" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+                <i class="material-icons xumm-green" style="font-size: 2em;">
+                    check_circle_outline
+                </i>
+                <label>Your account <b>{{originalAccountInfo.Account}}</b> can now sign transactions for <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b>. That means YOU have access to the account now.</label>
+              </mat-card>
+
+              <mat-card *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
+                <i class="material-icons xumm-green" style="font-size: 2em;">
+                    check_circle_outline
+                </i>
+                <label>The master key for the vanity account <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b> is disabled. That means <b>WE</b> can not access this account anymore.<br><br><b>It is truly yours now, enjoy!</b></label>
+              </mat-card>
+
+              <div *ngIf="loadingData" fxLayoutAlign="center center">
+                <label *ngIf="!accountActivated">Waiting for account activation ...</label>
+                <label *ngIf="accountActivated && !accountRekeyed">Waiting for account transfer ...</label>
+                <label *ngIf="accountActivated && accountRekeyed && !accountMasterKeyDisabled">Waiting for master key to be disabled ...</label>
+                <mat-progress-spinner color="primarylight" mode="indeterminate" diameter=25></mat-progress-spinner>
+              </div>
+
+              <mat-card *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" class="mat-card-orange" fxLayout="column" fxLayoutGap="0.5em">
+                <mat-card class="mat-card-red" *ngIf="rekeyAccount != originalAccountInfo.Account" fxLayout="column">
+                  <label>You have send the activation payment with a different account than the one you used for the payment and sign in earlier.</label>
+                  <label>We have now set <b>{{rekeyAccount}}</b> as "RegularKey". This account will now be able to sign transactions for <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
+                </mat-card>
+                <label>To use your account, copy the following address (via the button) and add it as "Read only" account to your XUMM app:</label>
+                <div fxLayout="row" fxLayoutGap="0.2em" fxLayoutAlign="start center" *ngIf="selectedVanityAddress">
+                  <label style="font-size: 0.9em;" (click)="copyAddress(selectedVanityAddress.address)"><b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
+                  <button mat-icon-button aria-label="Copy Address" (click)="copyAddress(selectedVanityAddress.address)">
+                    <mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
+                  </button>
+                </div>
+              </mat-card>
+
+              <div *ngIf="!loadingData && errorActivation">
+                <mat-card class="mat-card-red" fxLayoutGap="0.3em">
+                  <label>There was an error activating your new vanity address.</label>
+                  <label>Please contact @nixerFFM or @WietseWind on twitter or send a mail to xyz@gmail.com</label>
+                </mat-card>
+              </div>
+          </mat-card>
+        </mat-step>
+      </mat-vertical-stepper>
+    </div>
   </div>
   <div *ngIf="!openSearch">
-    <mat-card class="mat-card-red">
-      <div *ngIf="loadingPurchases" fxLayout="row" fxLayoutGap="0.5em">
-        <label class="warning">Loading purchases ...&nbsp;</label>
-        <mat-progress-spinner color="primarylight" mode="indeterminate" diameter=25></mat-progress-spinner>
+    <mat-card>
+      <div *ngIf="loadingPurchases" fxLayoutAlign="center center" fxLayoutGap="0.5em" style="padding-top: 10px;">
+        <label>Loading...</label>
+        <div class="spinner-border" role="status" style="padding-top: 0.5em;"></div>
       </div>
       <div *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )" fxLayout="column">
         <mat-card class="mat-card-orage">
           <label>No purchases found.</label>
         </mat-card>
       </div>
-      <div *ngIf="!loadingPurchases && purchasedAddresses && purchasedAddresses.length > 0" fxLayout="column">
+      <div class="purchases" *ngIf="!loadingPurchases && purchasedAddresses && purchasedAddresses.length > 0" fxLayout="column">
+        <ul class="list">
+          <li class="p-2" *ngFor="let address of purchasedAddresses">
+            <div>
+              <code><b>{{address.vanityAddress}}</b></code>
+            </div>
 
-        <mat-table [dataSource]="purchasedAddresses" class="mat-elevation-z8" matSort matSortActive="rekeyed" matSortDirection="desc">
-  
-          <ng-container matColumnDef="account">
-            <mat-cell *matCellDef="let row">
-              <b>Issuer Account:</b>&nbsp;
-              <label>{{row.account}}</label>
-            </mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="network">
-            <mat-cell *matCellDef="let row">
+            <div fxLayout="row">
               <b>Network:</b>&nbsp;
-              <label>{{row.testnet ? 'Testnet' : 'Mainnet'}}</label>
-            </mat-cell>
-          </ng-container>
+              <label>{{address.testnet ? 'Testnet' : 'Mainnet'}}</label>
+            </div>
 
-          <ng-container matColumnDef="activated">
-            <mat-cell *matCellDef="let row">
+            <div fxLayout="row">
               <b>Activated:</b>&nbsp;
-              <div *ngIf="row.activated" fxLayout="row" fxLayoutAlign="center center">
-                <i class="material-icons" style="color: green; font-size: 1.4em;">
-                  check_circle
+              <div *ngIf="address.activated" fxLayout="row" fxLayoutAlign="center center">
+                <i class="material-icons xumm-green">
+                  check_circle_outline
                 </i>
               </div>
 
-              <div *ngIf="!row.activated" fxLayout="row" fxLayoutAlign="center center">
+              <div *ngIf="!address.activated" fxLayout="row" fxLayoutAlign="center center">
                 <i class="material-icons" style="color: red; font-size: 1.4em;">
                   highlight_off
                 </i>
-                <button mat-raised-button color="primarylight" (click)="selectPurchasedAddressAndActivate(row)" [disabled]="loadingData">Activate now</button>
+                <button mat-raised-button color="primarylight" (click)="selectPurchasedAddressAndActivate(address)" [disabled]="loadingData">Activate now</button>
               </div>
-            </mat-cell>
-          </ng-container>
+            </div>
 
-          <ng-container matColumnDef="rekeyed">
-            <mat-cell *matCellDef="let row">
+            <div fxLayout="row">
               <b>Rekeyed:</b>&nbsp;
-              <div *ngIf="row.rekeyed" fxLayout="row" fxLayoutAlign="center center">
-                <i class="material-icons" style="color: green; font-size: 1.4em;">
-                  check_circle
+              <div *ngIf="address.rekeyed" fxLayout="row" fxLayoutAlign="center center">
+                <i class="material-icons xumm-green">
+                  check_circle_outline
                 </i>
               </div>
 
-              <div *ngIf="!row.rekeyed" fxLayout="row" fxLayoutAlign="center center">
+              <div *ngIf="!address.rekeyed" fxLayout="row" fxLayoutAlign="center center">
                 <i class="material-icons" style="color: red; font-size: 1.4em;">
                   highlight_off
                 </i>
               </div>
-            </mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="regularkey">
-            <mat-cell *matCellDef="let row">
-              <b>RegularKey:</b>&nbsp;
-              <label>{{row.regularKey}}</label>
-            </mat-cell>
-          </ng-container>
-  
-          <mat-header-row fxShow fxHide.xs *matHeaderRowDef="displayedColumns"></mat-header-row>
-          <mat-row fxLayout.xs="column" *matRowDef="let row; columns: displayedColumns;"></mat-row>
-          <mat-footer-row fxShow fxHide.xs *matFooterRowDef="displayedColumns"></mat-footer-row>
-        </mat-table>
-        <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 50, 100]"></mat-paginator>
+            </div>
+            
+            <div fxLayout="column">
+              <b>RegularKey:</b>
+              <label style="font-size: 0.9em;">{{address.regularKey}}</label>
+            </div>
+          </li>
+        </ul>
       </div>
     </mat-card>
   </div>

@@ -1,5 +1,4 @@
 // XUMM Custom styles
-
 $blue: #3052ff;
 $orange: #f8bf4c;
 $green: #3bdc96;
@@ -64,6 +63,22 @@ $theme-colors: map-merge(map-merge($theme-colors, $custom-xumm-colors), $custom-
 body {
   font-family: 'Proxima Nova', sans-serif;
   color: white !important;
+  height: 100%;
+  margin: 0;
+}
+
+a.footerlink {
+  margin-right: 1em;
+}
+
+.floatcenter {
+  display: inline-block;
+  margin: auto;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
 }
 
 .btn {
@@ -149,21 +164,41 @@ input.ng-valid {
   border-left-width: 1px !important;
 }
 
-.xumm-green-cb {
+.xumm-green {
   color: #3bdc96 !important;
 }
 
-.xumm-red-cb {
+.xumm-red {
   color: #ff5b5b !important;
 }
 
-.mat-checkbox-inner-container {
-  margin: 0 !important;
-  margin-right: 8px !important;
-  top: 4px !important;
+.mat-card.margin-5 {
+  margin: 5px;
 }
 
+// adds breaks to the mat-checkboxes with long labels
 .mat-checkbox-layout {
-  cursor: inherit;
-  white-space: unset !important;
+  white-space: normal !important;
+}
+
+// rather than center the checkbox, put the checkbox in the first line
+.mat-checkbox-inner-container {
+  margin-top: 3px !important;
+}
+
+.mat-card.margin-5 {
+  margin: 5px;
+}
+
+li {
+  color: $orange
+}
+
+.description {
+  color: $orange !important;
+}
+
+label {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
 }

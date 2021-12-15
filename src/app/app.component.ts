@@ -41,49 +41,12 @@ export class AppComponent implements OnInit {
       }
 
       let xAppToken = params.xAppToken;
-      let xAppStyle = params.xAppStyle;
 
-      this.receivedParams = xAppToken != null || xAppStyle != null;
+      this.receivedParams = xAppToken != null;
       //console.log("has params received: " + this.receivedParams)
 
       //console.log("received pararms: " + JSON.stringify(params));
       this.infoLabel = "params: " + JSON.stringify(params);
-
-      if(xAppStyle) {
-        switch(xAppStyle) {
-          case 'LIGHT':
-            this.themeClass = 'light-theme';
-            this.backgroundColor = '#FFFFFF';
-            break;
-          case 'DARK':
-            this.themeClass = 'dark-theme';
-            this.backgroundColor = '#000000';
-            break;
-          case 'MOONLIGHT':
-            this.themeClass = 'moonlight-theme';
-            this.backgroundColor = '#181A21';
-            break;
-          case 'ROYAL':
-            this.themeClass = 'royal-theme';
-            this.backgroundColor = '#030B36';
-            break;
-          default:
-            this.themeClass = 'dark-theme';
-            this.backgroundColor = '#000000';
-            break;
-        }
-      }
-
-      var bodyStyles = document.body.style;
-      console.log("setting style :" + this.themeClass);
-      bodyStyles.setProperty('--background-color', this.backgroundColor);
-      this.overlayContainer.getContainerElement().classList.remove('dark-theme');
-      this.overlayContainer.getContainerElement().classList.remove('light-theme');
-      this.overlayContainer.getContainerElement().classList.remove('moonlight-theme');
-      this.overlayContainer.getContainerElement().classList.remove('royal-theme');
-      this.overlayContainer.getContainerElement().classList.add(this.themeClass);
-
-      this.appStyleChanged.next({theme: this.themeClass, color: this.backgroundColor});
 
       if(xAppToken) {
         try {
@@ -94,27 +57,15 @@ export class AppComponent implements OnInit {
   
           this.alreadySent = true;
   
-          if(ottResponse && ottResponse.error) {
+          if(ottResponse && !ottResponse.error) {
             //console.log("error OTT, only sending app style");
-            this.ottReceived.next({style: xAppStyle});
-          } else {
             this.ottReceived.next(ottResponse);
             this.alreadySent = true;
-          }      
+          }
         } catch(err) {
           this.infoLabel = "error: " + JSON.stringify(err);
         }
         
-      } else {
-        //didn't got an ott. Just send over the app style (even if not available)
-        this.timeout1 = setTimeout(() => {
-          //console.log("checking with: " + this.receivedParams);
-          if(this.receivedParams && !this.alreadySent) {
-            //console.log("only received appstyle")
-            this.ottReceived.next({style: xAppStyle});
-            this.alreadySent = true;
-          }
-        }, 1000);
       }
     });
 

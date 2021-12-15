@@ -119,4 +119,13 @@ export class XummService {
             return [];
         }
     }
+
+    async convertToXrp(amountUsd: number): Promise<any> {
+        try {
+            return this.app.post(this.xummBackendURL+"/api/v1/vanity/xrpvalue", {amount: amountUsd});
+        } catch(err) {
+            console.log(JSON.stringify(err))
+            return [];
+        }
+    }
 }

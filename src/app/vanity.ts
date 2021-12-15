@@ -9,7 +9,6 @@ import { XummTypes } from 'xumm-sdk';
 import { webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import { Subscription, Observable } from 'rxjs';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { DateAdapter } from '@angular/material/core';
 import * as clipboard from 'copy-to-clipboard';
 import * as flagutil from './utils/flagutils';
 import { ActivatedRoute } from '@angular/router';
@@ -53,7 +52,11 @@ export class VanityComponent implements OnInit, OnDestroy {
   vanityWordUsedForSearch:string = null;
   fixAmounts:any = null;
 
+  amountXrpNeeded:number = null;
+
   openSearch:boolean = true;
+
+  balanceTooLow:boolean = false;
 
   purchaseStarted:boolean = false;
   purchaseSuccess:boolean = false;
@@ -107,11 +110,15 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   title: string = "XRPL Vanity";
 
+  accountReserve:number = 10000000;
+  ownerReserve:number = 2000000;
+
   async ngOnInit() {
 
     if(this.debugMode) {
       await this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
       this.fixAmounts = await this.xummService.getFixAmounts();
+      this.loadPurchases("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
       this.testMode = true;
       this.loadingData = false;      
       return;
@@ -170,6 +177,8 @@ export class VanityComponent implements OnInit, OnDestroy {
         this.searchVanityAddress();
       }
     });
+
+    await this.loadFeeReserves();
   }
 
   ngOnDestroy() {
@@ -178,6 +187,21 @@ export class VanityComponent implements OnInit, OnDestroy {
 
     if(this.themeReceived)
       this.themeReceived.unsubscribe();
+  }
+
+  async loadFeeReserves() {
+    let fee_request:any = {
+      command: "ledger_entry",
+      index: "4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A651",
+      ledger_index: "validated"
+    }
+
+    let feeSetting:any = await this.xrplWebSocket.getWebsocketMessage("fee-settings", fee_request, this.testMode);
+    this.accountReserve = feeSetting?.result?.node["ReserveBase"];
+    this.ownerReserve = feeSetting?.result?.node["ReserveIncrement"];
+
+    //console.log("resolved accountReserve: " + this.accountReserve);
+    //console.log("resolved ownerReserve: " + this.ownerReserve);
   }
 
   openSearchClick() {
@@ -435,9 +459,9 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.loadingData = false;
   }
 
-  getPurchaseAmount(): string {
+  getPurchaseAmountUSD(): string {
     if(this.vanityWordUsedForSearch) {
-      let length:string = (this.vanityWordUsedForSearch.length > 6 ? 6 : this.vanityWordUsedForSearch.length) + ""
+      let length:string = (this.vanityWordUsedForSearch.length > 8 ? 8 : this.vanityWordUsedForSearch.length) + ""
       
       if(this.fixAmounts[length])
         return this.fixAmounts[length]
@@ -463,8 +487,40 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectVanityAddress(account:VanitySearchResult) {
+  async selectVanityAddress(account:VanitySearchResult) {
     this.selectedVanityAddress = account;
+    try {
+      this.loadingData = true;
+      let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
+      this.amountXrpNeeded = parseInt(response.xrpamount) + this.ownerReserve + 10000000;
+
+      this.balanceTooLow = this.getAvailableBalance(this.originalAccountInfo) > this.amountXrpNeeded;
+
+      console.log("balance: " + this.getAvailableBalance(this.originalAccountInfo));
+      console.log("xrp amount needed: " + this.amountXrpNeeded);
+      this.loadingData = false;
+    } catch(err) {
+      console.log(err);
+      this.loadingData = false;
+      //but ignore
+    }
+  }
+
+  getAvailableBalance(accountInfo: any): number {
+    if(accountInfo && accountInfo.Balance) {
+      let balance:number = Number(accountInfo.Balance);
+      balance = balance - this.accountReserve; //deduct acc reserve
+      balance = balance - (accountInfo.OwnerCount * this.ownerReserve); //deduct owner count
+      balance = balance;
+
+      if(balance >= 1)
+        return balance
+      else
+        return 0;
+      
+    } else {
+      return 0;
+    }
   }
 
   async buyVanityAddress() {
