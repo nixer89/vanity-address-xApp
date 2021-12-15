@@ -162,12 +162,19 @@ body.vanity {
           text-overflow: ellipsis;
           white-space: nowrap;
           color: $light;
+          font-size: 1em;
           b {
             color: $green !important;
+            font-size: 1em !important;
           }
+        }
+        b {
+          font-size: 0.9em;
         }
         label {
           color: white !important;
+          font-size: 0.9em;
+          font-weight: bold;
         }
         > div {
           .btn {

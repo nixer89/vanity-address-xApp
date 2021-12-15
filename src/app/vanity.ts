@@ -599,12 +599,18 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.purchaseStarted = true;
     this.purchaseSuccess = true;
     this.informationConfirmed = true;
+
     this.openSearch = true;
+    this.loadingData = true;
     //silly but does what I need!
-    this.moveNext();
-    this.moveNext();
-    this.moveNext();
-    this.moveNext();
+    setTimeout(() => {
+      this.moveNext();
+      this.moveNext();
+      this.moveNext();
+      this.moveNext();
+      this.loadingData = false;
+    }, 500);
+    
   }
 
   async activateVanityAddress() {

@@ -122,9 +122,9 @@
                 <label style="font-size: 0.9em; color: #17ebb8;" *ngIf="originalAccountInfo && originalAccountInfo.Account"><b>{{originalAccountInfo.Account}}</b></label>
                 <label *ngIf="originalAccountInfo && originalAccountInfo.account">{{originalAccountInfo.account}}</label>
     
-                <div fxLayout="column" fxLayoutGap="1em" style="padding-top: 0.5em;">
+                <div fxLayout="column" fxLayoutGap="1em" style="width: 100%; padding-top: 0.5em;">
                   <div fxLayoutAlign="start center">
-                    <button class="btn btn-lg btn-primarylight search" (click)="signIn()" [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account) ? 'Change Account' : 'Sign In' }}</button>
+                    <button class="btn btn-lg btn-primarylight search" style="width: 100%;" (click)="signIn()" [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account) ? 'Change Account' : 'Sign In' }}</button>
                   </div>
                 </div>
               </div>
@@ -164,8 +164,8 @@
               <mat-checkbox [(ngModel)]="checkBoxSignAccFull" (change)="informationConfirmed = false;" [ngClass]="(checkBoxSignAccFull ? 'xumm-green': 'xumm-red')">The signing account {{originalAccountInfo && originalAccountInfo.Account}} needs always to be imported as "Full Access" in the XUMM app!</mat-checkbox-->
               <mat-checkbox [(ngModel)]="checkBoxVanityAccReadOnly" (change)="informationConfirmed = false;" [ngClass]="(checkBoxVanityAccReadOnly ? 'xumm-green': 'xumm-red')">Vanity Account <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b> needs to be imported as "Read only" in the XUMM app!</mat-checkbox>
             </div>
-            <div fxLayoutAlign="start center" style="padding-top: 0.5em;">
-              <button class="btn btn-lg btn-primarylight search" (click)="signToConfirm()" [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || informationConfirmed">Sign to confirm</button>
+            <div fxLayoutAlign="start center" style="width: 100%; padding-top: 0.5em;">
+              <button class="btn btn-lg btn-success" style="width: 100%;" (click)="signToConfirm()" [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || informationConfirmed">Sign to confirm</button>
             </div>
 
             <div *ngIf="loadingData" fxLayoutAlign="start center">
@@ -288,7 +288,7 @@
         <div class="spinner-border" role="status" style="padding-top: 0.5em;"></div>
       </div>
       <div *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )" fxLayout="column">
-        <mat-card class="mat-card-orage">
+        <mat-card class="mat-card-orange">
           <label>No purchases found.</label>
         </mat-card>
       </div>
@@ -300,35 +300,42 @@
             </div>
 
             <div fxLayout="row">
-              <b>Network:</b>&nbsp;
-              <label>{{address.testnet ? 'Testnet' : 'Mainnet'}}</label>
+              <div style="width: 40%;">
+                <b>Network:</b>&nbsp;
+              </div>
+              <div style="width: 60%;">
+                <label>{{address.testnet ? 'Testnet' : 'Mainnet'}}</label>
+              </div>
             </div>
 
             <div fxLayout="row">
-              <b>Activated:</b>&nbsp;
-              <div *ngIf="address.activated" fxLayout="row" fxLayoutAlign="center center">
+              <div style="width: 40%;">
+                <b>Activated:</b>&nbsp;
+              </div>
+              <div *ngIf="address.activated" style="width: 60%;">
                 <i class="material-icons xumm-green">
                   check_circle_outline
                 </i>
               </div>
 
-              <div *ngIf="!address.activated" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="0.5em">
+              <div *ngIf="!address.activated" style="width: 60%;">
                 <i class="material-icons xumm-red" style="font-size: 1.4em;">
                   highlight_off
                 </i>
-                <button class="btn btn-sm btn-success" (click)="selectPurchasedAddressAndActivate(address)" [disabled]="loadingData">Activate now</button>
               </div>
             </div>
 
             <div fxLayout="row">
-              <b>Rekeyed:</b>&nbsp;
-              <div *ngIf="address.rekeyed" fxLayout="row" fxLayoutAlign="center center">
+              <div style="width: 40%;">
+                <b>Rekeyed:</b>&nbsp;
+              </div>
+              <div *ngIf="address.rekeyed" style="width: 60%;">
                 <i class="material-icons xumm-green">
                   check_circle_outline
                 </i>
               </div>
 
-              <div *ngIf="!address.rekeyed" fxLayout="row" fxLayoutAlign="center center">
+              <div *ngIf="!address.rekeyed" style="width: 60%;">
                 <i class="material-icons xumm-red" style="font-size: 1.4em;">
                   highlight_off
                 </i>
@@ -338,6 +345,15 @@
             <div fxLayout="column">
               <b>RegularKey:</b>
               <label style="font-size: 0.9em;">{{address.regularKey}}</label>
+            </div>
+
+            <div *ngIf="!address.activated" fxLayout="row">
+              <div style="width: 40%;">
+                <b>Actions:</b>
+              </div>
+              <div style="width: 60%;">
+                <button class="btn btn-sm btn-success" (click)="selectPurchasedAddressAndActivate(address)" [disabled]="loadingData">Activate now</button>
+              </div>
             </div>
           </li>
         </ul>
