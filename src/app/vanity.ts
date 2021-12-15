@@ -494,7 +494,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
       this.amountXrpNeeded = parseInt(response.xrpamount) + this.ownerReserve + 10000000;
 
-      this.balanceTooLow = this.getAvailableBalance(this.originalAccountInfo) > this.amountXrpNeeded;
+      this.balanceTooLow = this.getAvailableBalance(this.originalAccountInfo) < this.amountXrpNeeded;
 
       console.log("balance: " + this.getAvailableBalance(this.originalAccountInfo));
       console.log("xrp amount needed: " + this.amountXrpNeeded);
@@ -595,15 +595,16 @@ export class VanityComponent implements OnInit, OnDestroy {
       address: account.vanityAddress,
       identifier: account.identifier
     }
+
     this.purchaseStarted = true;
     this.purchaseSuccess = true;
     this.informationConfirmed = true;
+    this.openSearch = true;
     //silly but does what I need!
     this.moveNext();
     this.moveNext();
     this.moveNext();
     this.moveNext();
-    this.openSearch = true;
   }
 
   async activateVanityAddress() {

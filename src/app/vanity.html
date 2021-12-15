@@ -1,15 +1,6 @@
 <div>
   <div id="topbar">
-    <mat-toolbar fxLayout="row" color="primary" class="mat-elevation-z4"  style="background-color: white; color: black; padding:5px;">  
-      <mat-toolbar-row>
-        <div fxLayout="row" fxLayoutGap="0.5em" fxLayoutAlign="start center">
-          <img src="../assets/topbar_logo.png" width="50px" height="50px" alt="Xumm Community Logo">
-          <label style="font-weight: bold;">{{title}}</label>  
-        </div>
-      </mat-toolbar-row>
-    </mat-toolbar>
-  
-    <mat-toolbar color="secondary" fxLayout="row" style="padding: 5px;">
+    <mat-toolbar color="secondary" fxLayout="row" style="background-color: #c3b6e9; padding: 5px;">
       <div fxLayoutAlign="start start" style="width: 50%;">
         <button class="topbar-button-left btn btn-md btn-primarylight" (click)="openSearchClick()" matTooltip="Buy Address">
           <i class="material-icons topbar-menu-icon">mobile_friendly</i>
@@ -133,7 +124,7 @@
     
                 <div fxLayout="column" fxLayoutGap="1em" style="padding-top: 0.5em;">
                   <div fxLayoutAlign="start center">
-                    <button class="btn btn-md btn-primarylight search" (click)="signIn()" [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account) ? 'Change Account' : 'Sign In' }}</button>
+                    <button class="btn btn-lg btn-primarylight search" (click)="signIn()" [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account) ? 'Change Account' : 'Sign In' }}</button>
                   </div>
                 </div>
               </div>
@@ -155,7 +146,7 @@
               </div>
     
               <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
-                  <button class="btn btn-sm btn-success" (click)="moveNext()" [disabled]="!originalAccountInfo || !originalAccountInfo.Account || loadingData">Next</button>
+                  <button class="btn btn-sm btn-success" (click)="moveNext(true)" [disabled]="!originalAccountInfo || !originalAccountInfo.Account || loadingData">Next</button>
                   <button class="btn btn-sm btn-primarylight" (click)="moveBack()" [disabled]="!originalAccountInfo || loadingData">Back</button>
               </div>
           </mat-card>
@@ -174,7 +165,7 @@
               <mat-checkbox [(ngModel)]="checkBoxVanityAccReadOnly" (change)="informationConfirmed = false;" [ngClass]="(checkBoxVanityAccReadOnly ? 'xumm-green': 'xumm-red')">Vanity Account <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b> needs to be imported as "Read only" in the XUMM app!</mat-checkbox>
             </div>
             <div fxLayoutAlign="start center" style="padding-top: 0.5em;">
-              <button class="btn btn-md btn-primarylight search" (click)="signToConfirm()" [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || informationConfirmed">Sign to confirm</button>
+              <button class="btn btn-lg btn-primarylight search" (click)="signToConfirm()" [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || informationConfirmed">Sign to confirm</button>
             </div>
 
             <div *ngIf="loadingData" fxLayoutAlign="start center">
@@ -191,15 +182,15 @@
         </mat-step>
     
         <mat-step completed="false" editable="false">
-          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+          <mat-card fxLayout="column" fxLayoutGap="1em">
             <ng-template matStepLabel>Purchase of Vanity Address</ng-template>
             <label class="description">You will have to pay the XRP equivalent of ~ <b>{{getPurchaseAmountUSD()}} USD</b> to buy your vanity address <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
-            <mat-card class="mat-card-orange">
+            <mat-card class="mat-card-red">
               <label>Funds can not be returned. After successfully purchase and account activation, the account is yours and YOURS only! The account can not be returned to us!</label>
             </mat-card>
 
-            <div *ngIf="!purchaseSuccess">
-              <button class="btn btn-lg btn-success" (click)="buyVanityAddress()" [disabled]="loadingData">Buy Vanity Address</button>
+            <div *ngIf="!purchaseSuccess" fyLayoutAlign="center center" style="width: 100%;">
+              <button class="btn btn-lg btn-success" style="width: 100%;" (click)="buyVanityAddress()" [disabled]="loadingData">Buy Vanity Address</button>
             </div>
 
             <div *ngIf="loadingData" fxLayoutAlign="center center">
@@ -233,8 +224,8 @@
                 <label>After you have activated your new account, we will change the porperties of that account that only YOU will have access to it!</label>
               </mat-card>
 
-              <div *ngIf="!accountActivated && !loadingData">
-                <button class="btn btn-lg btn-success" (click)="activateVanityAddress()" [disabled]="loadingData">Activate Vanity Address</button>
+              <div *ngIf="!accountActivated && !loadingData" style="width: 100%;">
+                <button class="btn btn-lg btn-success"  style="width: 100%;" (click)="activateVanityAddress()" [disabled]="loadingData">Activate Vanity Address</button>
               </div>
 
               <mat-card *ngIf="accountActivated" class="mat-card-green" fxLayout="row" fxLayoutGap="0.3em" fxLayoutAlign="start center">
@@ -321,11 +312,11 @@
                 </i>
               </div>
 
-              <div *ngIf="!address.activated" fxLayout="row" fxLayoutAlign="center center">
-                <i class="material-icons" style="color: red; font-size: 1.4em;">
+              <div *ngIf="!address.activated" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="0.5em">
+                <i class="material-icons xumm-red" style="font-size: 1.4em;">
                   highlight_off
                 </i>
-                <button mat-raised-button color="primarylight" (click)="selectPurchasedAddressAndActivate(address)" [disabled]="loadingData">Activate now</button>
+                <button class="btn btn-sm btn-success" (click)="selectPurchasedAddressAndActivate(address)" [disabled]="loadingData">Activate now</button>
               </div>
             </div>
 
@@ -338,7 +329,7 @@
               </div>
 
               <div *ngIf="!address.rekeyed" fxLayout="row" fxLayoutAlign="center center">
-                <i class="material-icons" style="color: red; font-size: 1.4em;">
+                <i class="material-icons xumm-red" style="font-size: 1.4em;">
                   highlight_off
                 </i>
               </div>
