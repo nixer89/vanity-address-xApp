@@ -194,6 +194,7 @@ body.vanity {
     color: rgb(59, 220, 150) !important;
     border: 1px !important;
     border-color: black !important;
+    font-weight: bold;
   }
 
   .snackbar-failed {
@@ -203,6 +204,7 @@ body.vanity {
     color: rgb(255, 91, 91) !important;
     border: 1px !important;
     border-color: black !important;
+    font-weight: bold;
   }
 
   .mat-card.mat-card-red {
@@ -243,5 +245,9 @@ body.vanity {
     font-size: 0.7em;
     padding-left: 10px !important;
     padding-right: 10px !important;
+  }
+
+  .mat-horizontal-content-container {
+    padding: 5px !important;
   }
 }

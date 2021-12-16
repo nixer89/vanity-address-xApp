@@ -54,10 +54,9 @@
       </mat-card>
     </div>
     <div *ngIf="testMode != null && testMode">
-      <mat-vertical-stepper linear #vanityStepper>
+      <mat-stepper orientation="horizontal" [linear]="isLinear" #vanityStepper>
         <mat-step completed="false" editable="false">
           <mat-card fxLayout="column" fxLayoutGap="1em" *ngIf="!loadingCheckForPurchaseActivation">
-            <ng-template matStepLabel>Vanity search</ng-template>
             <h3>Find yourself a beautiful XRPL vanity Address</h3>
             <!--label>A vanity address is a wallet address containing a few characters you like at the beginning of the wallet address.</label>
             <label>This xApp allows you to search for a vanity address of your choice. We will check for suitable addresses and show it to you if find any.</label>
@@ -114,7 +113,6 @@
     
         <mat-step completed="false" editable="false">
           <mat-card fxLayout="column" fxLayoutGap="0.5em" *ngIf="!loadingCheckForPurchaseActivation">
-              <ng-template matStepLabel>Payment Account</ng-template>
               <div fxLayout="column" fxLayoutGap="0.5em" *ngIf="originalAccountInfo">
                 <label class="description">Please choose the account which will be able to sign transactions for your new vanity address.</label>
                 <label>This account also needs to be used to activate the vanity address with <b>10 XRP</b> and pay for your vanity address (<b>100 USD in XRP</b>)</label>
@@ -154,7 +152,6 @@
 
         <mat-step completed="false" editable="false">
           <mat-card fxLayout="column" fxLayoutGap="0.5em" *ngIf="!loadingCheckForPurchaseActivation">
-            <ng-template matStepLabel>Confirmation</ng-template>
             <label class="description">Please read the information below carefully and sign the request to accept.</label>
             <div fxLayout="column" fxLayoutGap="1em" style="margin-right: 10px;">
               <mat-checkbox [(ngModel)]="checkBoxPurchaseAmount" (change)="informationConfirmed = false;" [ngClass]="(checkBoxPurchaseAmount ? 'xumm-green': 'xumm-red')">You aggree to pay the XRP equivalent of ~ <b>{{getPurchaseAmountUSD()}} USD</b> to buy your vanity address <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></mat-checkbox>
@@ -183,7 +180,6 @@
     
         <mat-step completed="false" editable="false">
           <mat-card fxLayout="column" fxLayoutGap="1em" *ngIf="!loadingCheckForPurchaseActivation">
-            <ng-template matStepLabel>Purchase of Vanity Address</ng-template>
             <label class="description">You will have to pay the XRP equivalent of ~ <b>{{getPurchaseAmountUSD()}} USD</b> to buy your vanity address <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
             <mat-card class="mat-card-red">
               <label>Funds can not be returned. After successfully purchase and account activation, the account is yours and YOURS only! The account can not be returned to us!</label>
@@ -218,7 +214,6 @@
     
         <mat-step completed="false" editable="false">
           <mat-card fxLayout="column" fxLayoutGap="0.5em" *ngIf="!loadingCheckForPurchaseActivation">
-              <ng-template matStepLabel>Account activation</ng-template>
               <mat-card class="mat-card-orange" *ngIf="!accountActivated || !accountRekeyed || !!accountMasterKeyDisabled">
                 <label>In order to use your new address, it has to hold at least <b>10 XRP</b>. This is a requirement by the XRP Ledger.</label>
                 <label>After you have activated your new account, we will change the porperties of that account that only YOU will have access to it!</label>
@@ -279,7 +274,7 @@
               </div>
           </mat-card>
         </mat-step>
-      </mat-vertical-stepper>
+      </mat-stepper>
     </div>
   </div>
   <div *ngIf="!openSearch">

@@ -16,8 +16,7 @@ import { environment } from '../environments/environment';
 
 @Component({
   selector: 'vanity',
-  templateUrl: './vanity.html',
-  styleUrls: ['./vanity.css', '../scss/vanity.scss', '../scss/main.scss']
+  templateUrl: './vanity.html'
 })
 export class VanityComponent implements OnInit, OnDestroy {
 

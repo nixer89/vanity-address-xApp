@@ -126,11 +126,14 @@ input.ng-valid {
   width: 90% !important;
 }
 
+.mat-stepper-horizontal {
+  margin-top: 8px;
+}
+
 .mat-step-icon.mat-step-icon-state-done {
   background-color: $green !important;
   font-weight: bold;
 }
-
 
 .mat-step-icon.mat-step-icon-state-number.mat-step-icon-selected {
   background-color: $green !important;
@@ -140,12 +143,6 @@ input.ng-valid {
 .mat-step-icon.mat-step-icon-state-number {
   background-color:  $secondary !important;
   font-weight: bold;
-}
-
-.mat-stepper-vertical-line::before {
-  background-color: greenyellow !important;
-  border-left-style: solid !important;
-  border-left-width: 1px !important;
 }
 
 .mat-step-label.mat-step-label-active {
@@ -159,11 +156,6 @@ input.ng-valid {
   font-size: 1.2em;
 }
 
-.mat-vertical-content-container {
-  border-left-style: solid !important;
-  border-left-width: 1px !important;
-}
-
 .xumm-green {
   color: #3bdc96 !important;
 }
@@ -172,8 +164,8 @@ input.ng-valid {
   color: #ff5b5b !important;
 }
 
-.mat-card.margin-5 {
-  margin: 5px;
+.mat-card {
+  padding: 10px !important;
 }
 
 // adds breaks to the mat-checkboxes with long labels
@@ -184,10 +176,6 @@ input.ng-valid {
 // rather than center the checkbox, put the checkbox in the first line
 .mat-checkbox-inner-container {
   margin-top: 3px !important;
-}
-
-.mat-card.margin-5 {
-  margin: 6px;
 }
 
 li {
