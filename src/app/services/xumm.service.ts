@@ -21,24 +21,6 @@ export class XummService {
         }
     }
 
-    async getPayloadInfo(payloadId:string): Promise<XummTypes.XummGetPayloadResponse> {
-        try {
-            return this.app.get(this.xummBackendURL+"/api/v1/platform/payload/"+payloadId);
-        } catch(err) {
-            console.log(JSON.stringify(err))
-            return null;
-        }
-    }
-
-    async deletePayload(payloadId:string): Promise<XummTypes.XummDeletePayloadResponse> {
-        try {
-            return this.app.delete(this.xummBackendURL+"/api/v1/platform/payload/"+payloadId);
-        } catch(err) {
-            console.log(JSON.stringify(err))
-            return null;
-        }
-    }
-    
     async getxAppOTTData(token: string): Promise<any> {
         try {
             return this.app.get(this.xummBackendURL+"/api/v1/platform/xapp/ott/" + token);
@@ -59,7 +41,7 @@ export class XummService {
 
     async sendxAppPush(data: any): Promise<any> {
         try {
-            return this.app.post(this.xummBackendURL+"/api/v1/platform/xapp/evepushnt", data);
+            return this.app.post(this.xummBackendURL+"/api/v1/platform/xapp/push", data);
         } catch(err) {
             console.log(JSON.stringify(err))
             return { error: true, success: false, testnet:false }
@@ -75,9 +57,9 @@ export class XummService {
         }
     }
 
-    async validateTransaction(payloadId:string): Promise<TransactionValidation> {
+    async validatePayment(payloadId:string): Promise<TransactionValidation> {
         try {
-            return this.app.get(this.xummBackendURL+"/api/v1/xrpl/validatetx/"+payloadId);
+            return this.app.get(this.xummBackendURL+"/api/v1/check/payment/"+payloadId);
         } catch(err) {
             console.log(JSON.stringify(err))
             return { error: true, success: false, testnet:false }

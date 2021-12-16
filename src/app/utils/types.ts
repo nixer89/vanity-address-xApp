@@ -61,14 +61,17 @@ export interface VanityPurchaseRequest {
 }
 
 export interface PurchasedVanityAddresses {
-    applicationId: string,
-    origin: string,
     buyerAccount: string,
     vanityAddress:string,
     identifier:string,
     testnet:boolean,
-    updated: Date
-    regularKey: string,
+    buyHash:string,
+    buyPayloadId: string,
     activated: boolean,
+    activatedHash: string,
+    activatedPayloadId: string,
     rekeyed: boolean,
+    masterDisabled: boolean,
+    regularKey: string,
+    updated: Date
 }

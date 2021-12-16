@@ -17,7 +17,7 @@
   </div>
 
   <mat-card class="mat-card-red" *ngIf="errorLabel" fxLayout="column" fxLayoutGap="0.5em;">
-    <label>Sorry that this error happened! Please copy the following error and send it to @XummCommunity on twitter or via mail to: XummCommunity@gmail.com . Thanks for your help!</label>
+    <label>Sorry that this error happened! Please copy the following error and send it to @XummSupport on twitter or visit https://support.xumm.app . Thank you for your help!</label>
     <label>&nbsp;</label>
     <label class="break-words" (click)="copyError()">{{errorLabel}}</label>
     <button mat-button class="xumm-grey-background" aria-label="Copy Error" (click)="copyError()">
@@ -39,8 +39,8 @@
   <label class="break-words" *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label-->
 
   <div *ngIf="openSearch" fxLayout="column" fxLayoutGap="0.5em">
-    <div *ngIf="testMode == null" fxLayoutAlign="center center" fxLayoutGap="0.5em" style="padding-top: 10px;">
-      <label>Loading...</label>
+    <div *ngIf="testMode == null || loadingCheckForPurchaseActivation" fxLayoutAlign="center center" fxLayoutGap="0.5em" style="padding-top: 10px;">
+      <label>Loading ...</label>
       <div class="spinner-border" role="status" style="padding-top: 0.5em;"></div>
     </div>
     <div *ngIf="testMode != null && !testMode">
@@ -56,7 +56,7 @@
     <div *ngIf="testMode != null && testMode">
       <mat-vertical-stepper linear #vanityStepper>
         <mat-step completed="false" editable="false">
-          <mat-card fxLayout="column" fxLayoutGap="1em">
+          <mat-card fxLayout="column" fxLayoutGap="1em" *ngIf="!loadingCheckForPurchaseActivation">
             <ng-template matStepLabel>Vanity search</ng-template>
             <h3>Find yourself a beautiful XRPL vanity Address</h3>
             <!--label>A vanity address is a wallet address containing a few characters you like at the beginning of the wallet address.</label>
@@ -113,7 +113,7 @@
         </mat-step >
     
         <mat-step completed="false" editable="false">
-          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em" *ngIf="!loadingCheckForPurchaseActivation">
               <ng-template matStepLabel>Payment Account</ng-template>
               <div fxLayout="column" fxLayoutGap="0.5em" *ngIf="originalAccountInfo">
                 <label class="description">Please choose the account which will be able to sign transactions for your new vanity address.</label>
@@ -153,7 +153,7 @@
         </mat-step>
 
         <mat-step completed="false" editable="false">
-          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em" *ngIf="!loadingCheckForPurchaseActivation">
             <ng-template matStepLabel>Confirmation</ng-template>
             <label class="description">Please read the information below carefully and sign the request to accept.</label>
             <div fxLayout="column" fxLayoutGap="1em" style="margin-right: 10px;">
@@ -168,9 +168,9 @@
               <button class="btn btn-lg btn-success" style="width: 100%;" (click)="signToConfirm()" [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || informationConfirmed">Sign to confirm</button>
             </div>
 
-            <div *ngIf="loadingData" fxLayoutAlign="start center">
-              <label>Loading...</label>
-              <mat-progress-spinner color="primarylight" mode="indeterminate" diameter=25></mat-progress-spinner>
+            <div *ngIf="loadingData" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+              <label>Loading ...</label>
+              <div class="spinner-border" role="status" style="padding-top: 0.5em;"></div>
             </div>
 
             <div style="padding-top: 0.5em;" fxLayoutGap="0.5em">
@@ -182,7 +182,7 @@
         </mat-step>
     
         <mat-step completed="false" editable="false">
-          <mat-card fxLayout="column" fxLayoutGap="1em">
+          <mat-card fxLayout="column" fxLayoutGap="1em" *ngIf="!loadingCheckForPurchaseActivation">
             <ng-template matStepLabel>Purchase of Vanity Address</ng-template>
             <label class="description">You will have to pay the XRP equivalent of ~ <b>{{getPurchaseAmountUSD()}} USD</b> to buy your vanity address <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
             <mat-card class="mat-card-red">
@@ -193,9 +193,9 @@
               <button class="btn btn-lg btn-success" style="width: 100%;" (click)="buyVanityAddress()" [disabled]="loadingData">Buy Vanity Address</button>
             </div>
 
-            <div *ngIf="loadingData" fxLayoutAlign="center center">
-              <label>Loading...</label>
-              <mat-progress-spinner color="primarylight" mode="indeterminate" diameter=25></mat-progress-spinner>
+            <div *ngIf="loadingData" fxLayoutAlign="center center" fxLayoutGap="0.5em">
+              <label>Loading ...</label>
+              <div class="spinner-border" role="status" style="padding-top: 0.5em;"></div>
             </div>
 
             <div>
@@ -217,7 +217,7 @@
         </mat-step>
     
         <mat-step completed="false" editable="false">
-          <mat-card fxLayout="column" fxLayoutGap="0.5em">
+          <mat-card fxLayout="column" fxLayoutGap="0.5em" *ngIf="!loadingCheckForPurchaseActivation">
               <ng-template matStepLabel>Account activation</ng-template>
               <mat-card class="mat-card-orange" *ngIf="!accountActivated || !accountRekeyed || !!accountMasterKeyDisabled">
                 <label>In order to use your new address, it has to hold at least <b>10 XRP</b>. This is a requirement by the XRP Ledger.</label>
@@ -249,11 +249,12 @@
                 <label>The master key for the vanity account <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b> is disabled. That means <b>WE</b> can not access this account anymore.<br><br><b>It is truly yours now, enjoy!</b></label>
               </mat-card>
 
-              <div *ngIf="loadingData" fxLayoutAlign="center center">
-                <label *ngIf="!accountActivated">Waiting for account activation ...</label>
-                <label *ngIf="accountActivated && !accountRekeyed">Waiting for account transfer ...</label>
-                <label *ngIf="accountActivated && accountRekeyed && !accountMasterKeyDisabled">Waiting for master key to be disabled ...</label>
-                <mat-progress-spinner color="primarylight" mode="indeterminate" diameter=25></mat-progress-spinner>
+              <div *ngIf="loadingData" fxLayout="column" fxLayoutAlign="center center">
+                <label *ngIf="!accountActivated">Waiting for account activation...</label>
+                <label *ngIf="accountActivated && !accountRekeyed">Waiting for account transfer...</label>
+                <label *ngIf="accountActivated && accountRekeyed && !accountMasterKeyDisabled">Waiting for master key to be disabled...</label>
+                
+                <div class="spinner-border" role="status" style="padding-top: 0.5em;"></div>
               </div>
 
               <mat-card *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" class="mat-card-orange" fxLayout="column" fxLayoutGap="0.5em">
@@ -264,7 +265,7 @@
                 <label>To use your account, copy the following address (via the button) and add it as "Read only" account to your XUMM app:</label>
                 <div fxLayout="row" fxLayoutGap="0.2em" fxLayoutAlign="start center" *ngIf="selectedVanityAddress">
                   <label style="font-size: 0.9em;" (click)="copyAddress(selectedVanityAddress.address)"><b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
-                  <button mat-icon-button aria-label="Copy Address" (click)="copyAddress(selectedVanityAddress.address)">
+                  <button class="btn btn-sm" aria-label="Copy Address" (click)="copyAddress(selectedVanityAddress.address)">
                     <mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
                   </button>
                 </div>
@@ -284,7 +285,7 @@
   <div *ngIf="!openSearch">
     <mat-card>
       <div *ngIf="loadingPurchases" fxLayoutAlign="center center" fxLayoutGap="0.5em" style="padding-top: 10px;">
-        <label>Loading...</label>
+        <label>Loading ...</label>
         <div class="spinner-border" role="status" style="padding-top: 0.5em;"></div>
       </div>
       <div *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )" fxLayout="column">
@@ -300,25 +301,25 @@
             </div>
 
             <div fxLayout="row">
-              <div style="width: 40%;">
+              <div style="width: 50%;">
                 <b>Network:</b>&nbsp;
               </div>
-              <div style="width: 60%;">
+              <div style="width: 50%;">
                 <label>{{address.testnet ? 'Testnet' : 'Mainnet'}}</label>
               </div>
             </div>
 
             <div fxLayout="row">
-              <div style="width: 40%;">
+              <div style="width: 50%;">
                 <b>Activated:</b>&nbsp;
               </div>
-              <div *ngIf="address.activated" style="width: 60%;">
+              <div *ngIf="address.activated" style="width: 50%;">
                 <i class="material-icons xumm-green">
                   check_circle_outline
                 </i>
               </div>
 
-              <div *ngIf="!address.activated" style="width: 60%;">
+              <div *ngIf="!address.activated" style="width: 50%;">
                 <i class="material-icons xumm-red" style="font-size: 1.4em;">
                   highlight_off
                 </i>
@@ -326,33 +327,67 @@
             </div>
 
             <div fxLayout="row">
-              <div style="width: 40%;">
+              <div style="width: 50%;">
                 <b>Rekeyed:</b>&nbsp;
               </div>
-              <div *ngIf="address.rekeyed" style="width: 60%;">
+              <div *ngIf="address.rekeyed" style="width: 50%;">
                 <i class="material-icons xumm-green">
                   check_circle_outline
                 </i>
               </div>
 
-              <div *ngIf="!address.rekeyed" style="width: 60%;">
+              <div *ngIf="!address.rekeyed" style="width: 50%;">
                 <i class="material-icons xumm-red" style="font-size: 1.4em;">
                   highlight_off
                 </i>
               </div>
             </div>
             
+            <div fxLayout="row">
+              <div style="width: 50%;">
+                <b>Masterkey Disabled:</b>&nbsp;
+              </div>
+              <div *ngIf="address.masterDisabled" style="width: 50%;">
+                <i class="material-icons xumm-green">
+                  check_circle_outline
+                </i>
+              </div>
+
+              <div *ngIf="!address.masterDisabled" style="width: 50%;">
+                <i class="material-icons xumm-red" style="font-size: 1.4em;">
+                  highlight_off
+                </i>
+              </div>
+            </div>
+
             <div fxLayout="column">
-              <b>RegularKey:</b>
-              <label style="font-size: 0.9em;">{{address.regularKey}}</label>
+              <div *ngIf="address.regularKey" fxLayout="column">
+                <b>RegularKey:</b>
+                <label style="font-size: 0.9em;">{{address.regularKey}}</label>
+              </div>
+              <div *ngIf="!address.regularKey" fxLayout="row">
+                <div style="width: 50%;">
+                  <b>RegularKey:</b>
+                </div>
+                
+                <div style="width: 50%;">
+                  <i class="material-icons xumm-red" style="font-size: 1.4em;">
+                    highlight_off
+                  </i>
+                </div>
+              </div>
+            
             </div>
 
             <div *ngIf="!address.activated" fxLayout="row">
-              <div style="width: 40%;">
+              <div style="width: 50%;">
                 <b>Actions:</b>
               </div>
-              <div style="width: 60%;">
+              <div *ngIf="address.testnet == testMode" style="width: 50%;">
                 <button class="btn btn-sm btn-success" (click)="selectPurchasedAddressAndActivate(address)" [disabled]="loadingData">Activate now</button>
+              </div>
+              <div *ngIf="address.testnet != testMode" style="width: 50%;">
+                <label class="xumm-red">Please change the network of your XUMM app to activate this address.</label>
               </div>
             </div>
           </li>

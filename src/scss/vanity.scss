@@ -192,6 +192,8 @@ body.vanity {
     justify-content: center;
     background-color: $primarylight !important;
     color: rgb(59, 220, 150) !important;
+    border: 1px !important;
+    border-color: black !important;
   }
 
   .snackbar-failed {
@@ -199,6 +201,8 @@ body.vanity {
     justify-content: center;
     background-color: $primarylight !important;
     color: rgb(255, 91, 91) !important;
+    border: 1px !important;
+    border-color: black !important;
   }
 
   .mat-card.mat-card-red {

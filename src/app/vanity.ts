@@ -12,6 +12,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import * as clipboard from 'copy-to-clipboard';
 import * as flagutil from './utils/flagutils';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'vanity',
@@ -104,9 +105,11 @@ export class VanityComponent implements OnInit, OnDestroy {
   purchasedAddresses:PurchasedVanityAddresses[] = null;
   loadingPurchases:boolean = false;
 
+  loadingCheckForPurchaseActivation:boolean = false;
+
   displayedColumns: string[] = ['account', 'network', 'activated', 'rekeyed', 'regularkey'];
 
-  debugMode:boolean = true;
+  debugMode:boolean = !environment.production;
 
   title: string = "XRPL Vanity";
 
@@ -528,8 +531,11 @@ export class VanityComponent implements OnInit, OnDestroy {
 
     if(this.debugMode) {
       this.purchaseStarted = true;
-      this.purchaseSuccess = true;
-      this.loadingData = false;
+      setTimeout(() => {
+        this.purchaseSuccess = true;
+        this.loadPurchases(this.originalAccountInfo.Account);
+        this.loadingData = false;
+      }, 1000);
       return;
     }
 
@@ -570,14 +576,15 @@ export class VanityComponent implements OnInit, OnDestroy {
 
         this.purchaseStarted = true;
 
-        let txInfo = await this.xummService.validateTransaction(message.payload_uuidv4);
+        let txInfo = await this.xummService.validatePayment(message.payload_uuidv4);
           //console.log('The generic dialog was closed: ' + JSON.stringify(info));
 
         //if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) { <-------- ######## USE THIS IN PROD. CHECK THAT PAYMENT WAS ON MAIN NET!!
         if(txInfo && txInfo.success && txInfo.account) {
-          if(isValidXRPAddress(txInfo.account) && txInfo.account == this.originalAccountInfo.Account)
+          if(isValidXRPAddress(txInfo.account) && txInfo.account == this.originalAccountInfo.Account) {
             this.purchaseSuccess = true;
-          else
+            this.loadPurchases(txInfo.account);
+          } else
             this.purchaseSuccess = false;
         } else {
           this.purchaseSuccess = false;
@@ -591,26 +598,43 @@ export class VanityComponent implements OnInit, OnDestroy {
   }
 
   async selectPurchasedAddressAndActivate(account:PurchasedVanityAddresses) {
-    this.selectedVanityAddress = {
-      address: account.vanityAddress,
-      identifier: account.identifier
+    this.loadingCheckForPurchaseActivation = true;
+    try {
+      this.selectedVanityAddress = {
+        address: account.vanityAddress,
+        identifier: account.identifier
+      }
+
+      //check purchase!
+      let paymentCheckResult = await this.xummService.validatePayment(account.buyPayloadId);
+
+      //check successfull
+      if(paymentCheckResult.account === account.buyerAccount && paymentCheckResult.account === this.originalAccountInfo?.Account && this.testMode === paymentCheckResult.testnet) {
+        this.snackBar.open("Payment checked successfully!", null, {panelClass: 'snackbar-success', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
+
+        this.informationConfirmed = true;
+        this.purchaseStarted = true;
+        this.purchaseSuccess = true;    
+
+        this.openSearch = true;
+        this.loadingData = true;
+        
+        setTimeout(() => {
+          this.loadingCheckForPurchaseActivation = false;
+          //silly and dirty, but it does what I need!
+          this.moveNext();
+          this.moveNext();
+          this.moveNext();
+          this.moveNext();
+          this.loadingData = false;
+        }, 500);
+      } else {
+        this.snackBar.open("Payment checked failed!", null, {panelClass: 'snackbar-failed', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
+        this.loadingCheckForPurchaseActivation = false;
+      }
+    } catch(err) {
+
     }
-
-    this.purchaseStarted = true;
-    this.purchaseSuccess = true;
-    this.informationConfirmed = true;
-
-    this.openSearch = true;
-    this.loadingData = true;
-    //silly but does what I need!
-    setTimeout(() => {
-      this.moveNext();
-      this.moveNext();
-      this.moveNext();
-      this.moveNext();
-      this.loadingData = false;
-    }, 500);
-    
   }
 
   async activateVanityAddress() {
@@ -618,10 +642,23 @@ export class VanityComponent implements OnInit, OnDestroy {
 
     if(this.debugMode) {
       this.activationAmountSent = true;
-      this.accountActivated = true;
-      this.accountRekeyed = true;
-      this.accountMasterKeyDisabled = true;
-      this.loadingData = false;
+      this.scrollToBottom();
+      setTimeout(() => {
+        this.accountActivated = true;
+        this.scrollToBottom();
+      },1000);
+
+      setTimeout(() => {
+        this.accountRekeyed = true;
+        this.scrollToBottom();
+      },2000);
+
+      setTimeout(() => {
+        this.accountMasterKeyDisabled = true;
+        this.loadingData = false;
+        this.scrollToBottom();
+      },3000);
+      
       return;
     }
 
@@ -658,13 +695,14 @@ export class VanityComponent implements OnInit, OnDestroy {
         
         this.activationStarted = true;
 
-        let txInfo = await this.xummService.validateTransaction(message.payload_uuidv4);
+        let txInfo = await this.xummService.validatePayment(message.payload_uuidv4);
 
         this.errorTimeout = setTimeout(() => {
           //something went wrong!
           if(!this.accountActivated || !this.accountRekeyed || !this.accountMasterKeyDisabled) {
             this.errorActivation = true;
             clearInterval(this.intervalAccountStatus);
+            this.loadPurchases(txInfo.account);
             this.loadingData = false;
           }
         }, 30000)
@@ -714,10 +752,11 @@ export class VanityComponent implements OnInit, OnDestroy {
           this.accountMasterKeyDisabled = accountInfo && accountInfo.Flags && flagutil.isMasterKeyDisabled(accountInfo.Flags);
 
           //scroll down because more elements are loaded
-          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+          this.scrollToBottom();
 
           if(this.accountActivated && this.accountRekeyed && this.accountMasterKeyDisabled) {
             clearInterval(this.intervalAccountStatus);
+            this.loadPurchases(xrplAccount);
             this.loadingData = false;
           }
         } else {
@@ -777,7 +816,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
         this.backendSaveStarted = true;
 
-        let txInfo = await this.xummService.validateTransaction(message.payload_uuidv4);
+        let txInfo = await this.xummService.validatePayment(message.payload_uuidv4);
           //console.log('The generic dialog was closed: ' + JSON.stringify(info));
 
         //if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) { <-------- ######## USE THIS IN PROD. CHECK THAT PAYMENT WAS ON MAIN NET!!
@@ -803,6 +842,10 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.snackBar.dismiss();
       this.snackBar.open("Address " +address+ " copied to clipboard!", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'bottom'});
     }
+  }
+
+  scrollToBottom() {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
 
   close() {
