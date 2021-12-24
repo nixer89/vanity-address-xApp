@@ -61,6 +61,14 @@ body.vanity {
       margin-top: 0.5rem;
     }
   }
+  .inlineloader {
+    display: inline-block;
+
+    label {
+      display: block;
+      margin-top: 0.5rem;
+    }
+  }
 
   h1 {
     font-size: 1.8rem;
@@ -78,11 +86,17 @@ body.vanity {
   }
 
   .btn {
-    padding: 0.15rem 1.5rem !important;
-    color: white !important;
+    padding: 0.15rem 1.5rem;
+    color: white;
   }
   .alert {
     font-weight: normal;
+  }
+  .alert-info {
+    background: #a660ff69;
+    border-color: #89799d;
+    color: white;
+    text-align: center;
   }
   label {
     font-weight: 600;
@@ -236,14 +250,13 @@ body.vanity {
       }
     }
     .mat-horizontal-content-container {
-      padding: 0rem 1rem;
-      // border: 2px solid yellow;
+      padding: 0;
       .mat-horizontal-stepper-content[aria-expanded='true'] {
         height: calc(100vh - 3rem - 4rem);
         display: grid;
         grid-template-rows: auto 4.5rem;
         overflow: scroll;
-        // border: 2px solid orange;
+        padding: 0rem 1rem;
 
         h2 {
           margin-top: 1rem;
@@ -261,7 +274,29 @@ body.vanity {
             width: 100%;
             font-size: 1.2rem;
           }
+          &.fullwidth {
+            grid-template-columns: auto;
+            grid-column-gap: 0rem;
+          }
         }
+      }
+    }
+  }
+
+  ul.accountlist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    li {
+      &:not(:last-child) {
+        border-bottom: 1px solid darken($light, 15%);
+      }
+      padding: 1rem;
+      div.subgrid {
+        display: grid;
+        grid-template-columns: 6fr 4fr;
+        align-items: center;
+        align-content: space-between;
       }
     }
   }
@@ -285,6 +320,7 @@ body.vanity {
     width: 100%;
     padding: 0.75rem 1.5rem !important;
     color: $primary !important;
+    border-radius: 1rem !important;
     background: #fff;
   }
   .mat-checkbox {
