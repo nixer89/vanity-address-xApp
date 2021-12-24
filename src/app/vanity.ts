@@ -76,7 +76,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   intervalAccountStatus = null;
   errorTimeout = null;
   errorActivation:boolean = false;
-  
+
   private ottReceived: Subscription;
   private themeReceived: Subscription;
   loadingData:boolean = false;
@@ -122,7 +122,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.fixAmounts = await this.xummService.getFixAmounts();
       this.loadPurchases("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
       this.testMode = true;
-      this.loadingData = false;      
+      this.loadingData = false;
       return;
     }
 
@@ -137,7 +137,7 @@ export class VanityComponent implements OnInit, OnDestroy {
         this.loadingData = true;
 
         this.infoLabel = JSON.stringify(ottData);
-        
+
         this.testMode = ottData.nodetype === 'TESTNET';
         //this.isTestMode = true;
 
@@ -147,7 +147,7 @@ export class VanityComponent implements OnInit, OnDestroy {
           this.loadPurchases(ottData.account);
           await this.loadAccountData(ottData.account);
 
-          //await this.loadAccountData(ottData.account); //false = ottResponse.node == 'TESTNET' 
+          //await this.loadAccountData(ottData.account); //false = ottResponse.node == 'TESTNET'
         } else {
           //this.issuer_account_info = "no account";
         }
@@ -244,7 +244,7 @@ export class VanityComponent implements OnInit, OnDestroy {
           this.loadingData = false;
           this.snackBar.open("Error contacting XUMM backend", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
           return;
-        }        
+        }
     } catch (err) {
         //console.log(JSON.stringify(err));
         this.handleError(err);
@@ -282,7 +282,7 @@ export class VanityComponent implements OnInit, OnDestroy {
                 this.websocket.unsubscribe();
                 this.websocket.complete();
               }
-              
+
               return resolve(message);
             }
         });
@@ -326,7 +326,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       let message:any = await this.waitForTransactionSigning(backendPayload);
 
       if(message && message.payload_uuidv4 && message.signed) {
-            
+
         let transactionResult:TransactionValidation = null;
         //check if we are an EscrowReleaser payment
         transactionResult = await this.xummService.checkSignIn(message.payload_uuidv4);
@@ -345,14 +345,14 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
 
     this.loadingData = false;
-  
+
   }
 
   async loadAccountData(xrplAccount: string) {
     //this.infoLabel = "loading " + xrplAccount;
     if(xrplAccount && isValidXRPAddress(xrplAccount)) {
       this.loadingData = true;
-      
+
       let account_info_request:any = {
         command: "account_info",
         account: xrplAccount,
@@ -413,7 +413,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       let message:any = await this.waitForTransactionSigning(backendPayload);
 
       if(message && message.payload_uuidv4 && message.signed) {
-            
+
         let transactionResult:TransactionValidation = null;
         //check if we are an EscrowReleaser payment
         transactionResult = await this.xummService.checkSignIn(message.payload_uuidv4);
@@ -464,7 +464,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   getPurchaseAmountUSD(): string {
     if(this.vanityWordUsedForSearch) {
       let length:string = (this.vanityWordUsedForSearch.length > 8 ? 8 : this.vanityWordUsedForSearch.length) + ""
-      
+
       if(this.fixAmounts[length])
         return this.fixAmounts[length]
       else if(this.fixAmounts["*"])
@@ -479,7 +479,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   getBackendFeeAmount(): string {
     if(this.vanityWordUsedForSearch) {
-      
+
       if(this.fixAmounts['backendFee'])
         return this.fixAmounts['backendFee']
       else
@@ -519,7 +519,7 @@ export class VanityComponent implements OnInit, OnDestroy {
         return balance
       else
         return 0;
-      
+
     } else {
       return 0;
     }
@@ -613,11 +613,11 @@ export class VanityComponent implements OnInit, OnDestroy {
 
         this.informationConfirmed = true;
         this.purchaseStarted = true;
-        this.purchaseSuccess = true;    
+        this.purchaseSuccess = true;
 
         this.openSearch = true;
         this.loadingData = true;
-        
+
         setTimeout(() => {
           this.loadingCheckForPurchaseActivation = false;
           //silly and dirty, but it does what I need!
@@ -657,7 +657,7 @@ export class VanityComponent implements OnInit, OnDestroy {
         this.loadingData = false;
         this.scrollToBottom();
       },3000);
-      
+
       return;
     }
 
@@ -691,7 +691,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       if(message && message.payload_uuidv4) {
 
         this.intervalAccountStatus = setInterval(() => this.checkVanityAccountStatus(this.selectedVanityAddress.address), 1000);
-        
+
         this.activationStarted = true;
 
         let txInfo = await this.xummService.validatePayment(message.payload_uuidv4);
@@ -732,7 +732,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   async checkVanityAccountStatus(xrplAccount: string) {
     //this.infoLabel = "loading " + xrplAccount;
     if(xrplAccount && isValidXRPAddress(xrplAccount)) {
-      
+
       let account_info_request:any = {
         command: "account_info",
         account: xrplAccount,
@@ -770,7 +770,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       }
     } else {
       this.accountActivated = false;
-      this.accountRekeyed = false; 
+      this.accountRekeyed = false;
       this.accountMasterKeyDisabled = false;
     }
   }
@@ -857,7 +857,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   }
 
   moveNext(reserveAddress?:boolean) {
-    
+
     if(reserveAddress)
       this.xummService.reserveVanityAddress(this.selectedVanityAddress.address, this.selectedVanityAddress.identifier, this.testMode);
     // complete the current step
