@@ -51,6 +51,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   selectedVanityAddress:VanitySearchResult = null;
   vanityWordUsedForSearch:string = null;
   fixAmounts:any = null;
+  xrpAmountFirst:number = null;
 
   amountXrpNeeded:number = null;
 
@@ -120,6 +121,10 @@ export class VanityComponent implements OnInit, OnDestroy {
     if(this.debugMode) {
       await this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
       this.fixAmounts = await this.xummService.getFixAmounts();
+
+      let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
+      this.xrpAmountFirst = parseInt(response.xrpamount)/1000000;
+      
       this.loadPurchases("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
       this.testMode = true;
       this.loadingData = false;
@@ -131,6 +136,9 @@ export class VanityComponent implements OnInit, OnDestroy {
       //console.log("ottReceived: " + JSON.stringify(ottData));
 
       this.fixAmounts = await this.xummService.getFixAmounts();
+
+      let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
+      this.xrpAmountFirst = parseInt(response.xrpamount)/1000000;
 
       if(ottData) {
 
@@ -462,7 +470,8 @@ export class VanityComponent implements OnInit, OnDestroy {
   }
 
   getPurchaseAmountUSD(): string {
-    if(this.vanityWordUsedForSearch) {
+    /**
+      if(this.vanityWordUsedForSearch) {
       let length:string = (this.vanityWordUsedForSearch.length > 8 ? 8 : this.vanityWordUsedForSearch.length) + ""
 
       if(this.fixAmounts[length])
@@ -475,6 +484,12 @@ export class VanityComponent implements OnInit, OnDestroy {
     } else {
       return "--";
     }
+    **/
+
+    if(this.fixAmounts["*"])
+      return this.fixAmounts["*"]
+    else
+      return "--"
   }
 
   getBackendFeeAmount(): string {

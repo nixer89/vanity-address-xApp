@@ -62,7 +62,7 @@
 
     <div *ngIf="!loadingCheckForPurchaseActivation && !selectedVanityAddress">
       <div class="p-3 pb-1">
-        <h1 class="sticky mb-0">Find yourself a vanity XRPL address <small>$100 / 210 XRP</small></h1>
+        <h1 class="sticky mb-0">Find yourself a vanity XRPL address <small>${{getPurchaseAmountUSD()}} / ~{{xrpAmountFirst}} XRP</small></h1>
       </div>
       <div class="sticky p-3 pt-1 pb-1">
         <form>
