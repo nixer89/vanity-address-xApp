@@ -422,7 +422,13 @@ body.vanity {
   //   padding: 5px !important;
   // }
 
+  //put connector lines in correct position
   .mat-stepper-horizontal-line {
     margin: 0px !important;
+  }
+
+  //disable header navigation
+  .mat-horizontal-stepper-header{
+    pointer-events: none !important;
   }
 }

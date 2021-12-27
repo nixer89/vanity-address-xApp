@@ -220,7 +220,7 @@ export class VanityComponent implements OnInit, OnDestroy {
     try {
       this.loadingPurchases = true;
       this.purchasedAddresses = await this.xummService.getPurchases(account);
-      console.log(JSON.stringify(this.purchasedAddresses));
+      //console.log(JSON.stringify(this.purchasedAddresses));
       this.loadingPurchases = false;
     } catch (err) {
       console.log(err);
@@ -628,9 +628,9 @@ export class VanityComponent implements OnInit, OnDestroy {
         this.loadingData = true;
 
         setTimeout(() => {
+          console.log("navigating...")
           this.loadingCheckForPurchaseActivation = false;
           //silly and dirty, but it does what I need!
-          this.moveNext();
           this.moveNext();
           this.moveNext();
           this.moveNext();

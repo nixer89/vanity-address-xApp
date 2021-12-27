@@ -55,7 +55,7 @@
 
   <div *ngIf="testMode != null && testMode">
 
-    <div *ngIf="!loadingCheckForPurchaseActivation && !selectedVanityAddress">
+    <div *ngIf="!selectedVanityAddress">
       <div class="p-3 pb-1">
         <h1 class="sticky mb-0">
           <label>Find yourself a vanity XRPL address </label>
@@ -103,17 +103,14 @@
             <b>Try changing your search word slightly!</b>
           </div>
         </div>
-
       </div>
-
     </div>
 
-
-    <mat-stepper orientation="horizontal" [linear]="isLinear" [@.disabled]="true" #vanityStepper *ngIf="selectedVanityAddress">
+    <mat-stepper orientation="horizontal" [linear]="isLinear" #vanityStepper *ngIf="selectedVanityAddress">
 
       <!-- STEP 1 -->
       <mat-step completed="false" editable="false">
-        <ng-container *ngIf="!loadingCheckForPurchaseActivation">
+        <ng-container>
           <div class="stepcontainer">
             <ng-container *ngIf="originalAccountInfo">
               <h2>Payment account</h2>
@@ -164,7 +161,7 @@
       </mat-step>
 
       <!-- STEP 2 -->
-      <mat-step completed="false" editable="false" *ngIf="!loadingCheckForPurchaseActivation">
+      <mat-step completed="false" editable="false">
         <div class="stepcontainer">
           <h2>Checks</h2>
           <p>Please read the information below carefully and sign the request to accept.</p>
@@ -201,7 +198,7 @@
       </mat-step>
 
       <!-- STEP 3 -->
-      <mat-step completed="false" editable="false" *ngIf="!loadingCheckForPurchaseActivation">
+      <mat-step completed="false" editable="false">
         <div class="stepcontainer">
           <ng-container *ngIf="!loadingData && !purchaseSuccess">
             <h2>Confirm</h2>
@@ -250,7 +247,7 @@
       </mat-step>
 
       <!-- STEP 4 -->
-      <mat-step completed="false" editable="false" *ngIf="!loadingCheckForPurchaseActivation">
+      <mat-step completed="false" editable="false">
         <div class="stepcontainer">
           <h2>Account ownership</h2>
           <p *ngIf="!accountActivated || !accountRekeyed || !!accountMasterKeyDisabled">
