@@ -44,8 +44,6 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   searchResult:VanitySearchResult[] = null;
 
-  xummVersion:string = null;
-
   originalAccountInfo:any;
   testMode:boolean = null;
   selectedVanityAddress:VanitySearchResult = null;
@@ -99,15 +97,11 @@ export class VanityComponent implements OnInit, OnDestroy {
   backgroundColor = '#030B36';
 
   errorLabel:string = null;
-  showHelp:boolean = false;
-  indexBeforeHelp:number = -1;
 
   purchasedAddresses:PurchasedVanityAddresses[] = null;
   loadingPurchases:boolean = false;
 
   loadingCheckForPurchaseActivation:boolean = false;
-
-  displayedColumns: string[] = ['account', 'network', 'activated', 'rekeyed', 'regularkey'];
 
   debugMode:boolean = !environment.production;
 
@@ -303,7 +297,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   checkVanitySearchChange() {
     if(this.vanityWordInput)
-      this.vanityWordValid = /^[a-zA-Z\d]{1,}$/.test(this.vanityWordInput)
+      this.vanityWordValid = /^[a-zA-Z]{1,}$/.test(this.vanityWordInput)
     else
       this.vanityWordValid = false;
   }
@@ -341,12 +335,12 @@ export class VanityComponent implements OnInit, OnDestroy {
 
         if(transactionResult && transactionResult.success) {
           await this.loadAccountData(transactionResult.account);
-          this.snackBar.open("Sign In successfull", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
+          this.snackBar.open("Sign In successful", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
         } else {
-          this.snackBar.open("SignIn not successfull!", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
+          this.snackBar.open("SignIn not successful!", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
         }
       } else {
-        this.snackBar.open("SignIn not successfull!", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
+        this.snackBar.open("SignIn not successful!", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
       }
     } catch(err) {
       this.handleError(err);
@@ -769,6 +763,10 @@ export class VanityComponent implements OnInit, OnDestroy {
           this.scrollToBottom();
 
           if(this.accountActivated && this.accountRekeyed && this.accountMasterKeyDisabled) {
+
+            this.stepper.selected.completed = true;
+            this.stepper.selected.editable = false;
+            
             clearInterval(this.intervalAccountStatus);
             this.loadPurchases(xrplAccount);
             this.loadingData = false;

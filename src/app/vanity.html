@@ -8,7 +8,7 @@
       </button>
     </div>
     <div fxLayoutAlign="end end" style="width: 50%;">
-      <button class="topbar-button-right btn" (click)="openPurchaseClick()" matTooltip="Show Purchases"
+      <button class="topbar-button-right btn" (click)="openPurchaseClick()" matTooltip="Show Purchases" [disabled]="stepper && stepper.selectedIndex >= 0"
         [ngClass]="{'active' : !openSearch}">
         <i class="material-icons topbar-menu-icon">list</i>
         <label>&nbsp;Show Purchases</label>
@@ -27,11 +27,6 @@
   </button>
 </mat-card>
 
-<div *ngIf="showHelp">
-  <label>Here will be some help shown, as FAQ in an accordion model?</label>
-  <button mat-raised-button color="primary" (click)="showHelp = false">Close Help</button>
-</div>
-
 <!--label class="break-words" *ngIf="infoLabel" style="color: red">{{infoLabel}}</label><br><br>
   <label class="break-words" *ngIf="infoLabel2" style="color: red">{{infoLabel2}}</label>
   <label class="break-words" *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label-->
@@ -39,7 +34,7 @@
 <div *ngIf="openSearch">
 
   <div
-    *ngIf="testMode == null || loadingCheckForPurchaseActivation || loadingData || loadingPurchases || !originalAccountInfo"
+    *ngIf="loadingCheckForPurchaseActivation || loadingData || loadingPurchases || !originalAccountInfo"
     class="loader">
     <div class="spinner-border" role="status"></div>
     <label>Loading</label>
@@ -62,7 +57,10 @@
 
     <div *ngIf="!loadingCheckForPurchaseActivation && !selectedVanityAddress">
       <div class="p-3 pb-1">
-        <h1 class="sticky mb-0">Find yourself a vanity XRPL address <small>${{getPurchaseAmountUSD()}} / ~{{xrpAmountFirst}} XRP</small></h1>
+        <h1 class="sticky mb-0">
+          <label>Find yourself a vanity XRPL address </label>
+          <label><small>${{getPurchaseAmountUSD()}} / ~{{xrpAmountFirst}} XRP</small></label>
+        </h1>
       </div>
       <div class="sticky p-3 pt-1 pb-1">
         <form>
@@ -74,9 +72,11 @@
           </div>
           <button class="btn btn-lg btn-primarylight search" (click)="searchVanityAddress()"
             [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 3 || !vanityWordValid">Search</button>
+          <mat-hint *ngIf="vanityWordInput && vanityWordInput.length > 0 && !vanityWordValid" style="color: #ff5b5b">Invalid characters detected. Please check your input</mat-hint>
           <ul class="notes">
             <li>Always starts with r</li>
             <li>Min. 3 and Max. 8 characters</li>
+            <li>Allowed: a-Z</li>
           </ul>
         </form>
       </div>
@@ -109,8 +109,7 @@
     </div>
 
 
-    <mat-stepper orientation="horizontal" [linear]="isLinear" [@.disabled]="true" #vanityStepper
-      *ngIf="selectedVanityAddress">
+    <mat-stepper orientation="horizontal" [linear]="isLinear" [@.disabled]="true" #vanityStepper *ngIf="selectedVanityAddress">
 
       <!-- STEP 1 -->
       <mat-step completed="false" editable="false">
@@ -153,7 +152,7 @@
           </div>
 
           <footer class="nextback">
-            <button class="btn btn-sm btn-primarylight" (click)="moveBack()"
+            <button class="btn btn-sm btn-primarylight" (click)="selectedVanityAddress = null;"
               [disabled]="!originalAccountInfo || loadingData">
               Back
             </button>
@@ -193,9 +192,9 @@
         <footer class="nextback">
           <button class="btn btn-sm btn-primarylight" (click)="moveBack();" [disabled]="loadingData">Back</button>
           <button class="btn btn-sm btn-success" (click)="moveNext()"
-            *ngIf="informationConfirmed || loadingData">Next</button>
+            *ngIf="informationConfirmed" [disabled]="loadingData">Next</button>
           <button class="btn btn-lg btn-secondary signbutton" (click)="signToConfirm()"
-            *ngIf="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || !informationConfirmed"
+            *ngIf="!checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || !informationConfirmed"
             [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || informationConfirmed">
             Sign</button>
         </footer>
@@ -211,14 +210,14 @@
             <code class="address">{{selectedVanityAddress && selectedVanityAddress.address}}</code>
             <hr>
             <div class="alert alert-danger">
-              Funds can not be returned. After successfully purchase and account activation, the account is yours and
+              Funds can not be returned. After successful purchase and account activation, the account is yours and
               YOURS only! The account can not be returned to us!
             </div>
 
           </ng-container>
 
           <div *ngIf="!loadingData && purchaseStarted && !purchaseSuccess" class="alert alert-danger">
-            Your payment was not successfull on the XRP Ledger MAIN net.
+            Your payment was not successful on the XRP Ledger MAIN net.
           </div>
 
           <ng-container *ngIf="!loadingData && purchaseStarted && purchaseSuccess">
@@ -226,7 +225,7 @@
             <div class="alert alert-success">
               <br>
               <p class="text-center">
-                <i class="material-icons xumm-green" style="font-size: 1.5em;">
+                <i class="material-icons xumm-green" style="font-size: 3em;">
                   check_circle_outline
                 </i>
               </p>
@@ -326,25 +325,37 @@
           </div> -->
 
 
-          <div *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled">
+          <div *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" fxLayoutGap="0.3em">
             <div *ngIf="rekeyAccount != originalAccountInfo.Account" class="alert alert-danger">
-              <label>You have send the activation payment with a different account than the one you used for the
-                payment and sign in earlier.</label>
-              <label>We have now set <b>{{rekeyAccount}}</b> as "RegularKey". This account will now be able to sign
+              <label>You have sent the activation payment with a different account than the one you used for the
+                payment and 'Sign in' earlier.</label>
+              <label>We have now set <b>{{rekeyAccount}}</b> as "RegularKey". Only this account will now be able to sign
                 transactions for <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
             </div>
-            <div class="alert alert-warning">
+            <div class="alert alert-warning" fxLayoutGap="0.3em">
               <label>To use your account, copy the following address (via the button) and add it as "Read only"
                 account to your XUMM app:</label>
-              <div *ngIf="selectedVanityAddress">
-                <label (click)="copyAddress(selectedVanityAddress.address)"><b>{{selectedVanityAddress
-                    &&
-                    selectedVanityAddress.address}}</b></label>
-                <button class="btn btn-sm" aria-label="Copy Address"
+              <div *ngIf="selectedVanityAddress" fxLayoutGap="0.3em">
+                <label (click)="copyAddress(selectedVanityAddress.address)"><b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
+                <button class="btn btn-success btn-sm" aria-label="Copy Address"
                   (click)="copyAddress(selectedVanityAddress.address)">
-                  <mat-icon style="font-size: 16px; width: fit-content; height: fit-content; color:inherit;">
-                    content_copy</mat-icon>
+                  <i class="material-icons" style="font-size: 16px; width: fit-content; height: fit-content;">
+                    content_copy</i>
                 </button>
+              </div>
+              <div class="listarea">
+                <ul class="notes">
+                  <li>Copy the above address via the above button</li>
+                  <li>Close the xApp (DON'T DO IT NOW!)</li>
+                  <li>Open "Settings" screen in you XUMM app</li>
+                  <li>Select "Accounts"</li>
+                  <li>Select "Add account"</li>
+                  <li>Select "Import existing account"</li>
+                  <li>Choose "Read only"</li>
+                  <li>Paste your new vanity address</li>
+                  <li>Follow the step to add an account until the end</li>
+                  <li>You can now close this xApp</li>
+                </ul>
               </div>
             </div>
           </div>

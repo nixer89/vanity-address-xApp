@@ -294,7 +294,7 @@ body.vanity {
       padding: 1rem;
       div.subgrid {
         display: grid;
-        grid-template-columns: 6fr 4fr;
+        grid-template-columns: 5fr 5fr;
         align-items: center;
         align-content: space-between;
         // test
@@ -414,10 +414,15 @@ body.vanity {
   .topbar-button-right {
     display: flex;
     justify-content: center;
+    align-items: center;
     width: 100%;
   }
 
   // .mat-horizontal-content-container {
   //   padding: 5px !important;
   // }
+
+  .mat-stepper-horizontal-line {
+    margin: 0px !important;
+  }
 }
