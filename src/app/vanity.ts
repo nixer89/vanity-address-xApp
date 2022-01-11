@@ -151,7 +151,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
           //await this.loadAccountData(ottData.account); //false = ottResponse.node == 'TESTNET'
         } else {
-          //this.issuer_account_info = "no account";
+          this.originalAccountInfo = "no account";
         }
 
         //this.infoLabel = JSON.stringify(this.originalAccountInfo);
