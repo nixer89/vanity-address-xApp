@@ -1,6 +1,6 @@
 {
   "name": "vanity-address-xApp",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "an XUMM xApp to buy XRP Ledger vanity addresses ",
   "scripts": {
     "ng": "ng",
@@ -9,7 +9,7 @@
     "upload": "ng build --configuration production & aws s3 --profile myevride rm s3://vanity.xrpl-address.com/ --recursive & aws s3 --profile myevride cp ./dist/vanity-address-xApp s3://vanity.xrpl-address.com/ --recursive --include '*' --acl public-read --cache-control public,max-age=604800,no-transform",
     "invalidate": "aws cloudfront --profile myevride create-invalidation --distribution-id EYVR6AKZZ1Y2F --paths /*",
     "upload-test": "ng build --configuration production & aws s3 --profile myevride rm s3://vanity-test.xrpl-address.com/ --recursive & aws s3 --profile myevride cp ./dist/vanity-address-xApp s3://vanity-test.xrpl-address.com/ --recursive --include '*' --acl public-read --cache-control public,max-age=604800,no-transform",
-    "invalidate-test": "aws cloudfront --profile myevride create-invalidation --distribution-id E3JH3XZIL5TNDH --paths /*",
+    "invalidate-test": "aws cloudfront --profile myevride create-invalidation --distribution-id E13S3AKDGXHRZZ --paths /*",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

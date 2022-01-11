@@ -112,21 +112,23 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
 
+    this.loadingData = true;
+
     if(this.debugMode) {
-      await this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
+      await this.loadAccountData("raPHaELpTDKtufQwptF9nhfb8qnvefqiMB");
       this.fixAmounts = await this.xummService.getFixAmounts();
 
       let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
       this.xrpAmountFirst = parseInt(response.xrpamount)/1000000;
       
-      this.loadPurchases("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
+      this.loadPurchases("raPHaELpTDKtufQwptF9nhfb8qnvefqiMB");
       this.testMode = true;
       this.loadingData = false;
       return;
     }
 
     this.ottReceived = this.ottChanged.subscribe(async ottData => {
-      this.infoLabel = "ott received: " + JSON.stringify(ottData);
+      //this.infoLabel = "ott received: " + JSON.stringify(ottData);
       //console.log("ottReceived: " + JSON.stringify(ottData));
 
       this.fixAmounts = await this.xummService.getFixAmounts();
@@ -136,14 +138,12 @@ export class VanityComponent implements OnInit, OnDestroy {
 
       if(ottData) {
 
-        this.loadingData = true;
-
-        this.infoLabel = JSON.stringify(ottData);
+        //this.infoLabel = JSON.stringify(ottData);
 
         this.testMode = ottData.nodetype === 'TESTNET';
         //this.isTestMode = true;
 
-        this.infoLabel2 = "changed mode to testnet: " + this.testMode;
+        //this.infoLabel2 = "changed mode to testnet: " + this.testMode;
 
         if(ottData && ottData.account && ottData.accountaccess == 'FULL') {
           this.loadPurchases(ottData.account);
@@ -154,7 +154,7 @@ export class VanityComponent implements OnInit, OnDestroy {
           //this.issuer_account_info = "no account";
         }
 
-        this.infoLabel = JSON.stringify(this.originalAccountInfo);
+        //this.infoLabel = JSON.stringify(this.originalAccountInfo);
 
         this.loadingData = false;
       }
@@ -455,7 +455,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
       this.searchResult = searchResultApi.results;
 
-      this.infoLabel = "search result: " +JSON.stringify(this.searchResult);
+      //this.infoLabel = "search result: " +JSON.stringify(this.searchResult);
     } catch(e) {
       await this.handleError(e);
     }
@@ -480,7 +480,7 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
     **/
 
-    if(this.fixAmounts["*"])
+    if(this.fixAmounts && this.fixAmounts["*"])
       return this.fixAmounts["*"]
     else
       return "--"
@@ -539,9 +539,9 @@ export class VanityComponent implements OnInit, OnDestroy {
 
     if(this.debugMode) {
       this.purchaseStarted = true;
-      setTimeout(() => {
+      setTimeout(async () => {
         this.purchaseSuccess = true;
-        this.loadPurchases(this.originalAccountInfo.Account);
+        await this.loadPurchases(this.originalAccountInfo.Account);
         this.loadingData = false;
       }, 1000);
       return;
@@ -591,7 +591,7 @@ export class VanityComponent implements OnInit, OnDestroy {
         if(txInfo && txInfo.success && txInfo.account) {
           if(isValidXRPAddress(txInfo.account) && txInfo.account == this.originalAccountInfo.Account) {
             this.purchaseSuccess = true;
-            this.loadPurchases(txInfo.account);
+            await this.loadPurchases(txInfo.account);
           } else
             this.purchaseSuccess = false;
         } else {
@@ -768,7 +768,7 @@ export class VanityComponent implements OnInit, OnDestroy {
             this.stepper.selected.editable = false;
             
             clearInterval(this.intervalAccountStatus);
-            this.loadPurchases(xrplAccount);
+            await this.loadPurchases(xrplAccount);
             this.loadingData = false;
           }
         } else {

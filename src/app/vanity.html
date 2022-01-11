@@ -1,4 +1,4 @@
-<div id="topbar">
+<div id="topbar" *ngIf="!stepper" >
   <mat-toolbar color="secondary" fxLayout="row">
     <div fxLayoutAlign="start start" style="width: 50%;">
       <button class="topbar-button-left btn" (click)="openSearchClick()" [ngClass]="{'active' : openSearch}"
@@ -8,7 +8,7 @@
       </button>
     </div>
     <div fxLayoutAlign="end end" style="width: 50%;">
-      <button class="topbar-button-right btn" (click)="openPurchaseClick()" matTooltip="Show Purchases" [disabled]="stepper && stepper.selectedIndex >= 0"
+      <button class="topbar-button-right btn" (click)="openPurchaseClick()" matTooltip="Show Purchases" 
         [ngClass]="{'active' : !openSearch}">
         <i class="material-icons topbar-menu-icon">list</i>
         <label>&nbsp;Show Purchases</label>
@@ -42,20 +42,8 @@
       <label *ngIf="loadingData">Searching addresses</label> -->
   </div>
 
-  <div *ngIf="testMode != null && !testMode">
-    <mat-card class="mat-card-red">
-      You can not choose a XRPL vanity address while being connected to the XRP Ledger {{testMode ? 'TEST' : 'MAIN'}}
-      net.
-      Please connect your XUMM app to the XRP Ledger {{testMode ? 'MAIN' : 'TEST'}} net and open the xApp again.
-
-      <button mat-raised-button class="xumm-grey-background" (click)="close()">Close</button>
-    </mat-card>
-  </div>
-
-
-  <div *ngIf="testMode != null && testMode">
-
-    <div *ngIf="!selectedVanityAddress">
+  <div>
+    <div *ngIf="!selectedVanityAddress && !loadingData">
       <div class="p-3 pb-1">
         <h1 class="sticky mb-0">
           <label>Find yourself a vanity XRPL address </label>
@@ -200,7 +188,7 @@
       <!-- STEP 3 -->
       <mat-step completed="false" editable="false">
         <div class="stepcontainer">
-          <ng-container *ngIf="!loadingData && !purchaseSuccess">
+          <ng-container *ngIf="!purchaseSuccess">
             <h2>Confirm</h2>
             <p>You will have to pay the XRP equivalent of <b>~ {{getPurchaseAmountUSD()}} USD</b> to buy your vanity
               address</p>
@@ -326,7 +314,7 @@
             <div *ngIf="rekeyAccount != originalAccountInfo.Account" class="alert alert-danger">
               <label>You have sent the activation payment with a different account than the one you used for the
                 payment and 'Sign in' earlier.</label>
-              <label>We have now set <b>{{rekeyAccount}}</b> as "RegularKey". Only this account will now be able to sign
+              <label>We have now set <b>{{rekeyAccount}}</b> as "RegularKey". ONLY this account will be able to sign
                 transactions for <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
             </div>
             <div class="alert alert-warning" fxLayoutGap="0.3em">
@@ -380,7 +368,7 @@
 
 <div *ngIf="!openSearch">
 
-  <div *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )">
+  <div *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )" style="padding: 0.25rem">
     <label>No purchases found.</label>
   </div>
   <div class="purchases" *ngIf="!loadingPurchases && purchasedAddresses && purchasedAddresses.length > 0">
