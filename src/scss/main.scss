@@ -59,6 +59,8 @@ $theme-colors: map-merge(map-merge($theme-colors, $custom-xumm-colors), $custom-
 // import all
 @import '../../node_modules/bootstrap/scss/bootstrap';
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css');
+// XUMM Font - Proxima Nova
+@import url('https://use.typekit.net/iqo4nny.css');
 
 body {
   font-family: 'Proxima Nova', sans-serif;
@@ -141,7 +143,7 @@ input.ng-valid {
 }
 
 .mat-step-icon.mat-step-icon-state-number {
-  background-color:  $secondary !important;
+  background-color: $secondary !important;
   font-weight: bold;
 }
 
@@ -179,7 +181,7 @@ input.ng-valid {
 }
 
 li {
-  color: $orange
+  color: $orange;
 }
 
 .description {
