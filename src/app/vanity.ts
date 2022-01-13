@@ -358,6 +358,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       let account_info_request:any = {
         command: "account_info",
         account: xrplAccount,
+        signer_lists: true,
         "strict": true,
       }
 
@@ -376,6 +377,10 @@ export class VanityComponent implements OnInit, OnDestroy {
     } else {
       this.originalAccountInfo = "no account"
     }
+  }
+
+  hasSignerList(): Boolean {
+    return this.originalAccountInfo.signer_lists && this.originalAccountInfo.signer_lists.length > 0;
   }
 
   async signToConfirm() {
@@ -571,7 +576,8 @@ export class VanityComponent implements OnInit, OnDestroy {
           blob: {
             vanityAddress: this.selectedVanityAddress,
             isPurchase: true,
-            vanityLength: vanityLength+""
+            vanityLength: vanityLength+"",
+            regularKey: this.originalAccountInfo.Account
           }
         }
       }
@@ -698,36 +704,33 @@ export class VanityComponent implements OnInit, OnDestroy {
       let message:any = await this.waitForTransactionSigning(genericBackendRequest);
 
       if(message && message.payload_uuidv4) {
-
-        this.intervalAccountStatus = setInterval(() => this.checkVanityAccountStatus(this.selectedVanityAddress.address), 1000);
-
         this.activationStarted = true;
 
         let txInfo = await this.xummService.validatePayment(message.payload_uuidv4);
-
-        this.errorTimeout = setTimeout(() => {
-          //something went wrong!
-          if(!this.accountActivated || !this.accountRekeyed || !this.accountMasterKeyDisabled) {
-            this.errorActivation = true;
-            clearInterval(this.intervalAccountStatus);
-            this.loadPurchases(txInfo.account);
-            this.loadingData = false;
-          }
-        }, 30000)
-          //console.log('The generic dialog was closed: ' + JSON.stringify(info));
+        //console.log('The generic dialog was closed: ' + JSON.stringify(info));
 
         //if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) {
         if(txInfo && txInfo.success && txInfo.account) {
-          if(isValidXRPAddress(txInfo.account) && txInfo.account == this.originalAccountInfo.Account)
+          if(isValidXRPAddress(txInfo.account) && txInfo.account == this.originalAccountInfo.Account) {
             this.activationAmountSent = true;
-          else {
+
+            //start interval timer to check account status
+            this.intervalAccountStatus = setInterval(() => this.checkVanityAccountStatus(this.selectedVanityAddress.address), 1000);
+
+            this.errorTimeout = setTimeout(() => {
+              //something went wrong!
+              if(!this.accountActivated || !this.accountRekeyed || !this.accountMasterKeyDisabled) {
+                this.errorActivation = true;
+                clearInterval(this.intervalAccountStatus);
+                this.loadingData = false;
+              }
+            }, 30000)
+          } else {
             this.activationAmountSent = false;
-            clearTimeout(this.errorTimeout);
             this.loadingData = false;
           }
         } else {
           this.activationAmountSent = false;
-          clearTimeout(this.errorTimeout);
           this.loadingData = false;
         }
       }
@@ -768,7 +771,8 @@ export class VanityComponent implements OnInit, OnDestroy {
             this.stepper.selected.editable = false;
             
             clearInterval(this.intervalAccountStatus);
-            await this.loadPurchases(xrplAccount);
+            clearTimeout(this.errorTimeout);
+
             this.loadingData = false;
           }
         } else {

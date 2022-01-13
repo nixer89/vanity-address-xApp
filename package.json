@@ -1,6 +1,6 @@
 {
   "name": "vanity-address-xApp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "an XUMM xApp to buy XRP Ledger vanity addresses ",
   "scripts": {
     "ng": "ng",
