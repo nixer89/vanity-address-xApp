@@ -240,6 +240,20 @@ body.vanity {
     font-family: 'Proxima Nova', sans-serif;
     margin: 0;
     height: 100vh;
+    margin-top: 8px;
+    //disable header navigation
+    .mat-horizontal-stepper-header {
+      pointer-events: none !important;
+      min-width: 25px !important;
+      padding-left: 10px !important;
+      padding-right: 10px !important;
+    }
+    //put connector lines in correct position
+    .mat-stepper-horizontal-line {
+      width: 100%;
+      margin-left: 1px;
+      margin-right: 1px;
+    }
     .mat-horizontal-stepper-header-container {
       height: 4rem;
       box-shadow: 0px 6px 10px darken($primary, 3%);
@@ -432,13 +446,5 @@ body.vanity {
   //   padding: 5px !important;
   // }
 
-  //put connector lines in correct position
-  .mat-stepper-horizontal-line {
-    margin: 0px !important;
-  }
 
-  //disable header navigation
-  .mat-horizontal-stepper-header {
-    pointer-events: none !important;
-  }
 }

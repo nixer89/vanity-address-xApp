@@ -86,6 +86,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   checkBoxAccess:boolean = false;
   checkBoxSignAccFull:boolean = false;
   checkBoxVanityAccReadOnly:boolean = false;
+  checkBoxVanityAccAccess:boolean = false;
 
   informationConfirmed:boolean = false;
 
@@ -115,13 +116,13 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.loadingData = true;
 
     if(this.debugMode) {
-      await this.loadAccountData("raPHaELpTDKtufQwptF9nhfb8qnvefqiMB");
+      await this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
       this.fixAmounts = await this.xummService.getFixAmounts();
 
       let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
       this.xrpAmountFirst = parseInt(response.xrpamount)/1000000;
       
-      this.loadPurchases("raPHaELpTDKtufQwptF9nhfb8qnvefqiMB");
+      this.loadPurchases("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
       this.testMode = true;
       this.loadingData = false;
       return;
@@ -410,7 +411,8 @@ export class VanityComponent implements OnInit, OnDestroy {
             TransactionType: "SignIn"
           },
           custom_meta: {
-            instruction: "Please confirm that you have understood the previous information and that you want to purchase the XRPL account " + this.selectedVanityAddress.address
+            instruction: "Please confirm that you understand that your new vanity address:\n\n- will cost " + this.getPurchaseAmountUSD() + "USD\n- needs activation with 10 XRP\n- is only accessible with " + this.originalAccountInfo.Account + "\n" +
+                          "- if access to " + this.originalAccountInfo.Account + " is lost, " + this.selectedVanityAddress.address + " will be inaccessible too"
           }
       }
     }
@@ -637,6 +639,48 @@ export class VanityComponent implements OnInit, OnDestroy {
           console.log("navigating...")
           this.loadingCheckForPurchaseActivation = false;
           //silly and dirty, but it does what I need!
+          this.moveNext();
+          this.moveNext();
+          this.moveNext();
+          this.loadingData = false;
+        }, 500);
+      } else {
+        this.snackBar.open("Payment checked failed!", null, {panelClass: 'snackbar-failed', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
+        this.loadingCheckForPurchaseActivation = false;
+      }
+    } catch(err) {
+
+    }
+  }
+
+  async openImportGuide(account: PurchasedVanityAddresses) {
+    this.loadingCheckForPurchaseActivation = true;
+    try {
+      this.selectedVanityAddress = {
+        address: account.vanityAddress,
+        identifier: account.identifier
+      }
+
+      //check purchase!
+      let paymentCheckResult = await this.xummService.validatePayment(account.buyPayloadId);
+
+      //check successfull
+      if(paymentCheckResult.account === account.buyerAccount && paymentCheckResult.account === this.originalAccountInfo?.Account && this.testMode === paymentCheckResult.testnet) {
+        this.snackBar.open("Payment checked successfully!", null, {panelClass: 'snackbar-success', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
+
+        this.informationConfirmed = true;
+        this.purchaseStarted = true;
+        this.purchaseSuccess = true;
+        this.activationStarted = this.accountActivated = this.accountRekeyed = this.accountMasterKeyDisabled = true;
+
+        this.openSearch = true;
+        this.loadingData = true;
+
+        setTimeout(() => {
+          console.log("navigating...")
+          this.loadingCheckForPurchaseActivation = false;
+          //silly and dirty, but it does what I need!
+          this.moveNext();
           this.moveNext();
           this.moveNext();
           this.moveNext();
