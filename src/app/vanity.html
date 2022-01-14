@@ -1,4 +1,4 @@
-<div id="topbar" *ngIf="!stepper">
+<div id="topbar" *ngIf="!stepper && fullAccessAccount">
   <mat-toolbar color="secondary" fxLayout="row">
     <div fxLayoutAlign="start start" style="width: 50%;">
       <button class="topbar-button-left btn" (click)="openSearchClick()" [ngClass]="{'active' : openSearch}"
@@ -17,7 +17,7 @@
   </mat-toolbar>
 </div>
 
-<mat-card class="mat-card-red" *ngIf="errorLabel">
+<div class="alert alert-danger" *ngIf="errorLabel">
   <label>Sorry that this error happened! Please copy the following error and send it to @XummSupport on twitter or
     visit https://support.xumm.app . Thank you for your help!</label>
   <label>&nbsp;</label>
@@ -25,13 +25,19 @@
   <button mat-button class="xumm-grey-background" aria-label="Copy Error" (click)="copyError()">
     Copy&nbsp;<mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
   </button>
-</mat-card>
+</div>
 
 <!--label class="break-words" *ngIf="infoLabel" style="color: red">{{infoLabel}}</label><br><br>
   <label class="break-words" *ngIf="infoLabel2" style="color: red">{{infoLabel2}}</label>
   <label class="break-words" *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label-->
 
-<div *ngIf="openSearch">
+<div *ngIf="!fullAccessAccount" class="alert alert-danger m-3 text-center" fxLayout="column" fxLayoutGap="0.5em">
+  <label>The account you opened this xApp with is not imported as "Full Access" in your XUMM app.</label>
+  <br>
+  <label>Please close this xApp, change the account in the 'Home' screen and open the xApp again.</label>
+</div>
+
+<div *ngIf="openSearch && fullAccessAccount">
 
   <div *ngIf="loadingCheckForPurchaseActivation || loadingData || loadingPurchases || !originalAccountInfo"
     class="loader">
@@ -154,7 +160,7 @@
             Back
           </button>
 
-          <button class="btn btn-sm btn-success" (click)="moveNext(true)"
+          <button class="btn btn-sm btn-success" (click)="moveNext()"
             [disabled]="!originalAccountInfo || !originalAccountInfo.Account || balanceTooLow || hasSignerList() || originalAccountInfo.RegularKey || loadingData">Next</button>
         </footer>
 
@@ -261,7 +267,7 @@
         <div class="stepcontainer">
           <h2>Account ownership</h2>
           <p *ngIf="!accountActivated || !accountRekeyed || !accountMasterKeyDisabled">
-            In order to use your new address, it has to hold at least <b>10 XRP</b>. This is a requirement by the XRP
+            In order to use your new address, it has to hold at least <b>{{accountReserve}} XRP</b>. This is a requirement by the XRP
             Ledger. After you have activated your new account, we will change the porperties of that account that only
             YOU will have access to it!
           </p>
@@ -398,7 +404,7 @@
   </div>
 </div>
 
-<div *ngIf="!openSearch">
+<div *ngIf="!openSearch && fullAccessAccount">
 
   <div class="purchases p-2 pt-4">
     <div class="alert alert-info" *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )">

@@ -102,6 +102,8 @@ export class VanityComponent implements OnInit, OnDestroy {
   purchasedAddresses:PurchasedVanityAddresses[] = null;
   loadingPurchases:boolean = false;
 
+  fullAccessAccount:boolean = true;
+
   loadingCheckForPurchaseActivation:boolean = false;
 
   debugMode:boolean = !environment.production;
@@ -122,8 +124,9 @@ export class VanityComponent implements OnInit, OnDestroy {
       let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
       this.xrpAmountFirst = parseInt(response.xrpamount)/1000000;
       
-      this.loadPurchases("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
+      this.loadPurchases();
       this.testMode = true;
+
       this.loadingData = false;
       return;
     }
@@ -147,11 +150,14 @@ export class VanityComponent implements OnInit, OnDestroy {
         //this.infoLabel2 = "changed mode to testnet: " + this.testMode;
 
         if(ottData && ottData.account && ottData.accountaccess == 'FULL') {
-          this.loadPurchases(ottData.account);
           await this.loadAccountData(ottData.account);
+          await this.loadPurchases();
+
+          this.fullAccessAccount = true;
 
           //await this.loadAccountData(ottData.account); //false = ottResponse.node == 'TESTNET'
         } else {
+          this.fullAccessAccount = false;
           this.originalAccountInfo = "no account";
         }
 
@@ -217,11 +223,14 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.openSearch = false;
   }
 
-  async loadPurchases(account:string) {
+  async loadPurchases() {
     try {
       this.loadingPurchases = true;
-      this.purchasedAddresses = await this.xummService.getPurchases(account);
+
+      if(this.originalAccountInfo && this.originalAccountInfo.Account && isValidXRPAddress(this.originalAccountInfo.Account))
+        this.purchasedAddresses = await this.xummService.getPurchases(this.originalAccountInfo.Account);
       //console.log(JSON.stringify(this.purchasedAddresses));
+
       this.loadingPurchases = false;
     } catch (err) {
       console.log(err);
@@ -389,7 +398,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
     if(this.debugMode) {
       this.informationConfirmed = true;
-      this.snackBar.open("Information confirmed!", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
+      this.snackBar.open("Information confirmed with a very very long text which is too long!", null, {panelClass: 'snackbar-success', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
       this.loadingData = false;
       return;
     }
@@ -505,18 +514,48 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
   }
 
-  async selectVanityAddress(account:VanitySearchResult) {
-    this.selectedVanityAddress = account;
+  async selectVanityAddress(selectedAddress:VanitySearchResult) {
     try {
+
       this.loadingData = true;
+      //check vanity address existence     
+
+      let account_info_request:any = {
+        command: "account_info",
+        account: selectedAddress.address,
+        "strict": true,
+      }
+
+      let message_acc_info:any = await this.xrplWebSocket.getWebsocketMessage("loadAccount", account_info_request, this.testMode);
+      console.log("xrpl-transactions account info: " + JSON.stringify(message_acc_info));
+      //this.infoLabel = JSON.stringify(message_acc_info);
+      if(message_acc_info && message_acc_info.status && message_acc_info.type && message_acc_info.type === 'response') {
+        if(message_acc_info.status === 'success' && message_acc_info.result?.account_data?.Account && isValidXRPAddress(message_acc_info.result.account_data.Account)) {
+          //address exists already, stop here!
+          this.selectedVanityAddress = null;
+          
+          //reduce search result by already activated address
+          this.searchResult = this.searchResult.filter(vanity => vanity.address != selectedAddress.address);
+
+          this.snackBar.open("Address is not available! Please choose a different address.", null, {panelClass: 'snackbar-failed', duration: 8000, horizontalPosition: 'center', verticalPosition: 'top'});
+          this.loadingData = false;
+          return;
+        }
+      }
+
+      await this.xummService.reserveVanityAddress(selectedAddress.address, selectedAddress.identifier, this.testMode);
+
       let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
-      this.amountXrpNeeded = parseInt(response.xrpamount) + this.ownerReserve + 10000000;
+      this.amountXrpNeeded = parseInt(response.xrpamount) + this.accountReserve + 100000; //add 100000 as "buffer"
 
       this.balanceTooLow = this.getAvailableBalance(this.originalAccountInfo) < this.amountXrpNeeded;
 
-      console.log("balance: " + this.getAvailableBalance(this.originalAccountInfo));
-      console.log("xrp amount needed: " + this.amountXrpNeeded);
+      this.selectedVanityAddress = selectedAddress;
+
+      //console.log("balance: " + this.getAvailableBalance(this.originalAccountInfo));
+      //console.log("xrp amount needed: " + this.amountXrpNeeded);
       this.loadingData = false;
+
     } catch(err) {
       console.log(err);
       this.loadingData = false;
@@ -548,7 +587,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.purchaseStarted = true;
       setTimeout(async () => {
         this.purchaseSuccess = true;
-        await this.loadPurchases(this.originalAccountInfo.Account);
+        await this.loadPurchases();
         this.loadingData = false;
       }, 1000);
       return;
@@ -916,10 +955,7 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
   }
 
-  moveNext(reserveAddress?:boolean) {
-
-    if(reserveAddress)
-      this.xummService.reserveVanityAddress(this.selectedVanityAddress.address, this.selectedVanityAddress.identifier, this.testMode);
+  moveNext() {
     // complete the current step
     this.stepper.selected.completed = true;
     this.stepper.selected.editable = false;
