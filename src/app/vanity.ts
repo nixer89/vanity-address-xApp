@@ -363,7 +363,7 @@ export class VanityComponent implements OnInit, OnDestroy {
         "strict": true,
       }
 
-      let message_acc_info:any = await this.xrplWebSocket.getWebsocketMessage("xrpl-transactions", account_info_request, this.testMode);
+      let message_acc_info:any = await this.xrplWebSocket.getWebsocketMessage("loadAccount", account_info_request, this.testMode);
       console.log("xrpl-transactions account info: " + JSON.stringify(message_acc_info));
       //this.infoLabel = JSON.stringify(message_acc_info);
       if(message_acc_info && message_acc_info.status && message_acc_info.type && message_acc_info.type === 'response') {
@@ -596,10 +596,9 @@ export class VanityComponent implements OnInit, OnDestroy {
           //console.log('The generic dialog was closed: ' + JSON.stringify(info));
 
         //if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) { <-------- ######## USE THIS IN PROD. CHECK THAT PAYMENT WAS ON MAIN NET!!
-        if(txInfo && txInfo.success && txInfo.account) {
-          if(isValidXRPAddress(txInfo.account) && txInfo.account == this.originalAccountInfo.Account) {
+        if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == this.testMode) {
+          if(isValidXRPAddress(txInfo.account)) {
             this.purchaseSuccess = true;
-            await this.loadPurchases(txInfo.account);
           } else
             this.purchaseSuccess = false;
         } else {
@@ -754,8 +753,8 @@ export class VanityComponent implements OnInit, OnDestroy {
         //console.log('The generic dialog was closed: ' + JSON.stringify(info));
 
         //if(txInfo && txInfo.success && txInfo.account && txInfo.testnet == false) {
-        if(txInfo && txInfo.success && txInfo.account) {
-          if(isValidXRPAddress(txInfo.account) && txInfo.account == this.originalAccountInfo.Account) {
+        if(txInfo && txInfo.success && txInfo.account && txInfo.testnet === this.testMode) {
+          if(isValidXRPAddress(txInfo.account)) {
             this.activationAmountSent = true;
 
             //start interval timer to check account status
