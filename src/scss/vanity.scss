@@ -240,7 +240,7 @@ body.vanity {
     font-family: 'Proxima Nova', sans-serif;
     margin: 0;
     height: 100vh;
-    margin-top: 8px;
+    // margin-top: 8px;
     //disable header navigation
     .mat-horizontal-stepper-header {
       pointer-events: none !important;
@@ -445,6 +445,4 @@ body.vanity {
   // .mat-horizontal-content-container {
   //   padding: 5px !important;
   // }
-
-
 }
