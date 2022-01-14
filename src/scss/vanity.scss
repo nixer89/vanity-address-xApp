@@ -86,7 +86,7 @@ body.vanity {
   }
 
   .btn {
-    padding: 0.15rem 1.5rem;
+    padding: 0.15rem 1rem;
     color: white;
   }
   .alert {
@@ -113,7 +113,7 @@ body.vanity {
 
   .btn.icon-button {
     display: flex;
-    padding: 0.3rem 1.0rem;
+    padding: 0.3rem 1rem;
   }
 
   form {
@@ -239,6 +239,7 @@ body.vanity {
     // grid-template-rows: 4rem auto;
     font-family: 'Proxima Nova', sans-serif;
     margin: 0;
+    height: 100vh;
     .mat-horizontal-stepper-header-container {
       height: 4rem;
       box-shadow: 0px 6px 10px darken($primary, 3%);
@@ -257,24 +258,29 @@ body.vanity {
     .mat-horizontal-content-container {
       padding: 0;
       .mat-horizontal-stepper-content[aria-expanded='true'] {
-        height: calc(100vh - 3rem - 4rem);
+        // height: calc(100vh - 3rem - 4rem);
+        height: calc(100vh - 4rem);
         display: grid;
         grid-template-rows: auto 4.5rem;
         overflow: scroll;
-        padding: 0rem 1rem;
 
         h2 {
           margin-top: 1rem;
         }
-
+        .stepcontainer {
+          padding: 0rem 1rem;
+          overflow: scroll;
+          display: block;
+        }
         footer.nextback {
           display: grid;
-          grid-template-columns: auto auto;
+          grid-template-columns: 1fr 1fr;
           grid-column-gap: 1rem;
           // border-top: 1px solid red;
-          padding: 0.5rem 0 1rem 0;
+          padding: 0.5rem;
           // padding: 1rem 0rem;
           // min-height: 5rem;
+          height: 4.5rem;
           .btn {
             width: 100%;
             font-size: 1.2rem;
@@ -324,7 +330,6 @@ body.vanity {
   }
   .btn.signbutton {
     width: 100%;
-    padding: 0.75rem 1.5rem !important;
     color: $primary !important;
     border-radius: 1rem !important;
     background: #fff;
@@ -433,7 +438,7 @@ body.vanity {
   }
 
   //disable header navigation
-  .mat-horizontal-stepper-header{
+  .mat-horizontal-stepper-header {
     pointer-events: none !important;
   }
 }

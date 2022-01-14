@@ -1,4 +1,4 @@
-<div id="topbar" *ngIf="!stepper" >
+<div id="topbar" *ngIf="!stepper">
   <mat-toolbar color="secondary" fxLayout="row">
     <div fxLayoutAlign="start start" style="width: 50%;">
       <button class="topbar-button-left btn" (click)="openSearchClick()" [ngClass]="{'active' : openSearch}"
@@ -8,7 +8,7 @@
       </button>
     </div>
     <div fxLayoutAlign="end end" style="width: 50%;">
-      <button class="topbar-button-right btn" (click)="openPurchaseClick()" matTooltip="Show Purchases" 
+      <button class="topbar-button-right btn" (click)="openPurchaseClick()" matTooltip="Show Purchases"
         [ngClass]="{'active' : !openSearch}">
         <i class="material-icons topbar-menu-icon">list</i>
         <label>&nbsp;Show Purchases</label>
@@ -33,8 +33,7 @@
 
 <div *ngIf="openSearch">
 
-  <div
-    *ngIf="loadingCheckForPurchaseActivation || loadingData || loadingPurchases || !originalAccountInfo"
+  <div *ngIf="loadingCheckForPurchaseActivation || loadingData || loadingPurchases || !originalAccountInfo"
     class="loader">
     <div class="spinner-border" role="status"></div>
     <label>Loading</label>
@@ -60,7 +59,8 @@
           </div>
           <button class="btn btn-lg btn-primarylight search" (click)="searchVanityAddress()"
             [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 3 || !vanityWordValid">Search</button>
-          <mat-hint *ngIf="vanityWordInput && vanityWordInput.length > 0 && !vanityWordValid" style="color: #ff5b5b">Invalid characters detected. Please check your input</mat-hint>
+          <mat-hint *ngIf="vanityWordInput && vanityWordInput.length > 0 && !vanityWordValid" style="color: #ff5b5b">
+            Invalid characters detected. Please check your input</mat-hint>
           <ul class="notes">
             <li>XRPL addresses always start with the letter r</li>
             <li>Min. 3 and Max. 8 characters supported</li>
@@ -98,64 +98,66 @@
 
       <!-- STEP 1 -->
       <mat-step completed="false" editable="false">
-        <ng-container>
-          <div class="stepcontainer">
-            <ng-container *ngIf="originalAccountInfo">
-              <h2>Payment account</h2>
-              <ng-container *ngIf="originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account)">
-                <label>Selected account:</label>
-                <code class="address"
-                  *ngIf="originalAccountInfo && originalAccountInfo.Account"><b>{{originalAccountInfo.Account}}</b></code>
-                <!-- TODO: we need this? -->
-                <code class="address"
-                  *ngIf="originalAccountInfo && originalAccountInfo.account">{{originalAccountInfo.account}}</code>
-              </ng-container>
-
-              <button class="btn btn-sm btn-primarylight changeaccount" (click)="signIn()"
-                [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account ||
-                originalAccountInfo.account) ? 'Change account' : 'Sign In' }}</button>
-              <hr>
-              <div class="alert alert-warning">
-                <p>Please choose the account which will be able to sign transactions for your new vanity address.</p>
-                This account also needs to be used to activate the vanity address with <b>10 XRP</b> and purchase 
-                your vanity address (<b>{{getPurchaseAmountUSD()}} USD in XRP</b>)
-              </div>
-
+        <div class="stepcontainer">
+          <ng-container *ngIf="originalAccountInfo">
+            <h2>Payment account</h2>
+            <ng-container *ngIf="originalAccountInfo && (originalAccountInfo.Account || originalAccountInfo.account)">
+              <label>Selected account:</label>
+              <code class="address"
+                *ngIf="originalAccountInfo && originalAccountInfo.Account"><b>{{originalAccountInfo.Account}}</b></code>
+              <!-- TODO: we need this? -->
+              <code class="address"
+                *ngIf="originalAccountInfo && originalAccountInfo.account">{{originalAccountInfo.account}}</code>
             </ng-container>
 
-            <mat-card
-              *ngIf="originalAccountInfo && originalAccountInfo.error && originalAccountInfo.error == 'actNotFound' && !loadingData"
-              class="mat-card-red">
-              <label>Account not activated on {{testMode ? 'Testnet' : 'Mainnet'}}.</label>
-              <label>Please select an activated account.</label>
-            </mat-card>
+            <button class="btn btn-sm btn-primarylight changeaccount" (click)="signIn()"
+              [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account ||
+              originalAccountInfo.account) ? 'Change account' : 'Sign In' }}</button>
+            <hr>
+            <div class="alert alert-warning">
+              <p>Please choose the account which will be able to sign transactions for your new vanity address.</p>
+              This account also needs to be used to activate the vanity address with <b>10 XRP</b> and purchase
+              your vanity address (<b>{{getPurchaseAmountUSD()}} USD in XRP</b>)
+            </div>
 
-            <mat-card *ngIf="originalAccountInfo && originalAccountInfo.Account && balanceTooLow && !loadingData" class="mat-card-red">
-              <label>The balance of this account is too low!</label>
-              <label>You should have at least {{(amountXrpNeeded/1000000)}} XRP in your account!</label>
-            </mat-card>
+          </ng-container>
 
-            <mat-card *ngIf="originalAccountInfo && originalAccountInfo.RegularKey && !loadingData" class="mat-card-red">
-              <label>The selected account has a RegularKey set!</label>
-              <label>You can not use this account as "RegularKey" for your vanity address. Please choose a different account.</label>
-            </mat-card>
-
-            <mat-card *ngIf="originalAccountInfo && hasSignerList() && !loadingData" class="mat-card-red">
-              <label>The selected account has a SignerList set!</label>
-              <label>You can not use this account as "RegularKey" for your vanity address. Please choose a different account.</label>
-            </mat-card>
+          <div
+            *ngIf="originalAccountInfo && originalAccountInfo.error && originalAccountInfo.error == 'actNotFound' && !loadingData"
+            class="alert alert-danger">
+            <label>Account not activated on {{testMode ? 'Testnet' : 'Mainnet'}}.</label>
+            <label>Please select an activated account.</label>
           </div>
 
-          <footer class="nextback">
-            <button class="btn btn-sm btn-primarylight" (click)="selectedVanityAddress = null;"
-              [disabled]="!originalAccountInfo || loadingData">
-              Back
-            </button>
+          <div *ngIf="originalAccountInfo && originalAccountInfo.Account && balanceTooLow && !loadingData"
+            class="alert alert-danger">
+            <label>The balance of this account is too low!</label>
+            <label>You should have at least {{(amountXrpNeeded/1000000)}} XRP in your account!</label>
+          </div>
 
-            <button class="btn btn-sm btn-success" (click)="moveNext(true)"
-              [disabled]="!originalAccountInfo || !originalAccountInfo.Account || balanceTooLow || hasSignerList() || originalAccountInfo.RegularKey || loadingData">Next</button>
-          </footer>
-        </ng-container>
+          <div *ngIf="originalAccountInfo && originalAccountInfo.RegularKey && !loadingData" class="alert alert-danger">
+            <label>The selected account has a RegularKey set!</label>
+            <label>You can not use this account as "RegularKey" for your vanity address. Please choose a different
+              account.</label>
+          </div>
+
+          <div *ngIf="originalAccountInfo && hasSignerList() && !loadingData" class="alert alert-danger">
+            <label>The selected account has a SignerList set!</label>
+            <label>You can not use this account as "RegularKey" for your vanity address. Please choose a different
+              account.</label>
+          </div>
+        </div>
+
+        <footer class="nextback">
+          <button class="btn btn-sm btn-primarylight" (click)="selectedVanityAddress = null;"
+            [disabled]="!originalAccountInfo || loadingData">
+            Back
+          </button>
+
+          <button class="btn btn-sm btn-success" (click)="moveNext(true)"
+            [disabled]="!originalAccountInfo || !originalAccountInfo.Account || balanceTooLow || hasSignerList() || originalAccountInfo.RegularKey || loadingData">Next</button>
+        </footer>
+
       </mat-step>
 
       <!-- STEP 2 -->
@@ -177,7 +179,7 @@
           <mat-checkbox [(ngModel)]="checkBoxVanityAccReadOnly" (change)="informationConfirmed = false;"
             [ngClass]="(checkBoxVanityAccReadOnly ? 'active': '')">Your new Vanity account <b>{{selectedVanityAddress &&
               selectedVanityAddress.address}}</b> needs to be imported as "Read only" in the XUMM app! Your account
-              {{originalAccountInfo && originalAccountInfo.Account}} will be able to sign transactions for it.
+            {{originalAccountInfo && originalAccountInfo.Account}} will be able to sign transactions for it.
           </mat-checkbox>
 
           <div *ngIf="!informationConfirmed" class="alert alert-info">
@@ -187,8 +189,8 @@
         </div>
         <footer class="nextback">
           <button class="btn btn-sm btn-primarylight" (click)="moveBack();" [disabled]="loadingData">Back</button>
-          <button class="btn btn-sm btn-success" (click)="moveNext()"
-            *ngIf="informationConfirmed" [disabled]="loadingData">Next</button>
+          <button class="btn btn-sm btn-success" (click)="moveNext()" *ngIf="informationConfirmed"
+            [disabled]="loadingData">Next</button>
           <button class="btn btn-lg btn-secondary signbutton" (click)="signToConfirm()"
             *ngIf="!checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || !informationConfirmed"
             [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || informationConfirmed">
@@ -248,68 +250,71 @@
       <!-- STEP 4 -->
       <mat-step completed="false" editable="false">
         <div class="stepcontainer">
-          <h2>Account ownership</h2>
-          <p *ngIf="!accountActivated || !accountRekeyed || !!accountMasterKeyDisabled">
-            In order to use your new address, it has to hold at least <b>10 XRP</b>. This is a requirement by the XRP
-            Ledger. After you have activated your new account, we will change the porperties of that account that only
-            YOU will have access to it!
-          </p>
-
-          <h3>1. Account activated</h3>
-          <div *ngIf="accountActivated else accountActivatedMsg">
-            <div class="alert alert-success">
-              <i class="material-icons xumm-green" style="font-size: 1.5em; vertical-align: middle;">
-                check_circle
-              </i> This account has been activated.
-            </div>
-            <code class="address">{{selectedVanityAddress && selectedVanityAddress.address}}</code>
-          </div>
-          <ng-template #accountActivatedMsg>
-            <button *ngIf="!accountActivated && !loadingData" class="btn btn-lg btn-success w-100 pt-2 pb-2"
-              (click)="activateVanityAddress()" [disabled]="loadingData">Activate vanity address</button>
-          </ng-template>
-
-          <hr>
-
-          <h3>2. Account access</h3>
-          <div *ngIf="accountActivated && accountRekeyed else accountAccess">
-            <div class="alert alert-success">
-              <i class="material-icons xumm-green" style="font-size: 1.5em; vertical-align: middle;">
-                check_circle
-              </i>
-              Your account <small>({{originalAccountInfo && originalAccountInfo.Account}})</small> can now sign transactions for
-            </div>
-            <code class="address">{{selectedVanityAddress && selectedVanityAddress.address}}</code>
-            <p>
-              That means YOU have access to the account now.
+          <div *ngIf="!accountActivated && !accountRekeyed && !accountMasterKeyDisabled">
+            <h2>Account ownership</h2>
+            <p *ngIf="!accountActivated || !accountRekeyed || !!accountMasterKeyDisabled">
+              In order to use your new address, it has to hold at least <b>10 XRP</b>. This is a requirement by the XRP
+              Ledger. After you have activated your new account, we will change the porperties of that account that only
+              YOU will have access to it!
             </p>
-          </div>
-          <ng-template #accountAccess>
-            <div class="alert alert-info">
-              Waiting for activation...
-            </div>
-          </ng-template>
 
-          <hr>
+            <h3>1. Account activated</h3>
+            <div *ngIf="accountActivated else accountActivatedMsg">
+              <div class="alert alert-success">
+                <i class="material-icons xumm-green" style="font-size: 1.5em; vertical-align: middle;">
+                  check_circle
+                </i> This account has been activated.
+              </div>
+              <code class="address">{{selectedVanityAddress && selectedVanityAddress.address}}</code>
+            </div>
+            <ng-template #accountActivatedMsg>
+              <button *ngIf="!accountActivated && !loadingData" class="btn btn-lg btn-success w-100 pt-2 pb-2"
+                (click)="activateVanityAddress()" [disabled]="loadingData">Activate vanity address</button>
+            </ng-template>
 
-          <h3>3. Disabling master key</h3>
-          <div *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled else accountMasterKeyDisabled">
-            <div class="alert alert-success">
-              <i class="material-icons xumm-green" style="font-size: 1.5em; vertical-align: middle;">
-                check_circle
-              </i>
-              The master key for the vanity account is disabled.
+            <hr>
+
+            <h3>2. Account access</h3>
+            <div *ngIf="accountActivated && accountRekeyed else accountAccess">
+              <div class="alert alert-success">
+                <i class="material-icons xumm-green" style="font-size: 1.5em; vertical-align: middle;">
+                  check_circle
+                </i>
+                Your account <small>({{originalAccountInfo && originalAccountInfo.Account}})</small> can now sign
+                transactions for
+              </div>
+              <code class="address">{{selectedVanityAddress && selectedVanityAddress.address}}</code>
+              <p>
+                That means YOU have access to the account now.
+              </p>
             </div>
-            <code class="address">{{selectedVanityAddress && selectedVanityAddress.address}}</code>
-            <p>
-              That means <b>WE</b> can not access this account anymore. <b>It is fully yours now, enjoy!</b>
-            </p>
+            <ng-template #accountAccess>
+              <div class="alert alert-info">
+                Waiting for activation...
+              </div>
+            </ng-template>
+
+            <hr>
+
+            <h3>3. Disabling master key</h3>
+            <div *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled else accountMasterKeyDisabled">
+              <div class="alert alert-success">
+                <i class="material-icons xumm-green" style="font-size: 1.5em; vertical-align: middle;">
+                  check_circle
+                </i>
+                The master key for the vanity account is disabled.
+              </div>
+              <code class="address">{{selectedVanityAddress && selectedVanityAddress.address}}</code>
+              <p>
+                That means <b>WE</b> can not access this account anymore. <b>It is fully yours now, enjoy!</b>
+              </p>
+            </div>
+            <ng-template #accountMasterKeyDisabled>
+              <div class="alert alert-info">
+                Waiting for account access...
+              </div>
+            </ng-template>
           </div>
-          <ng-template #accountMasterKeyDisabled>
-            <div class="alert alert-info">
-              Waiting for account access...
-            </div>
-          </ng-template>
 
           <!-- <div *ngIf="loadingData" class="inlineloader">
             <label *ngIf="!accountActivated">Waiting for account activation...</label>
@@ -321,38 +326,38 @@
           </div> -->
 
 
-          <div *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" fxLayoutGap="0.3em">
-            <div class="alert alert-warning" fxLayoutGap="0.3em">
-              <label>To use your account, copy the following address (via the button) and add it as "Read only"
-                account to your XUMM app. The guide below explains how to do it.</label>
-              <div *ngIf="selectedVanityAddress" fxLayoutGap="0.3em">
-                <label (click)="copyAddress(selectedVanityAddress.address)"><b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></label>
-                <button class="btn btn-success btn-sm icon-button" aria-label="Copy Address"
-                  (click)="copyAddress(selectedVanityAddress.address)">
-                  <i class="material-icons" style="font-size: 16px; width: fit-content; height: fit-content;">
-                    content_copy</i>
-                </button>
-              </div>
+          <div *ngIf="accountMasterKeyDisabled">
+            <h2>Next steps</h2>
+
+            <p>
+              To use your account, copy the following address (via the button) and add it as "Read only" account to your
+              XUMM app. The guide below explains how to do it.
+            </p>
+
+            <div *ngIf="selectedVanityAddress">
+              <code class="address">{{selectedVanityAddress && selectedVanityAddress.address}}</code>
             </div>
-            <div class="alert alert-info" fxLayoutGap="0.3em">
-              <label>Next Steps:</label>
-              <label>To use your new account, please follow the below steps!</label>
-              <div class="listarea">
-                <ul class="notes">
-                  <li>Copy the above address via the button</li>
-                  <li>Close the xApp (NOT YET, DO IT LATER!)</li>
-                  <li>Open the "Settings" screen in you XUMM app</li>
-                  <li>Select "Accounts"</li>
-                  <li>Select "Add account"</li>
-                  <li>Select "Import existing account"</li>
-                  <li>Choose "Read only"</li>
-                  <li>Paste your new vanity address</li>
-                  <li>Follow the step to add an account until the end</li>
-                  <li>Done. You have now access to {{selectedVanityAddress && selectedVanityAddress.address}} via your account {{originalAccountInfo && originalAccountInfo.Account}} </li>
-                  <li>You can now close this xApp</li>
-                </ul>
-              </div>
+
+            <h2>Guide:</h2>
+            <p>To use your new account, please follow the steps below!</p>
+            <ul class="notes" style="list-style-type:decimal;">
+              <li>Copy the above address via the button</li>
+              <li>Close the xApp (NOT YET, DO IT LATER!)</li>
+              <li>Open the "Settings" screen in you XUMM app</li>
+              <li>Select "Accounts"</li>
+              <li>Select "Add account"</li>
+              <li>Select "Import existing account"</li>
+              <li>Choose "Read only"</li>
+              <li>Paste your new vanity address</li>
+              <li>Follow the step to add an account until the end</li>
+              <li>Done. You have now access to {{selectedVanityAddress && selectedVanityAddress.address}} via your
+                account {{originalAccountInfo && originalAccountInfo.Account}} </li>
+              <li>You can now close this xApp</li>
+            </ul>
+            <div class="alert alert-warning">
+              Don't worry you can always find your bought address trough the purchases tab on the homepage of this xApp
             </div>
+
           </div>
 
           <div *ngIf="!loadingData && errorActivation">
@@ -364,10 +369,12 @@
 
         </div>
 
-        <!-- <footer class="nextback fullwidth">
-          <button *ngIf="!accountActivated && !loadingData" class="btn btn-sm btn-success"
-            (click)="activateVanityAddress()" [disabled]="loadingData">Activate Vanity Address</button>
-        </footer> -->
+        <footer class="nextback fullwidth" *ngIf="accountMasterKeyDisabled">
+          <button class="btn btn-success btn-sm w-100" aria-label="Copy Address"
+            (click)="copyAddress(selectedVanityAddress.address)">
+            <i class="material-icons" style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</i>
+            Copy address</button>
+        </footer>
 
       </mat-step>
 
@@ -378,9 +385,12 @@
 
 <div *ngIf="!openSearch">
 
-  <div *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )" style="padding: 0.25rem">
-    <label>No purchases found.</label>
+  <div class="purchases p-2 pt-4">
+    <div class="alert alert-info" *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )">
+      <label>No purchases found.</label>
+    </div>
   </div>
+
   <div class="purchases" *ngIf="!loadingPurchases && purchasedAddresses && purchasedAddresses.length > 0">
     <ul class="accountlist">
       <li *ngFor="let address of purchasedAddresses">
