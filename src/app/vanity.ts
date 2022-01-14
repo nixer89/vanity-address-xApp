@@ -654,6 +654,12 @@ export class VanityComponent implements OnInit, OnDestroy {
   async selectPurchasedAddressAndActivate(account:PurchasedVanityAddresses) {
     this.loadingCheckForPurchaseActivation = true;
     try {
+
+      if(this.testMode != account.testnet) {
+        this.snackBar.open("To activate this address please change the XRP Ledger network XUMM is connected to!", null, {panelClass: 'snackbar-success', duration: 8000, horizontalPosition: 'center', verticalPosition: 'top'});
+        return;
+      }
+
       this.selectedVanityAddress = {
         address: account.vanityAddress,
         identifier: account.identifier
@@ -664,7 +670,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
       //check successfull
       if(paymentCheckResult.account === account.buyerAccount && paymentCheckResult.account === this.originalAccountInfo?.Account && this.testMode === paymentCheckResult.testnet) {
-        this.snackBar.open("Payment checked successfully!", null, {panelClass: 'snackbar-success', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
+        this.snackBar.open("Purchase checked successfully!", null, {panelClass: 'snackbar-success', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
 
         this.informationConfirmed = true;
         this.purchaseStarted = true;
@@ -699,37 +705,26 @@ export class VanityComponent implements OnInit, OnDestroy {
         identifier: account.identifier
       }
 
-      //check purchase!
-      let paymentCheckResult = await this.xummService.validatePayment(account.buyPayloadId);
+      this.informationConfirmed = true;
+      this.purchaseStarted = true;
+      this.purchaseSuccess = true;
+      this.activationStarted = this.accountActivated = this.accountRekeyed = this.accountMasterKeyDisabled = true;
 
-      //check successfull
-      if(paymentCheckResult.account === account.buyerAccount && paymentCheckResult.account === this.originalAccountInfo?.Account && this.testMode === paymentCheckResult.testnet) {
-        this.snackBar.open("Payment checked successfully!", null, {panelClass: 'snackbar-success', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
+      this.openSearch = true;
+      this.loadingData = true;
 
-        this.informationConfirmed = true;
-        this.purchaseStarted = true;
-        this.purchaseSuccess = true;
-        this.activationStarted = this.accountActivated = this.accountRekeyed = this.accountMasterKeyDisabled = true;
-
-        this.openSearch = true;
-        this.loadingData = true;
-
-        setTimeout(() => {
-          console.log("navigating...")
-          this.loadingCheckForPurchaseActivation = false;
-          //silly and dirty, but it does what I need!
-          this.moveNext();
-          this.moveNext();
-          this.moveNext();
-          this.moveNext();
-          this.loadingData = false;
-        }, 500);
-      } else {
-        this.snackBar.open("Payment checked failed!", null, {panelClass: 'snackbar-failed', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
+      setTimeout(() => {
+        console.log("navigating...")
         this.loadingCheckForPurchaseActivation = false;
-      }
+        //silly and dirty, but it does what I need!
+        this.moveNext();
+        this.moveNext();
+        this.moveNext();
+        this.moveNext();
+        this.loadingData = false;
+      }, 500);
     } catch(err) {
-
+      //ignore?
     }
   }
 
