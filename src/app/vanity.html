@@ -267,7 +267,7 @@
         <div class="stepcontainer">
           <h2>Account ownership</h2>
           <p *ngIf="!accountActivated || !accountRekeyed || !accountMasterKeyDisabled">
-            In order to use your new address, it has to hold at least <b>{{accountReserve}} XRP</b>. This is a requirement by the XRP
+            In order to use your new address, it has to hold at least <b>{{accountReserve/1000000}} XRP</b>. This is a requirement by the XRP
             Ledger. After you have activated your new account, we will change the porperties of that account that only
             YOU will have access to it!
           </p>

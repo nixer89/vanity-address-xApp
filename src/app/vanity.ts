@@ -420,7 +420,7 @@ export class VanityComponent implements OnInit, OnDestroy {
             TransactionType: "SignIn"
           },
           custom_meta: {
-            instruction: "Please confirm that you understand that your new vanity address:\n\n- will cost " + this.getPurchaseAmountUSD() + "USD\n- needs activation with 10 XRP\n- is only accessible with " + this.originalAccountInfo.Account + "\n" +
+            instruction: "Confirm that your vanity address:\n- costs " + this.getPurchaseAmountUSD() + " USD\n- needs activation with 10 XRP\n- ONLY accessible with " + this.originalAccountInfo.Account + "\n" +
                           "- if access to " + this.originalAccountInfo.Account + " is lost, " + this.selectedVanityAddress.address + " will be inaccessible too"
           }
       }
@@ -801,7 +801,7 @@ export class VanityComponent implements OnInit, OnDestroy {
                 clearInterval(this.intervalAccountStatus);
                 this.loadingData = false;
               }
-            }, 30000)
+            }, 45000)
           } else {
             this.activationAmountSent = false;
             this.loadingData = false;
