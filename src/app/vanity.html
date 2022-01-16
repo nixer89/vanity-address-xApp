@@ -43,8 +43,7 @@
     class="loader">
     <div class="spinner-border" role="status"></div>
     <label>Loading</label>
-    <!-- <label *ngIf="!loadingData">Loading</label>
-      <label *ngIf="loadingData">Searching addresses</label> -->
+    <label class="floatcenter" *ngIf="loadingData && vanityWordInput && !selectedVanityAddress && !searchResult">Please be patient, searching for addresses can take a while.</label>
   </div>
 
   <div>
@@ -53,11 +52,11 @@
         <h1 class="sticky mb-0">
           <label>Find yourself a vanity XRPL address </label>
           <div fxLayout="row">
-            <div fxLayoutAlign="start start" style="width: 50%">
+            <div fxLayoutAlign="start start" style="width: 80%">
               <label><small>${{getPurchaseAmountUSD()}} / ~{{xrpAmountFirst}} XRP</small></label>
             </div>
-            <div fxLayoutAlign="end end" style="width: 50%">
-              <label class="label-faq" (click)="openFAQ()">FAQ?</label>
+            <div fxLayoutAlign="end end" style="width: 20%">
+              <label class="label-faq" (click)="openFAQ()">FAQ</label>
             </div>
           </div>
         </h1>
@@ -70,13 +69,13 @@
               placeholder="Look for your name / brand" [(ngModel)]="vanityWordInput"
               (ngModelChange)="checkVanitySearchChange()">
           </div>
-          <div>
+          <mat-hint *ngIf="vanityWordInput && vanityWordInput.length > 0 && !vanityWordValid" style="color: #ff5b5b">
+            Invalid characters detected. Please check your input</mat-hint>
+          <div *ngIf="!vanityWordInput || vanityWordValid ">
             <label>Example Address: <code>r<b>{{vanityWordInput}}</b>...</code></label>
           </div>
           <button class="btn btn-lg btn-primarylight search" (click)="searchVanityAddress()"
             [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 3 || !vanityWordValid">Search</button>
-          <mat-hint *ngIf="vanityWordInput && vanityWordInput.length > 0 && !vanityWordValid" style="color: #ff5b5b">
-            Invalid characters detected. Please check your input</mat-hint>
           <ul class="notes">
             <li>XRPL addresses always start with the letter r</li>
             <li>Min. 3 and Max. 8 characters supported</li>
@@ -207,8 +206,8 @@
           </mat-checkbox>
 
           <mat-checkbox [(ngModel)]="checkBoxActivation" (change)="informationConfirmed = false;"
-            [ngClass]="(checkBoxActivation ? 'active': '')">You need to fund your new vanity address with the <b>10
-              XRP</b> reserve fee required by the XRP Ledger.</mat-checkbox>
+            [ngClass]="(checkBoxActivation ? 'active': '')">You need to fund your new vanity address with the 
+            <b>{{accountReserve/1000000}} XRP</b> account reserve required by the XRP Ledger.</mat-checkbox>
 
         </div>
 
@@ -417,7 +416,11 @@
 <div *ngIf="!openSearch && fullAccessAccount">
 
   <div class="purchases p-2 pt-4">
-    <div class="alert alert-info" *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )">
+    <div class="alert alert-info">
+      <label>Below you find all purchases for the account you opened this xApp with:</label>
+      <code>{{originalAccountInfo && originalAccountInfo.Account}}</code>
+    </div>
+    <div class="alert alert-danger text-center-align" *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )">
       <label>No purchases found.</label>
     </div>
   </div>

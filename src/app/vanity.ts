@@ -1000,7 +1000,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       //this.infoLabel = "opening sign request";
       window.ReactNativeWebView.postMessage(JSON.stringify({
         command: "openBrowser",
-        url: "https://support.xumm.app"
+        url: "https://support.xumm.app/hc/en-us/articles/4415447550610"
       }));
     }
   }
