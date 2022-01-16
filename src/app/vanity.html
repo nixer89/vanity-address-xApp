@@ -1,4 +1,4 @@
-<div id="topbar" *ngIf="!stepper && fullAccessAccount">
+<div id="topbar" *ngIf="!stepper && fullAccessAccount && !testMode">
   <mat-toolbar color="secondary" fxLayout="row">
     <div fxLayoutAlign="start start" style="width: 50%;">
       <button class="topbar-button-left btn" (click)="openSearchClick()" [ngClass]="{'active' : openSearch}"
@@ -37,7 +37,13 @@
   <label>Please close this xApp, change the account in the 'Home' screen and open the xApp again.</label>
 </div>
 
-<div *ngIf="openSearch && fullAccessAccount">
+<div *ngIf="!loadingData && testMode" class="alert alert-danger m-3 text-center" fxLayout="column" fxLayoutGap="0.5em">
+  <label>This xApp can not be used while being connected to the XRP Ledger Testnet.</label>
+  <br>
+  <label>Please connect your XUMM app to the XRP Ledger Mainnet and open this xApp again.</label>
+</div>
+
+<div *ngIf="openSearch && fullAccessAccount && !testMode">
 
   <div *ngIf="loadingCheckForPurchaseActivation || loadingData || loadingPurchases || !originalAccountInfo"
     class="loader">
@@ -415,8 +421,8 @@
 
 <div *ngIf="!openSearch && fullAccessAccount">
 
-  <div class="purchases p-2 pt-4">
-    <div class="alert alert-info">
+  <div class="purchases p-2 pt-4" fxLayout="column">
+    <div class="alert alert-info" fxLayout="column">
       <label>Below you find all purchases for the account you opened this xApp with:</label>
       <code>{{originalAccountInfo && originalAccountInfo.Account}}</code>
     </div>

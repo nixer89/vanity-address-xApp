@@ -108,6 +108,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   loadingCheckForPurchaseActivation:boolean = false;
 
   debugMode:boolean = !environment.production;
+  testnetAllowed:boolean = environment.useTestNet;
 
   title: string = "XRPL Vanity";
 
