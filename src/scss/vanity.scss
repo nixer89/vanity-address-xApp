@@ -116,6 +116,13 @@ body.vanity {
     padding: 0.3rem 1rem;
   }
 
+  .label-faq {
+    color: #f8bf4c;
+    text-decoration: underline;
+    font-size: small;
+    cursor: pointer;
+  }
+
   form {
     font-family: 'Ubuntu Mono', monospace;
     input[type='search']::-webkit-search-cancel-button {

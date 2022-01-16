@@ -102,6 +102,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   purchasedAddresses:PurchasedVanityAddresses[] = null;
   loadingPurchases:boolean = false;
 
+  highlightedText:string = null;
   fullAccessAccount:boolean = true;
 
   loadingCheckForPurchaseActivation:boolean = false;
@@ -112,6 +113,10 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   accountReserve:number = 10000000;
   ownerReserve:number = 2000000;
+
+  searchString:string[] = ["dsfdsf","fgtfh","zuukuzk","gfdgfdg","fsfdsf","zuui","qsdsd","kloh","bngjh","adgjig","dfdghjj","qwfguilo","vkhprfhh","vcbmgote",
+  "cloho","scbnhjuz","gjkizf","ssdfzii","ghjhkh","cgfhg","ghgfhsdf","efrhjhlkl","hkues","daniel","richard","peter","wietse","tristan","qwertzui","poiuztre",
+  "asdfghjk","cvbnmjkl","xdcfvgbh","xxxxxxxx","vbnhzuik","fghjmkiz","kiolpztd","xyascbmk","aghjiztr",]
 
   async ngOnInit() {
 
@@ -128,6 +133,21 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.testMode = true;
 
       this.loadingData = false;
+
+      /**
+      console.log("start search");
+      for(let i = 0; i < this.searchString.length;i++) {
+        setTimeout(async () => {
+          let word = this.searchString[i];
+          console.time(word);
+          let searchResultApi:VanitySearchResponse = await this.xummService.searchVanityAddress(word, this.testMode);
+          console.timeEnd(word);
+
+        },0)
+      }
+
+      */
+
       return;
     }
 
@@ -973,6 +993,16 @@ export class VanityComponent implements OnInit, OnDestroy {
     });
 
     this.stepper.previous();
+  }
+
+  openFAQ() {
+    if (typeof window.ReactNativeWebView !== 'undefined') {
+      //this.infoLabel = "opening sign request";
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        command: "openBrowser",
+        url: "https://support.xumm.app"
+      }));
+    }
   }
 
   scrollToTop() {

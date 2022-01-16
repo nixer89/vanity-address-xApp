@@ -48,11 +48,18 @@
   </div>
 
   <div>
-    <div *ngIf="!selectedVanityAddress && !loadingData">
+    <div *ngIf="!selectedVanityAddress && !(loadingData && !vanityWordInput)">
       <div class="p-3 pb-1">
         <h1 class="sticky mb-0">
           <label>Find yourself a vanity XRPL address </label>
-          <label><small>${{getPurchaseAmountUSD()}} / ~{{xrpAmountFirst}} XRP</small></label>
+          <div fxLayout="row">
+            <div fxLayoutAlign="start start" style="width: 50%">
+              <label><small>${{getPurchaseAmountUSD()}} / ~{{xrpAmountFirst}} XRP</small></label>
+            </div>
+            <div fxLayoutAlign="end end" style="width: 50%">
+              <label class="label-faq" (click)="openFAQ()">FAQ?</label>
+            </div>
+          </div>
         </h1>
       </div>
       <div class="sticky p-3 pt-1 pb-1">
@@ -62,6 +69,9 @@
             <input #inpvanityword class="form-control form-control-lg" minlength="3" maxlength="8" name="vanity word"
               placeholder="Look for your name / brand" [(ngModel)]="vanityWordInput"
               (ngModelChange)="checkVanitySearchChange()">
+          </div>
+          <div>
+            <label>Example Address: <code>r<b>{{vanityWordInput}}</b>...</code></label>
           </div>
           <button class="btn btn-lg btn-primarylight search" (click)="searchVanityAddress()"
             [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 3 || !vanityWordValid">Search</button>
@@ -82,7 +92,7 @@
             <h3>Adresses found ({{searchResult.length}}) :</h3>
             <ul class="list">
               <li *ngFor="let address of searchResult">
-                <code>r<b>{{address.address.substring(1,vanityWordInput.length+1)}}</b>{{address.address.substring(vanityWordInput.length+1)}}</code>
+                <code>r<b>{{address.address.substring(1,vanityWordUsedForSearch.length+1)}}</b>{{address.address.substring(vanityWordUsedForSearch.length+1)}}</code>
                 <div>
                   <button class="btn btn-sm btn-success" (click)="selectVanityAddress(address);">Buy</button>
                 </div>
