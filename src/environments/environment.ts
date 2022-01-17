@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  useTestNet: true
+  useMainNet: false
 };
 
 /*

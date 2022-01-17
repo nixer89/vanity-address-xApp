@@ -1,4 +1,11 @@
-<div id="topbar" *ngIf="!stepper && fullAccessAccount && !testMode">
+<div *ngIf="loadingCheckForPurchaseActivation || loadingData || loadingPurchases || !originalAccountInfo"
+  class="loader">
+  <div class="spinner-border" role="status"></div>
+  <label>Loading</label>
+  <label class="floatcenter" *ngIf="loadingData && vanityWordInput && !selectedVanityAddress && !searchResult">Please be patient, searching for addresses can take a while.</label>
+</div>
+
+<div id="topbar" *ngIf="!stepper && fullAccessAccount && useMainNet === !testMode">
   <mat-toolbar color="secondary" fxLayout="row">
     <div fxLayoutAlign="start start" style="width: 50%;">
       <button class="topbar-button-left btn" (click)="openSearchClick()" [ngClass]="{'active' : openSearch}"
@@ -37,21 +44,13 @@
   <label>Please close this xApp, change the account in the 'Home' screen and open the xApp again.</label>
 </div>
 
-<div *ngIf="!loadingData && testMode" class="alert alert-danger m-3 text-center" fxLayout="column" fxLayoutGap="0.5em">
-  <label>This xApp can not be used while being connected to the XRP Ledger Testnet.</label>
+<div *ngIf="!loadingData && (useMainNet === testMode)" class="alert alert-danger m-3 text-center" fxLayout="column" fxLayoutGap="0.5em">
+  <label>This xApp can not be used while being connected to the XRP Ledger {{testMode ? 'Testnet' : 'Mainnet'}}.</label>
   <br>
   <label>Please connect your XUMM app to the XRP Ledger Mainnet and open this xApp again.</label>
 </div>
 
-<div *ngIf="openSearch && fullAccessAccount && !testMode">
-
-  <div *ngIf="loadingCheckForPurchaseActivation || loadingData || loadingPurchases || !originalAccountInfo"
-    class="loader">
-    <div class="spinner-border" role="status"></div>
-    <label>Loading</label>
-    <label class="floatcenter" *ngIf="loadingData && vanityWordInput && !selectedVanityAddress && !searchResult">Please be patient, searching for addresses can take a while.</label>
-  </div>
-
+<div *ngIf="openSearch && fullAccessAccount && useMainNet === !testMode">
   <div>
     <div *ngIf="!selectedVanityAddress && !(loadingData && !vanityWordInput)">
       <div class="p-3 pb-1">
@@ -109,7 +108,7 @@
         <div *ngIf="searchResult.length <= 0">
           <div class="alert alert-warning m-3 p-2 text-center">
             <p>No vanity addresses found for your search.</p>
-            <b>Try changing your search word slightly or come back later as we continue to generate addresses daily!</b>
+            <b>Try changing your search word slightly or come back later as we continue to generate new addresses!</b>
           </div>
         </div>
       </div>
@@ -135,10 +134,8 @@
               [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account ||
               originalAccountInfo.account) ? 'Change account' : 'Sign In' }}</button>
             <hr>
-            <div class="alert alert-warning">
-              <p>Please choose the account which will be able to sign transactions for your new vanity address.</p>
-              <p>This account is also refered to as:</p>
-              <p><b>"Regular Key"</b></p>
+            <div *ngIf="!originalAccountInfo || !originalAccountInfo.Account" class="alert alert-warning">
+              <p>The selected account <b>{{originalAccountInfo && originalAccountInfo.Account}}</b> will be able to sign transactions for your vanity address {{selectedVanityAddress}}</p>
             </div>
 
           </ng-container>
@@ -154,17 +151,19 @@
             class="alert alert-danger">
             <label>The balance of this account is too low!</label>
             <label>You should have at least {{(amountXrpNeeded/1000000)}} XRP in your account!</label>
+            <label>Please choose a different account or top up your account balance.</label>
           </div>
 
           <div *ngIf="originalAccountInfo && originalAccountInfo.RegularKey && !loadingData" class="alert alert-danger">
-            <label>The selected account has a RegularKey set!</label>
-            <label>You can not use this account as "RegularKey" for your vanity address. Please choose a different
+            <label>Your XUMM account <code>{{originalAccountInfo && originalAccountInfo.Account}}</code> has a RegularKey set!</label>
+            <label>That means a different account can sign transactions for it.</label>
+            <label>You can not use this account to buy and configure your vanity address. Please choose a different
               account.</label>
           </div>
 
           <div *ngIf="originalAccountInfo && hasSignerList() && !loadingData" class="alert alert-danger">
-            <label>The selected account has a SignerList set!</label>
-            <label>You can not use this account as "RegularKey" for your vanity address. Please choose a different
+            <label>Your XUMM account <code>{{originalAccountInfo && originalAccountInfo.Account}}</code> has a SignerList set!</label>
+            <label>You can not use this account to buy and configure your vanity address. Please choose a different
               account.</label>
           </div>
         </div>
@@ -357,11 +356,6 @@
             <div class="spinner-border" role="status" style="padding-top: 0.5em;"></div>
           </div> -->
 
-          <footer class="nextback fullwidth">
-            <button *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" class="btn btn-sm btn-success" (click)="moveNext()"
-              [disabled]="!accountMasterKeyDisabled || loadingData">Next</button>
-          </footer>
-
           <div *ngIf="!loadingData && errorActivation">
             <div class="alert alert-danger">
               <label>There was an error activating your new vanity address.</label>
@@ -370,6 +364,11 @@
           </div>
 
         </div>
+
+        <footer class="nextback fullwidth">
+          <button *ngIf="accountActivated && accountRekeyed && accountMasterKeyDisabled" class="btn btn-sm btn-success" (click)="moveNext()"
+            [disabled]="!accountMasterKeyDisabled || loadingData">Next</button>
+        </footer>
 
       </mat-step>
 

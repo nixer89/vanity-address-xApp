@@ -108,7 +108,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   loadingCheckForPurchaseActivation:boolean = false;
 
   debugMode:boolean = !environment.production;
-  testnetAllowed:boolean = environment.useTestNet;
+  useMainNet:boolean = environment.useMainNet;
 
   title: string = "XRPL Vanity";
 
@@ -124,14 +124,15 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.loadingData = true;
 
     if(this.debugMode) {
-      await this.loadAccountData("r9N4v3cWxfh4x6yUNjxNy3DbWUgbzMBLdk");
+      this.testMode = true;
+      await this.loadAccountData("rNixerUVPwrhxGDt4UooDu6FJ7zuofvjCF");
       this.fixAmounts = await this.xummService.getFixAmounts();
 
       let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
       this.xrpAmountFirst = parseInt(response.xrpamount)/1000000;
       
-      this.loadPurchases();
-      this.testMode = true;
+      await this.loadPurchases();
+
 
       this.loadingData = false;
 
@@ -175,16 +176,16 @@ export class VanityComponent implements OnInit, OnDestroy {
           await this.loadPurchases();
 
           this.fullAccessAccount = true;
+          this.loadingData = false;
 
           //await this.loadAccountData(ottData.account); //false = ottResponse.node == 'TESTNET'
         } else {
           this.fullAccessAccount = false;
           this.originalAccountInfo = "no account";
+          this.loadingData = false;
         }
 
         //this.infoLabel = JSON.stringify(this.originalAccountInfo);
-
-        this.loadingData = false;
       }
     });
 
@@ -463,7 +464,7 @@ export class VanityComponent implements OnInit, OnDestroy {
         } else {
           this.informationConfirmed = false;
           if(transactionResult.account && transactionResult.account != this.originalAccountInfo.Account)
-            this.snackBar.open("Signed with wrong account!", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
+            this.snackBar.open("Signed with wrong account! Please sign with the account you chose in the previous step!", null, {panelClass: 'snackbar-failed', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top'});
           else
             this.snackBar.open("Information not confirmed!", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
         }
