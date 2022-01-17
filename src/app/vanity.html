@@ -212,6 +212,12 @@
             vanity address <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b>
           </mat-checkbox>
 
+          <mat-checkbox [(ngModel)]="checkBoxVanityPrivacy" (change)="informationConfirmed = false;"
+            [ngClass]="(checkBoxVanityAccReadOnly ? 'active': '')">If you, as example, chose your name as vanity address,
+            please be aware that your name will be visible in your public account address and therefore in every transaction
+            you make with this account on the XRP Ledger. 
+          </mat-checkbox>
+
           <mat-checkbox [(ngModel)]="checkBoxActivation" (change)="informationConfirmed = false;"
             [ngClass]="(checkBoxActivation ? 'active': '')">You need to fund your new vanity address with the 
             <b>{{accountReserve/1000000}} XRP</b> account reserve required by the XRP Ledger.</mat-checkbox>
@@ -223,8 +229,8 @@
           <button class="btn btn-sm btn-success" (click)="moveNext()" *ngIf="informationConfirmed"
             [disabled]="loadingData">Next</button>
           <button class="btn btn-lg btn-secondary signbutton" (click)="signToConfirm()"
-            *ngIf="!checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || !checkBoxVanityAccAccess || !informationConfirmed"
-            [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || !checkBoxVanityAccAccess || informationConfirmed">
+            *ngIf="!checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || !checkBoxVanityAccAccess || !checkBoxVanityPrivacy || !informationConfirmed"
+            [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || !checkBoxVanityAccAccess || !checkBoxVanityPrivacy || informationConfirmed">
             Sign</button>
         </footer>
       </mat-step>
@@ -360,8 +366,9 @@
 
           <div *ngIf="!loadingData && errorActivation">
             <div class="alert alert-danger">
-              <label>There was an error activating your new vanity address.</label>
-              <label>Please contact @nixerFFM or @WietseWind on twitter or visit https://support.xumm.app</label>
+              <label>There was a problem recognizing your account activation.</label>
+              <label>Please close the xApp and open it again with the account selected (in the XUMM home screen) you *bought* your vanity address with.</label>
+              <label>Then select "Show Purchases" and you will see the available options for your vanity address.</label>
             </div>
           </div>
 

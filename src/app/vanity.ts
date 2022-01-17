@@ -87,6 +87,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   checkBoxSignAccFull:boolean = false;
   checkBoxVanityAccReadOnly:boolean = false;
   checkBoxVanityAccAccess:boolean = false;
+  checkBoxVanityPrivacy:boolean = false;
 
   informationConfirmed:boolean = false;
 
@@ -755,6 +756,9 @@ export class VanityComponent implements OnInit, OnDestroy {
 
     if(this.debugMode) {
       this.activationAmountSent = true;
+      //this.errorActivation = true;
+      //this.loadingData = false;
+      //return;
       this.scrollToBottom();
       setTimeout(() => {
         this.accountActivated = true;
@@ -980,6 +984,7 @@ export class VanityComponent implements OnInit, OnDestroy {
     // move to next step
     this.stepper.next();
     this.stepper.selected.editable = true;
+    this.scrollToTop();
   }
 
   moveBack() {
