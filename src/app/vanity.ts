@@ -632,10 +632,10 @@ export class VanityComponent implements OnInit, OnDestroy {
         txjson: {
           Account: this.originalAccountInfo.Account,
           TransactionType: "Payment",
-          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Payment for buying vanity address: "+this.selectedVanityAddress.address, 'utf8').toString('hex').toUpperCase()}}]
+          Memos : [{Memo: {MemoType: Buffer.from("Vanity-xApp-Memo", 'utf8').toString('hex').toUpperCase(), MemoData: Buffer.from("Payment to purchase vanity address: "+this.selectedVanityAddress.address, 'utf8').toString('hex').toUpperCase()}}]
         },
         custom_meta: {
-          instruction: "Please pay with the account which is already selected.\n\nThis account will be able to sign transactions for " + this.selectedVanityAddress.address,
+          instruction: "Please sign this request to buy your vanity address " + this.selectedVanityAddress.address + "\n\nYou can also sign with a different account than your RegularKey account " + this.originalAccountInfo.Account,
           blob: {
             vanityAddress: this.selectedVanityAddress,
             isPurchase: true,

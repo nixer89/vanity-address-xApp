@@ -134,10 +134,9 @@
               [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account ||
               originalAccountInfo.account) ? 'Change account' : 'Sign In' }}</button>
             <hr>
-            <div *ngIf="!originalAccountInfo || !originalAccountInfo.Account" class="alert alert-warning">
-              <p>The selected account <b>{{originalAccountInfo && originalAccountInfo.Account}}</b> will be able to sign transactions for your vanity address {{selectedVanityAddress}}</p>
+            <div *ngIf="originalAccountInfo && originalAccountInfo.Account" class="alert alert-info">
+              <p>The selected account <code><b>{{originalAccountInfo && originalAccountInfo.Account}}</b></code> will be able to sign transactions for your vanity address {{selectedVanityAddress}}</p>
             </div>
-
           </ng-container>
 
           <div
