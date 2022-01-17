@@ -137,7 +137,7 @@
               [disabled]="loadingData">{{originalAccountInfo && (originalAccountInfo.Account ||
               originalAccountInfo.account) ? 'Change account' : 'Sign In' }}</button>
             <hr>
-            <div *ngIf="originalAccountInfo && originalAccountInfo.Account" class="alert alert-info">
+            <div *ngIf="originalAccountInfo && originalAccountInfo.Account && !balanceTooLow && !hasSignerList() && !originalAccountInfo.RegularKey && !loadingData" class="alert alert-info">
               <p>Your XUMM account <code><b>{{originalAccountInfo && originalAccountInfo.Account}}</b></code> will be able to sign transactions for your new vanity address {{selectedVanityAddress && selectedVanityAddress.address}}</p>
             </div>
           </ng-container>
