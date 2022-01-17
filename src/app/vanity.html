@@ -2,7 +2,10 @@
   class="loader">
   <div class="spinner-border" role="status"></div>
   <label>Loading</label>
-  <label class="floatcenter" *ngIf="loadingData && vanityWordInput && !selectedVanityAddress && !searchResult">Please be patient, searching for addresses can take a while.</label>
+  <div class="floatcenter" *ngIf="loadingData && vanityWordInput && !selectedVanityAddress && !searchResult">
+    <label>Please be patient!</label>
+    <label>Searching can take up to 30s</label>
+  </div>
 </div>
 
 <div id="topbar" *ngIf="!stepper && fullAccessAccount && useMainNet === !testMode">
