@@ -135,7 +135,7 @@
               originalAccountInfo.account) ? 'Change account' : 'Sign In' }}</button>
             <hr>
             <div *ngIf="originalAccountInfo && originalAccountInfo.Account" class="alert alert-info">
-              <p>The selected account <code><b>{{originalAccountInfo && originalAccountInfo.Account}}</b></code> will be able to sign transactions for your vanity address {{selectedVanityAddress}}</p>
+              <p>Your XUMM account <code><b>{{originalAccountInfo && originalAccountInfo.Account}}</b></code> will be able to sign transactions for your new vanity address {{selectedVanityAddress && selectedVanityAddress.address}}</p>
             </div>
           </ng-container>
 
