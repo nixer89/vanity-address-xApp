@@ -27,21 +27,25 @@
   </mat-toolbar>
 </div>
 
-<div class="alert alert-danger" *ngIf="errorLabel">
-  <label>Sorry that this error happened! Please copy the following error and send it to @XummSupport on twitter or
-    visit https://support.xumm.app . Thank you for your help!</label>
-  <label>&nbsp;</label>
-  <label class="break-words" (click)="copyError()">{{errorLabel}}</label>
-  <button mat-button class="xumm-grey-background" aria-label="Copy Error" (click)="copyError()">
-    Copy&nbsp;<mat-icon style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</mat-icon>
-  </button>
+<div class="alert alert-danger floatcenter" *ngIf="errorLabel" fxLayout="column" fxLayoutGap="0.3em">
+  <label>Sorry, an unexpected error happened!</label>
+  <label>Please try again!</label>
+  <label>If this keeps on happening, use the button below to copy the error text to your clipboard:</label>
+  <div class="fullwidth">
+    <button class="btn btn-success btn-sm w-100" aria-label="Copy Error"
+      (click)="copyError()">
+      <i class="material-icons" style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</i>
+      Copy error text</button>
+  </div>
+  <label>You can now open the XUMM Support xApp and send the error to our team. Thank you for your help!</label>
+  <label class="label-link purple" (click)="openSupportApp()"><b>Open Support xApp</b></label>
 </div>
 
 <!--label class="break-words" *ngIf="infoLabel" style="color: red">{{infoLabel}}</label><br><br>
   <label class="break-words" *ngIf="infoLabel2" style="color: red">{{infoLabel2}}</label>
   <label class="break-words" *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label-->
 
-<div *ngIf="!fullAccessAccount" class="alert alert-danger m-3 text-center" fxLayout="column" fxLayoutGap="0.5em">
+<div *ngIf="!loadingData && useMainNet === !testMode && !fullAccessAccount" class="alert alert-danger m-3 text-center" fxLayout="column" fxLayoutGap="0.5em">
   <label>The account you opened this xApp with is not imported as "Full Access" in your XUMM app.</label>
   <br>
   <label>Please close this xApp, change the account in the 'Home' screen and open the xApp again.</label>
@@ -64,7 +68,7 @@
               <label><small>${{getPurchaseAmountUSD()}} / ~{{xrpAmountFirst}} XRP</small></label>
             </div>
             <div fxLayoutAlign="end end" style="width: 20%">
-              <label class="label-faq" (click)="openFAQ()">FAQ</label>
+              <label class="faq orange label-link" (click)="openFAQ()">FAQ</label>
             </div>
           </div>
         </h1>
@@ -138,7 +142,10 @@
               originalAccountInfo.account) ? 'Change account' : 'Sign In' }}</button>
             <hr>
             <div *ngIf="originalAccountInfo && originalAccountInfo.Account && !balanceTooLow && !hasSignerList() && !originalAccountInfo.RegularKey && !loadingData" class="alert alert-info">
-              <p>Your XUMM account <code><b>{{originalAccountInfo && originalAccountInfo.Account}}</b></code> will be able to sign transactions for your new vanity address {{selectedVanityAddress && selectedVanityAddress.address}}</p>
+              <label>Your XUMM account</label>
+              <label><code class="green"><b>{{originalAccountInfo && originalAccountInfo.Account}}</b></code></label>
+              <label>will be able to sign transactions for your new vanity address</label>
+              <label><code><b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></code></label>
             </div>
           </ng-container>
 
@@ -212,6 +219,12 @@
             vanity address <b>{{selectedVanityAddress && selectedVanityAddress.address}}</b>
           </mat-checkbox>
 
+          <mat-checkbox [(ngModel)]="checkBoxMasterKey" (change)="informationConfirmed = false;"
+            [ngClass]="(checkBoxVanityAccReadOnly ? 'active': '')">The private key (master key) of your new vanity address will be disabled so
+            it can not be used to sign transactions. It is highly recommended to keep the private key disabled.
+            DO NOT enable the private key for your vanity address!
+          </mat-checkbox>
+
           <mat-checkbox [(ngModel)]="checkBoxVanityPrivacy" (change)="informationConfirmed = false;"
             [ngClass]="(checkBoxVanityAccReadOnly ? 'active': '')">If you, as example, chose your name as vanity address,
             please be aware that your name will be visible in your public account address and therefore in every transaction
@@ -229,8 +242,8 @@
           <button class="btn btn-sm btn-success" (click)="moveNext()" *ngIf="informationConfirmed"
             [disabled]="loadingData">Next</button>
           <button class="btn btn-lg btn-secondary signbutton" (click)="signToConfirm()"
-            *ngIf="!checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || !checkBoxVanityAccAccess || !checkBoxVanityPrivacy || !informationConfirmed"
-            [disabled]="loadingData || !checkBoxPurchaseAmount || !checkBoxActivation || !checkBoxVanityAccReadOnly || !checkBoxVanityAccAccess || !checkBoxVanityPrivacy || informationConfirmed">
+            *ngIf="!isAllCheckboxesChecked() || !informationConfirmed"
+            [disabled]="loadingData || !isAllCheckboxesChecked() || informationConfirmed">
             Sign</button>
         </footer>
       </mat-step>
@@ -432,7 +445,7 @@
   <div class="purchases p-2 pt-4" fxLayout="column">
     <div class="alert alert-info" fxLayout="column">
       <label>Below you find all purchases for the account you opened this xApp with:</label>
-      <code>{{originalAccountInfo && originalAccountInfo.Account}}</code>
+      <code><b>{{originalAccountInfo && originalAccountInfo.Account}}</b></code>
     </div>
     <div class="alert alert-danger text-center-align" *ngIf="!loadingPurchases && (!purchasedAddresses || purchasedAddresses.length <=0 )">
       <label>No purchases found.</label>

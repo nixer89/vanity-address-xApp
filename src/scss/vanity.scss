@@ -119,10 +119,24 @@ body.vanity {
     padding: 0.3rem 1rem;
   }
 
-  .label-faq {
-    color: #f8bf4c;
-    text-decoration: underline;
+  .faq {
     font-size: small;
+  }
+
+  .orange {
+    color: #f8bf4c;
+  }
+
+  .purple {
+    color: $primary
+  }
+
+  .green {
+    color: $green;
+  }
+
+  .label-link {
+    text-decoration: underline;
     cursor: pointer;
   }
 
@@ -346,6 +360,7 @@ body.vanity {
     text-align: center;
     color: $green;
     margin-bottom: 0.5rem;
+    font-weight: bold;
   }
   .btn.changeaccount {
     width: 100%;

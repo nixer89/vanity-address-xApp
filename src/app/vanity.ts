@@ -88,6 +88,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   checkBoxVanityAccReadOnly:boolean = false;
   checkBoxVanityAccAccess:boolean = false;
   checkBoxVanityPrivacy:boolean = false;
+  checkBoxMasterKey:boolean = false;
 
   informationConfirmed:boolean = false;
 
@@ -134,6 +135,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       
       await this.loadPurchases();
 
+      //this.errorLabel = "AN ERROR HAPPENED!!!!"
 
       this.loadingData = false;
 
@@ -956,6 +958,10 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.loadingData = false;
   }
 
+  isAllCheckboxesChecked(): boolean {
+    return this.checkBoxPurchaseAmount && this.checkBoxActivation && this.checkBoxVanityAccReadOnly && this.checkBoxVanityAccAccess && this.checkBoxVanityPrivacy && this.checkBoxMasterKey;
+  }
+
   copyAddress(address) {
     if(address) {
       clipboard(address);
@@ -1009,6 +1015,16 @@ export class VanityComponent implements OnInit, OnDestroy {
       window.ReactNativeWebView.postMessage(JSON.stringify({
         command: "openBrowser",
         url: "https://support.xumm.app/hc/en-us/articles/4415447550610"
+      }));
+    }
+  }
+
+  openSupportApp() {
+    if (typeof window.ReactNativeWebView !== 'undefined') {
+      //this.infoLabel = "opening sign request";
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        command: "openBrowser",
+        url: "https://xumm.app/detect/xapp:xumm.support?xAppSource=xumm.vanity"
       }));
     }
   }
