@@ -257,7 +257,7 @@
               address</p>
             <code class="address">{{selectedVanityAddress && selectedVanityAddress.address}}</code>
             <hr>
-            <div class="alert alert-danger">
+            <div *ngIf="!purchaseStarted" class="alert alert-danger">
               Funds can not be returned. After successful purchase and account activation, the account is yours and
               YOURS only! The account can not be returned to us!
             </div>
@@ -265,7 +265,7 @@
           </ng-container>
 
           <div *ngIf="!loadingData && purchaseStarted && !purchaseSuccess" class="alert alert-danger">
-            Your payment was not successful on the XRP Ledger MAIN net.
+            Your payment was not successful on the XRP Ledger {{testMode ? 'Testnet' : 'Mainnet'}}.
           </div>
 
           <ng-container *ngIf="!loadingData && purchaseStarted && purchaseSuccess">
