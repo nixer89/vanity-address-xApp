@@ -11,7 +11,6 @@ import { Subscription, Observable } from 'rxjs';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import * as clipboard from 'copy-to-clipboard';
 import * as flagutil from './utils/flagutils';
-import { ActivatedRoute } from '@angular/router';
 import { environment } from '../environments/environment';
 
 @Component({
@@ -23,8 +22,7 @@ export class VanityComponent implements OnInit, OnDestroy {
   constructor(private xummService: XummService,
               private xrplWebSocket: XRPLWebsocket,
               private snackBar: MatSnackBar,
-              private overlayContainer: OverlayContainer,
-              private route: ActivatedRoute) { }
+              private overlayContainer: OverlayContainer) { }
 
 
   @ViewChild('inpvanityword') inpvanityword;
@@ -179,6 +177,30 @@ export class VanityComponent implements OnInit, OnDestroy {
           await this.loadPurchases();
 
           this.fullAccessAccount = true;
+
+          console.log("having full access!");
+
+          try {
+            //read origin data
+            if(ottData.vanityword) {
+
+              let predefined = ottData.vanityword;
+
+              console.log("predefined: " + predefined);
+              if(predefined && typeof predefined === 'string' && predefined.trim().length >=3 &&  predefined.trim().length <= 8) {
+                //we have a deeplink with a vanity word, set it and go!
+                this.vanityWordInput = predefined.trim();
+                this.checkVanitySearchChange();
+                console.log("vanityWordInput for search: " + this.vanityWordInput);
+                await this.searchVanityAddress();
+              }
+            }
+          } catch(err) {
+            //nothing if it fails.. just reset some things
+            this.vanityWordInput = null;
+            this.checkVanitySearchChange();
+          }
+
           this.loadingData = false;
 
           //await this.loadAccountData(ottData.account); //false = ottResponse.node == 'TESTNET'
@@ -206,13 +228,6 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.overlayContainer.getContainerElement().classList.add(this.themeClass);
     });
     //this.infoLabel = JSON.stringify(this.device.getDeviceInfo());
-
-    this.route.queryParams.subscribe(async params => {
-      if(params.found) {
-        this.vanityWordInput = params.found;
-        this.searchVanityAddress();
-      }
-    });
 
     await this.loadFeeReserves();
   }
