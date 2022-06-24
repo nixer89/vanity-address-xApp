@@ -104,6 +104,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   highlightedText:string = null;
   fullAccessAccount:boolean = true;
+  isProUser:boolean = false;
 
   loadingCheckForPurchaseActivation:boolean = false;
 
@@ -126,9 +127,10 @@ export class VanityComponent implements OnInit, OnDestroy {
     if(this.debugMode) {
       this.testMode = true;
       await this.loadAccountData("rNixerUVPwrhxGDt4UooDu6FJ7zuofvjCF");
+      this.isProUser = true;
       this.fixAmounts = await this.xummService.getFixAmounts();
 
-      let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
+      let response = await this.xummService.convertToXrp(this.getPurchaseAmountUSD());
       this.xrpAmountFirst = parseInt(response.xrpamount)/1000000;
       
       await this.loadPurchases();
@@ -157,17 +159,20 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.ottReceived = this.ottChanged.subscribe(async ottData => {
       //this.infoLabel = "ott received: " + JSON.stringify(ottData);
       //console.log("ottReceived: " + JSON.stringify(ottData));
+      //console.log("OTT RECEIVED EVENT");
+
+      this.isProUser = ottData && ottData.account_info && ottData.account_info.proSubscription;
 
       this.fixAmounts = await this.xummService.getFixAmounts();
 
-      let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
-      this.xrpAmountFirst = parseInt(response.xrpamount)/1000000;
+      let response = await this.xummService.convertToXrp(this.getPurchaseAmountUSD());
+      this.xrpAmountFirst = Math.round(parseInt(response.xrpamount)/1000000);
 
       if(ottData) {
 
         //this.infoLabel = JSON.stringify(ottData);
 
-        this.testMode = ottData.nodetype === 'TESTNET';
+        this.testMode = ottData.nodetype != 'MAINNET';
         //this.isTestMode = true;
 
         //this.infoLabel2 = "changed mode to testnet: " + this.testMode;
@@ -519,7 +524,7 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.loadingData = false;
   }
 
-  getPurchaseAmountUSD(): string {
+  getPurchaseAmountUSD(): number {
     /**
       if(this.vanityWordUsedForSearch) {
       let length:string = (this.vanityWordUsedForSearch.length > 8 ? 8 : this.vanityWordUsedForSearch.length) + ""
@@ -536,10 +541,18 @@ export class VanityComponent implements OnInit, OnDestroy {
     }
     **/
 
+    let amount:number = null;
+
     if(this.fixAmounts && this.fixAmounts["*"])
-      return this.fixAmounts["*"]
+      amount = Number(this.fixAmounts["*"]);
     else
-      return "--"
+      amount = null;
+
+    if(amount && this.isProUser)
+      amount = Math.round((amount * 100 * 0.8) / 100);
+
+    return amount;
+
   }
 
   getBackendFeeAmount(): string {
@@ -585,7 +598,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
       await this.xummService.reserveVanityAddress(selectedAddress.address, selectedAddress.identifier, this.testMode);
 
-      let response = await this.xummService.convertToXrp(parseInt(this.getPurchaseAmountUSD()));
+      let response = await this.xummService.convertToXrp(this.getPurchaseAmountUSD());
       this.amountXrpNeeded = parseInt(response.xrpamount) + this.accountReserve + 100000; //add 100000 as "buffer"
 
       this.balanceTooLow = this.getAvailableBalance(this.originalAccountInfo) < this.amountXrpNeeded;

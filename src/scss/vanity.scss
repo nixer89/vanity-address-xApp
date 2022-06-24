@@ -114,15 +114,22 @@ body.vanity {
     box-shadow: 0px 6px 10px darken($primary, 3%);
   }
 
+  div.pro {
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+    background: $primary;
+    small {
+      color: #FAC00F;
+      font-size: 0.6em;
+    }
+  }
+
   .btn.icon-button {
     display: flex;
     padding: 0.3rem 1rem;
   }
-
-  .faq {
-    font-size: small;
-  }
-
+  
   .orange {
     color: #f8bf4c;
   }

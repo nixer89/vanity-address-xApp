@@ -54,7 +54,7 @@
 <div *ngIf="!loadingData && (useMainNet === testMode)" class="alert alert-danger m-3 text-center" fxLayout="column" fxLayoutGap="0.5em">
   <label>This xApp can not be used while being connected to the XRP Ledger {{testMode ? 'Testnet' : 'Mainnet'}}.</label>
   <br>
-  <label>Please connect your XUMM app to the XRP Ledger Mainnet and open this xApp again.</label>
+  <label>Please connect your XUMM app to the XRP Ledger {{testMode ? 'Mainnet' : 'Testnet'}} and open this xApp again.</label>
 </div>
 
 <div *ngIf="openSearch && fullAccessAccount && useMainNet === !testMode">
@@ -64,14 +64,16 @@
         <h1 class="sticky mb-0">
           <label>Find yourself a vanity XRPL address </label>
           <div fxLayout="row">
-            <div fxLayoutAlign="start start" style="width: 80%">
-              <label><small>${{getPurchaseAmountUSD()}} / ~{{xrpAmountFirst}} XRP</small></label>
+            <div fxLayout="row" fxLayoutAlign="start center" style="width: 50%" fxLayoutGap="0.3em">
+              <label><small>${{getPurchaseAmountUSD()}} / ~{{xrpAmountFirst}} XRP</small></label>              
             </div>
-            <div fxLayoutAlign="end end" style="width: 20%">
-              <label class="faq orange label-link" (click)="openFAQ()">FAQ</label>
+            <span style="flex: 1 1 auto;"></span>
+            <div class="pro" *ngIf="isProUser" fxLayout="row" fxLayoutAlign="start center">
+              <label><small>-20% </small></label>
+              <img src="../assets/pro-badge.png" width ="50px" height="21px" alt="XUMM Pro">
             </div>
           </div>
-        </h1>
+        </h1>        
       </div>
       <div class="sticky p-3 pt-1 pb-1">
         <form>
@@ -83,8 +85,15 @@
           </div>
           <mat-hint *ngIf="vanityWordInput && vanityWordInput.length > 0 && !vanityWordValid" style="color: #ff5b5b">
             Invalid characters detected. Please check your input</mat-hint>
-          <div *ngIf="!vanityWordInput || vanityWordValid ">
-            <label>Example Address: <code>r<b>{{vanityWordInput}}</b>...</code></label>
+          
+          <div fxLayout="row">
+            <div *ngIf="!vanityWordInput || vanityWordValid ">
+              <label>Example Address: <code>r<b>{{vanityWordInput}}</b>...</code></label>
+            </div>
+            <span style="flex: 1 1 auto;"></span>
+            <div fxLayout="row" fxLayoutAlign="start center">
+              <label class="orange label-link" (click)="openFAQ()">FAQ</label>
+            </div>
           </div>
           <button class="btn btn-lg btn-primarylight search" (click)="searchVanityAddress()"
             [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 3 || !vanityWordValid">Search</button>
