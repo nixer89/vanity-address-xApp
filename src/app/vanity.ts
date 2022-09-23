@@ -116,6 +116,8 @@ export class VanityComponent implements OnInit, OnDestroy {
   accountReserve:number = 10000000;
   ownerReserve:number = 2000000;
 
+  prospect:string = null;
+
   searchString:string[] = ["dsfdsf","fgtfh","zuukuzk","gfdgfdg","fsfdsf","zuui","qsdsd","kloh","bngjh","adgjig","dfdghjj","qwfguilo","vkhprfhh","vcbmgote",
   "cloho","scbnhjuz","gjkizf","ssdfzii","ghjhkh","cgfhg","ghgfhsdf","efrhjhlkl","hkues","daniel","richard","peter","wietse","tristan","qwertzui","poiuztre",
   "asdfghjk","cvbnmjkl","xdcfvgbh","xxxxxxxx","vbnhzuik","fghjmkiz","kiolpztd","xyascbmk","aghjiztr",]
@@ -173,6 +175,8 @@ export class VanityComponent implements OnInit, OnDestroy {
         //this.infoLabel = JSON.stringify(ottData);
 
         this.testMode = ottData.nodetype != 'MAINNET';
+
+        this.prospect = ottData.user;
         //this.isTestMode = true;
 
         //this.infoLabel2 = "changed mode to testnet: " + this.testMode;
@@ -510,7 +514,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.searchResult = null;
       this.vanityWordUsedForSearch = this.vanityWordInput.trim();
 
-      let searchResultApi:VanitySearchResponse = await this.xummService.searchVanityAddress(this.vanityWordUsedForSearch, this.testMode);
+      let searchResultApi:VanitySearchResponse = await this.xummService.searchVanityAddress(this.vanityWordUsedForSearch, this.testMode, this.prospect);
 
       console.log("Search result: " + JSON.stringify(searchResultApi));
 
@@ -596,7 +600,7 @@ export class VanityComponent implements OnInit, OnDestroy {
         }
       }
 
-      await this.xummService.reserveVanityAddress(selectedAddress.address, selectedAddress.identifier, this.testMode);
+      await this.xummService.reserveVanityAddress(this.prospect, selectedAddress.identifier, this.testMode);
 
       let response = await this.xummService.convertToXrp(this.getPurchaseAmountUSD());
       this.amountXrpNeeded = parseInt(response.xrpamount) + this.accountReserve + 100000; //add 100000 as "buffer"

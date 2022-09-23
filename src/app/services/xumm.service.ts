@@ -66,18 +66,18 @@ export class XummService {
         }
     }
 
-    async searchVanityAddress(searchString: string, testnet: boolean): Promise<VanitySearchResponse> {
+    async searchVanityAddress(searchString: string, testnet: boolean, prospect: string): Promise<VanitySearchResponse> {
         try {
-            return this.app.post(this.xummBackendURL+"/api/v1/vanity/search", {searchWord: searchString, testnet: testnet});
+            return this.app.post(this.xummBackendURL+"/api/v1/vanity/search", {searchWord: searchString, testnet: testnet, prospect: prospect});
         } catch(err) {
             console.log(JSON.stringify(err))
             return null;
         }
     }
     
-    async reserveVanityAddress(account: string, identifier:string, testnet: boolean): Promise<VanityReserveResponse> {
+    async reserveVanityAddress(prospect: string, identifier:string, testnet: boolean): Promise<VanityReserveResponse> {
         try {
-            return this.app.post(this.xummBackendURL+"/api/v1/vanity/reserve", {prospect: account, identifier: identifier, testnet: testnet});
+            return this.app.post(this.xummBackendURL+"/api/v1/vanity/reserve", {prospect: prospect, identifier: identifier, testnet: testnet});
         } catch(err) {
             console.log(JSON.stringify(err))
             return null;
