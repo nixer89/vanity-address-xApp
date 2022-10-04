@@ -65,7 +65,7 @@
           <label>Find yourself a vanity XRPL address </label>
           <div fxLayout="row">
             <div fxLayout="row" fxLayoutAlign="start center" style="width: 50%" fxLayoutGap="0.3em">
-              <label><small>${{getPurchaseAmountUSD()}} / ~{{xrpAmountFirst}} XRP</small></label>              
+              <label><small>€{{getPurchaseAmount()}} / ~{{xrpAmountFirst}} XRP</small></label>              
             </div>
             <span style="flex: 1 1 auto;"></span>
             <div class="pro" *ngIf="isProUser" fxLayout="row" fxLayoutAlign="start center">
@@ -211,8 +211,8 @@
           </div>
 
           <mat-checkbox [(ngModel)]="checkBoxPurchaseAmount" (change)="informationConfirmed = false;"
-            [ngClass]="(checkBoxPurchaseAmount ? 'active': '')">You agree to pay the XRP equivalent of <b>~
-              {{getPurchaseAmountUSD()}} USD</b> to buy your vanity address <b>{{selectedVanityAddress &&
+            [ngClass]="(checkBoxPurchaseAmount ? 'active': '')">You agree to pay <b>{{getPurchaseAmount()}} EUR</b> or the XRP equivalent of <b>~
+              {{getPurchaseAmount()}} EUR</b> to buy your vanity address <b>{{selectedVanityAddress &&
               selectedVanityAddress.address}}</b>
           </mat-checkbox>
 
@@ -262,7 +262,7 @@
         <div class="stepcontainer">
           <ng-container *ngIf="!purchaseSuccess">
             <h2>Confirm</h2>
-            <p>You will have to pay the XRP equivalent of <b>~ {{getPurchaseAmountUSD()}} USD</b> to buy your vanity
+            <p>You will have to pay <b>{{getPurchaseAmount()}} EUR</b> or the XRP equivalent of <b>~ {{getPurchaseAmount()}} EUR</b> to buy your vanity
               address</p>
             <code class="address">{{selectedVanityAddress && selectedVanityAddress.address}}</code>
             <hr>

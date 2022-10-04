@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { AppService } from './app.service';
 import { XummTypes } from 'xumm-sdk';
 import { GenericBackendPostRequest, PurchasedVanityAddresses, TransactionValidation, VanityReserveResponse, VanitySearchResponse } from '../utils/types';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class XummService {
     constructor(private app: AppService) {}
 
-    isTestMode = false;
-    xummBackendURL = this.isTestMode ? 'http://localhost:4001' : 'https://api.xrpl-address.com';
+    xummBackendURL = environment.useMainNet ? 'https://api.xrpl-address.com' :  'https://test-api.xrpl-address.com';
 
     async submitPayload(payload:GenericBackendPostRequest): Promise<XummTypes.XummPostPayloadResponse> {
         try {
@@ -102,9 +102,9 @@ export class XummService {
         }
     }
 
-    async convertToXrp(amountUsd: number): Promise<any> {
+    async convertToXrp(amount: number): Promise<any> {
         try {
-            return this.app.post(this.xummBackendURL+"/api/v1/vanity/xrpvalue", {amount: amountUsd});
+            return this.app.post(this.xummBackendURL+"/api/v1/vanity/xrpvalue", {amount: amount});
         } catch(err) {
             console.log(JSON.stringify(err))
             return [];

@@ -132,7 +132,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       this.isProUser = true;
       this.fixAmounts = await this.xummService.getFixAmounts();
 
-      let response = await this.xummService.convertToXrp(this.getPurchaseAmountUSD());
+      let response = await this.xummService.convertToXrp(this.getPurchaseAmount());
       this.xrpAmountFirst = parseInt(response.xrpamount)/1000000;
       
       await this.loadPurchases();
@@ -167,7 +167,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
       this.fixAmounts = await this.xummService.getFixAmounts();
 
-      let response = await this.xummService.convertToXrp(this.getPurchaseAmountUSD());
+      let response = await this.xummService.convertToXrp(this.getPurchaseAmount());
       this.xrpAmountFirst = Math.round(parseInt(response.xrpamount)/1000000);
 
       if(ottData) {
@@ -356,7 +356,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   checkVanitySearchChange() {
     if(this.vanityWordInput)
-      this.vanityWordValid = /^[a-zA-Z]{1,}$/.test(this.vanityWordInput)
+      this.vanityWordValid = /^[a-zA-Z\d]{1,}$/.test(this.vanityWordInput)
     else
       this.vanityWordValid = false;
   }
@@ -469,7 +469,7 @@ export class VanityComponent implements OnInit, OnDestroy {
             TransactionType: "SignIn"
           },
           custom_meta: {
-            instruction: "Confirm that your vanity address:\n- costs " + this.getPurchaseAmountUSD() + " USD\n- needs activation with 10 XRP\n- ONLY accessible with " + this.originalAccountInfo.Account + "\n" +
+            instruction: "Confirm that your vanity address:\n- costs " + this.getPurchaseAmount() + " EUR\n- needs activation with 10 XRP\n- ONLY accessible with " + this.originalAccountInfo.Account + "\n" +
                           "- if access to " + this.originalAccountInfo.Account + " is lost, " + this.selectedVanityAddress.address + " will be inaccessible too"
           }
       }
@@ -528,7 +528,7 @@ export class VanityComponent implements OnInit, OnDestroy {
     this.loadingData = false;
   }
 
-  getPurchaseAmountUSD(): number {
+  getPurchaseAmount(): number {
     /**
       if(this.vanityWordUsedForSearch) {
       let length:string = (this.vanityWordUsedForSearch.length > 8 ? 8 : this.vanityWordUsedForSearch.length) + ""
@@ -602,7 +602,7 @@ export class VanityComponent implements OnInit, OnDestroy {
 
       await this.xummService.reserveVanityAddress(this.prospect, selectedAddress.identifier, this.testMode);
 
-      let response = await this.xummService.convertToXrp(this.getPurchaseAmountUSD());
+      let response = await this.xummService.convertToXrp(this.getPurchaseAmount());
       this.amountXrpNeeded = parseInt(response.xrpamount) + this.accountReserve + 100000; //add 100000 as "buffer"
 
       this.balanceTooLow = this.getAvailableBalance(this.originalAccountInfo) < this.amountXrpNeeded;
