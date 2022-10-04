@@ -211,7 +211,7 @@
           </div>
 
           <mat-checkbox [(ngModel)]="checkBoxPurchaseAmount" (change)="informationConfirmed = false;"
-            [ngClass]="(checkBoxPurchaseAmount ? 'active': '')">You agree to pay <b>{{getPurchaseAmount()}} EUR</b> or the XRP equivalent of <b>~
+            [ngClass]="(checkBoxPurchaseAmount ? 'active': '')">You agree to pay the XRP equivalent of <b>~
               {{getPurchaseAmount()}} EUR</b> to buy your vanity address <b>{{selectedVanityAddress &&
               selectedVanityAddress.address}}</b>
           </mat-checkbox>
@@ -262,7 +262,7 @@
         <div class="stepcontainer">
           <ng-container *ngIf="!purchaseSuccess">
             <h2>Confirm</h2>
-            <p>You will have to pay <b>{{getPurchaseAmount()}} EUR</b> or the XRP equivalent of <b>~ {{getPurchaseAmount()}} EUR</b> to buy your vanity
+            <p>You will have to pay the XRP equivalent of <b>~ {{getPurchaseAmount()}} EUR</b> to buy your vanity
               address</p>
             <code class="address">{{selectedVanityAddress && selectedVanityAddress.address}}</code>
             <hr>
@@ -433,7 +433,7 @@
               <li>You can now close this xApp</li>
             </ul>
             <div class="alert alert-warning">
-              Don't worry you can always find your bought address trough the purchases tab on the homepage of this xApp
+              Don't worry you can always find your purchased addresses through the "Show Purchases" tab on the main screen of this xApp!
             </div>
         </div>
         <footer class="nextback fullwidth" *ngIf="accountMasterKeyDisabled">
