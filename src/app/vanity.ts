@@ -6,7 +6,6 @@ import { XRPLWebsocket } from './services/xrplWebSocket';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GenericBackendPostRequest, PurchasedVanityAddresses, TransactionValidation, VanitySearchResponse, VanitySearchResult } from './utils/types';
 import { XummTypes } from 'xumm-sdk';
-import { webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import { Subscription, Observable } from 'rxjs';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import * as clipboard from 'copy-to-clipboard';
@@ -37,8 +36,6 @@ export class VanityComponent implements OnInit, OnDestroy {
   themeChanged: Observable<any>;
 
   vanityWordValid:boolean = false;
-
-  websocket: WebSocketSubject<any>;
 
   searchResult:VanitySearchResult[] = null;
 
@@ -293,8 +290,11 @@ export class VanityComponent implements OnInit, OnDestroy {
     let xummResponse:XummTypes.XummPostPayloadResponse;
     try {
         payloadRequest.payload.options = {
-          expire: 2,
-          forceAccount: isValidXRPAddress(payloadRequest.payload.txjson.Account+"")
+          expire: 2
+        }
+
+        if(payloadRequest.payload.txjson.Account && isValidXRPAddress(payloadRequest.payload.txjson.Account+"")) {
+          payloadRequest.payload.options.signers = [payloadRequest.payload.txjson.Account+""];
         }
 
         //console.log("sending xumm payload: " + JSON.stringify(xummPayload));
@@ -325,28 +325,41 @@ export class VanityComponent implements OnInit, OnDestroy {
     //remove old websocket
     try {
 
-      if(this.websocket && !this.websocket.closed) {
-        this.websocket.unsubscribe();
-        this.websocket.complete();
-      }
+      return new Promise( async (resolve, reject) => {
 
-      return new Promise( (resolve, reject) => {
+        //use event listeners over websockets
+        if(typeof window.addEventListener === 'function') {
+          window.addEventListener("message", event => {
+            try {
+              if(event && event.data) {
+                let eventData = JSON.parse(event.data);
+        
+                console.log("WINDOW: " + eventData);
 
-        this.websocket = webSocket(xummResponse.refs.websocket_status);
-        this.websocket.asObservable().subscribe(async message => {
-            //console.log("message received: " + JSON.stringify(message));
-            //this.infoLabel = "message received: " + JSON.stringify(message);
+                if(eventData && eventData.method == "payloadResolved") {
 
-            if((message.payload_uuidv4 && message.payload_uuidv4 === xummResponse.uuid) || message.expired || message.expires_in_seconds <= 0) {
+                  window.removeAllListeners("message");
 
-              if(this.websocket) {
-                this.websocket.unsubscribe();
-                this.websocket.complete();
+                  if(eventData.reason == "SIGNED") {
+                    //create own response
+                    let message = {
+                      signed: true,
+                      payload_uuidv4: eventData.uuid
+                    }
+                    
+                    resolve(message);
+
+                  } else if(eventData.reason == "DECLINED") {
+                    //user closed without signing
+                    resolve(null)
+                  }
+                }
               }
-
-              return resolve(message);
+            } catch(err) {
+              //ignore errors
             }
-        });
+          });
+        }
       });
     } catch(err) {
       this.loadingData = false;
@@ -355,10 +368,20 @@ export class VanityComponent implements OnInit, OnDestroy {
   }
 
   checkVanitySearchChange() {
-    if(this.vanityWordInput)
-      this.vanityWordValid = /^[a-zA-Z\d]{1,}$/.test(this.vanityWordInput)
-    else
+    if(this.vanityWordInput) {
+      this.vanityWordValid = /^[rpshnafwBUDNEGHJKLMPQRSTVWXYZbcdeCgjkmoFqituvAxyz]{3,}$/.test(this.vanityWordInput)
+
+      if(!this.vanityWordValid) {
+        this.vanityWordInput = this.vanityWordInput.replace("I", "i");
+        this.vanityWordInput = this.vanityWordInput.replace("l", "L");
+        this.vanityWordInput = this.vanityWordInput.replace("O", "o");
+
+        this.vanityWordValid = /^[rpshnafwBUDNEGHJKLMPQRSTVWXYZbcdeCgjkmoFqituvAxyz]{3,}$/.test(this.vanityWordInput)
+      }
+    } else {
       this.vanityWordValid = false;
+
+    }
   }
 
   async signIn() {
@@ -461,9 +484,6 @@ export class VanityComponent implements OnInit, OnDestroy {
           pushDisabled: true
       },
       payload: {
-          options: {
-            forceAccount: true
-          },
           txjson: {
             Account: this.originalAccountInfo.Account,
             TransactionType: "SignIn"
@@ -661,9 +681,6 @@ export class VanityComponent implements OnInit, OnDestroy {
         pushDisabled: true
       },
       payload: {
-        options: {
-          forceAccount: true
-        },
         txjson: {
           Account: this.originalAccountInfo.Account,
           TransactionType: "Payment",
@@ -819,9 +836,6 @@ export class VanityComponent implements OnInit, OnDestroy {
         pushDisabled: true
       },
       payload: {
-        options: {
-          forceAccount: true
-        },
         txjson: {
           Account: this.originalAccountInfo.Account,
           TransactionType: "Payment",
@@ -860,23 +874,21 @@ export class VanityComponent implements OnInit, OnDestroy {
               if(!this.accountActivated || !this.accountRekeyed || !this.accountMasterKeyDisabled) {
                 this.errorActivation = true;
                 clearInterval(this.intervalAccountStatus);
-                this.loadingData = false;
               }
             }, 45000)
           } else {
             this.activationAmountSent = false;
-            this.loadingData = false;
           }
         } else {
           this.activationAmountSent = false;
-          this.loadingData = false;
         }
       }
     } catch(err) {
       this.activationAmountSent = false;
-      this.loadingData = false;
       this.handleError(err);
     }
+
+    this.loadingData = false;
   }
 
   async checkVanityAccountStatus(xrplAccount: string) {
@@ -945,9 +957,6 @@ export class VanityComponent implements OnInit, OnDestroy {
         xrplAccount: this.originalAccountInfo.Account
       },
       payload: {
-        options: {
-          forceAccount: true
-        },
         txjson: {
           Account: this.originalAccountInfo.Account,
           TransactionType: "Payment",

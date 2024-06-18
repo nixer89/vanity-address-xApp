@@ -79,12 +79,10 @@
         <form>
           <div class="input-group mb-2 no-wrap-at-all">
             <span class="input-group-text"><i class="bi-search"></i></span>
-            <input #inpvanityword class="form-control form-control-lg" minlength="3" maxlength="8" name="vanity word"
-              placeholder="Look for your name / brand" [(ngModel)]="vanityWordInput"
-              (ngModelChange)="checkVanitySearchChange()">
+            <input #inpvanityword class="form-control form-control-lg" minlength="3" maxlength="8" name="vanity word" placeholder="Look for your name / brand" [(ngModel)]="vanityWordInput" (ngModelChange)="checkVanitySearchChange()">
           </div>
-          <mat-hint *ngIf="vanityWordInput && vanityWordInput.length > 0 && !vanityWordValid" style="color: #ff5b5b">
-            Invalid characters detected. Please check your input</mat-hint>
+          <mat-hint *ngIf="vanityWordInput && vanityWordInput.length > 2 && !vanityWordValid" style="color: #ff5b5b">Invalid characters detected. Please check your input!</mat-hint>
+          
           
           <div fxLayout="row">
             <div *ngIf="!vanityWordInput || vanityWordValid ">
@@ -97,11 +95,13 @@
           </div>
           <button class="btn btn-lg btn-primarylight search" (click)="searchVanityAddress()"
             [disabled]="loadingData || !vanityWordInput || vanityWordInput.trim().length < 3 || !vanityWordValid">Search</button>
-          <ul class="notes">
-            <li>XRPL addresses always start with the letter r</li>
-            <li>Min. 3 and Max. 8 characters supported</li>
-            <li>Allowed: a-Z</li>
-          </ul>
+          <div *ngIf="!searchResult || !vanityWordInput || vanityWordInput.trim().length < 3 || !vanityWordValid">
+            <ul class="notes">
+              <li>XRPL addresses always start with the letter r</li>
+              <li>Min. 3 and Max. 8 characters supported</li>
+              <li>Allowed: a-Z:
+            </ul>
+          </div>
         </form>
       </div>
 
