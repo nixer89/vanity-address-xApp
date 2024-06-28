@@ -327,18 +327,57 @@ export class VanityComponent implements OnInit, OnDestroy {
 
       return new Promise( async (resolve, reject) => {
 
+        window.addEventListener("message", event => {
+          try {
+            if(event && event.data) {
+              let eventData = JSON.parse(event.data);
+      
+              console.log("WINDOW: " + eventData);
+
+              if(eventData && eventData.method == "payloadResolved") {
+
+                window.removeAllListeners("message");
+
+                if(typeof document.addEventListener === 'function') {
+                  document.removeAllListeners("message");
+                }
+
+                if(eventData.reason == "SIGNED") {
+                  //create own response
+                  let message = {
+                    signed: true,
+                    payload_uuidv4: eventData.uuid
+                  }
+                  
+                  resolve(message);
+
+                } else if(eventData.reason == "DECLINED") {
+                  //user closed without signing
+                  resolve(null)
+                }
+              }
+            }
+          } catch(err) {
+            //ignore errors
+          }
+        });
+
         //use event listeners over websockets
-        if(typeof window.addEventListener === 'function') {
-          window.addEventListener("message", event => {
+        if(typeof document.addEventListener === 'function') {
+          document.addEventListener("message", event => {
             try {
-              if(event && event.data) {
-                let eventData = JSON.parse(event.data);
+              let anyEvent:any = event;
+              if(anyEvent && anyEvent.data) {
+                let eventData = JSON.parse(anyEvent.data);
         
                 console.log("WINDOW: " + eventData);
 
                 if(eventData && eventData.method == "payloadResolved") {
 
-                  window.removeAllListeners("message");
+                  document.removeAllListeners("message");
+                  if(typeof window.addEventListener === 'function') {
+                    window.removeAllListeners("message");
+                  }
 
                   if(eventData.reason == "SIGNED") {
                     //create own response
