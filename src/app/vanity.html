@@ -37,7 +37,7 @@
       <i class="material-icons" style="font-size: 16px; width: fit-content; height: fit-content;">content_copy</i>
       Copy error text</button>
   </div>
-  <label>You can now open the XUMM Support xApp and send the error to our team. Thank you for your help!</label>
+  <label>You can now open the Xaman Support xApp and send the error to our team. Thank you for your help!</label>
   <label class="label-link purple" (click)="openSupportApp()"><b>Open Support xApp</b></label>
 </div>
 
@@ -46,7 +46,7 @@
   <label class="break-words" *ngIf="infoLabel3" style="color: red">{{infoLabel3}}</label-->
 
 <div *ngIf="!loadingData && useMainNet === !testMode && !fullAccessAccount" class="alert alert-danger m-3 text-center" fxLayout="column" fxLayoutGap="0.5em">
-  <label>The account you opened this xApp with is not imported as "Full Access" in your XUMM app.</label>
+  <label>The account you opened this xApp with is not imported as "Full Access" in your Xaman app.</label>
   <br>
   <label>Please close this xApp, change the account in the 'Home' screen and open the xApp again.</label>
 </div>
@@ -54,7 +54,7 @@
 <div *ngIf="!loadingData && (useMainNet === testMode)" class="alert alert-danger m-3 text-center" fxLayout="column" fxLayoutGap="0.5em">
   <label>This xApp can not be used while being connected to the XRP Ledger {{testMode ? 'Testnet' : 'Mainnet'}}.</label>
   <br>
-  <label>Please connect your XUMM app to the XRP Ledger {{testMode ? 'Mainnet' : 'Testnet'}} and open this xApp again.</label>
+  <label>Please connect your Xaman app to the XRP Ledger {{testMode ? 'Mainnet' : 'Testnet'}} and open this xApp again.</label>
 </div>
 
 <div *ngIf="openSearch && fullAccessAccount && useMainNet === !testMode">
@@ -70,7 +70,7 @@
             <span style="flex: 1 1 auto;"></span>
             <div class="pro" *ngIf="isProUser" fxLayout="row" fxLayoutAlign="start center">
               <label><small>-20% </small></label>
-              <img src="../assets/pro-badge.png" width ="50px" height="21px" alt="XUMM Pro">
+              <img src="../assets/pro-badge.png" width ="50px" height="21px" alt="Xaman Pro">
             </div>
           </div>
         </h1>        
@@ -151,7 +151,7 @@
               originalAccountInfo.account) ? 'Change account' : 'Sign In' }}</button>
             <hr>
             <div *ngIf="originalAccountInfo && originalAccountInfo.Account && !balanceTooLow && !hasSignerList() && !originalAccountInfo.RegularKey && !loadingData" class="alert alert-info">
-              <label>Your XUMM account</label>
+              <label>Your Xaman account</label>
               <label><code class="green"><b>{{originalAccountInfo && originalAccountInfo.Account}}</b></code></label>
               <label>will be able to sign transactions for your new vanity address</label>
               <label><code><b>{{selectedVanityAddress && selectedVanityAddress.address}}</b></code></label>
@@ -173,14 +173,14 @@
           </div>
 
           <div *ngIf="originalAccountInfo && originalAccountInfo.RegularKey && !loadingData" class="alert alert-danger">
-            <label>Your XUMM account <code>{{originalAccountInfo && originalAccountInfo.Account}}</code> has a RegularKey set!</label>
+            <label>Your Xaman account <code>{{originalAccountInfo && originalAccountInfo.Account}}</code> has a RegularKey set!</label>
             <label>That means a different account can sign transactions for it.</label>
             <label>You can not use this account to buy and configure your vanity address. Please choose a different
               account.</label>
           </div>
 
           <div *ngIf="originalAccountInfo && hasSignerList() && !loadingData" class="alert alert-danger">
-            <label>Your XUMM account <code>{{originalAccountInfo && originalAccountInfo.Account}}</code> has a SignerList set!</label>
+            <label>Your Xaman account <code>{{originalAccountInfo && originalAccountInfo.Account}}</code> has a SignerList set!</label>
             <label>You can not use this account to buy and configure your vanity address. Please choose a different
               account.</label>
           </div>
@@ -218,7 +218,7 @@
 
           <mat-checkbox [(ngModel)]="checkBoxVanityAccReadOnly" (change)="informationConfirmed = false;"
             [ngClass]="(checkBoxVanityAccReadOnly ? 'active': '')">Your new Vanity account <b>{{selectedVanityAddress &&
-              selectedVanityAddress.address}}</b> needs to be imported as "Read only" in the XUMM app! Your account
+              selectedVanityAddress.address}}</b> needs to be imported as "Read only" in the Xaman app! Your account
              <b>{{originalAccountInfo && originalAccountInfo.Account}}</b> will be able to sign transactions for it.
           </mat-checkbox>
 
@@ -389,7 +389,7 @@
           <div *ngIf="!loadingData && errorActivation">
             <div class="alert alert-danger">
               <label>There was a problem recognizing your account activation.</label>
-              <label>Please close the xApp and open it again with the account selected (in the XUMM home screen) you *bought* your vanity address with.</label>
+              <label>Please close the xApp and open it again with the account selected (in the Xaman home screen) you *bought* your vanity address with.</label>
               <label>Then select "Show Purchases" and you will see the available options for your vanity address.</label>
             </div>
           </div>
@@ -409,7 +409,7 @@
 
             <p>
               To use your account, copy the following address (via the button) and add it as "Read only" account to your
-              XUMM app. The guide below explains how to do it.
+              Xaman app. The guide below explains how to do it.
             </p>
 
             <div *ngIf="selectedVanityAddress">
@@ -421,7 +421,7 @@
             <ul class="notes" style="list-style-type:decimal;">
               <li>Copy the above address via the button</li>
               <li>Close the xApp (NOT YET, DO IT LATER!)</li>
-              <li>Open the "Settings" screen in you XUMM app</li>
+              <li>Open the "Settings" screen in you Xaman app</li>
               <li>Select "Accounts"</li>
               <li>Select "Add account"</li>
               <li>Select "Import existing account"</li>
@@ -553,12 +553,12 @@
                   [disabled]="loadingData">Activate now</button>
               </div>
               <div *ngIf="address.testnet != testMode">
-                <label class="xumm-red">Please change the network of your XUMM app to activate this address.</label>
+                <label class="xumm-red">Please change the network of your Xaman app to activate this address.</label>
               </div>
             </div>
             <div>
               <button class="btn btn-sm btn-primarylight" (click)="openImportGuide(address)"
-                  [disabled]="loadingData">Import into XUMM</button>
+                  [disabled]="loadingData">Import into Xaman</button>
             </div>
           </div>
         </div>

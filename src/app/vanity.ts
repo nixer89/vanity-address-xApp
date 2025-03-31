@@ -309,14 +309,14 @@ export class VanityComponent implements OnInit, OnDestroy {
         console.log(JSON.stringify(xummResponse));
         if(!xummResponse || !xummResponse.uuid) {
           this.loadingData = false;
-          this.snackBar.open("Error contacting XUMM backend", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
+          this.snackBar.open("Error contacting Xaman backend", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
           return;
         }
     } catch (err) {
         //console.log(JSON.stringify(err));
         this.handleError(err);
         this.loadingData = false;
-        this.snackBar.open("Could not contact XUMM backend", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
+        this.snackBar.open("Could not contact Xaman backend", null, {panelClass: 'snackbar-failed', duration: 3000, horizontalPosition: 'center', verticalPosition: 'top'});
         return;
     }
 
@@ -534,7 +534,7 @@ export class VanityComponent implements OnInit, OnDestroy {
             TransactionType: "SignIn"
           },
           custom_meta: {
-            instruction: "Confirm that your vanity address:\n- costs " + this.getPurchaseAmount() + " EUR\n- needs activation with 10 XRP\n- ONLY accessible with " + this.originalAccountInfo.Account + "\n" +
+            instruction: "Confirm that your vanity address:\n- costs " + this.getPurchaseAmount() + " EUR\n- needs activation with " + this.accountReserve/1000000 + " XRP\n- ONLY accessible with " + this.originalAccountInfo.Account + "\n" +
                           "- if access to " + this.originalAccountInfo.Account + " is lost, " + this.selectedVanityAddress.address + " will be inaccessible too"
           }
       }
@@ -775,7 +775,7 @@ export class VanityComponent implements OnInit, OnDestroy {
     try {
 
       if(this.testMode != account.testnet) {
-        this.snackBar.open("To activate this address please change the XRP Ledger network XUMM is connected to!", null, {panelClass: 'snackbar-success', duration: 8000, horizontalPosition: 'center', verticalPosition: 'top'});
+        this.snackBar.open("To activate this address please change the XRP Ledger network Xaman is connected to!", null, {panelClass: 'snackbar-success', duration: 8000, horizontalPosition: 'center', verticalPosition: 'top'});
         return;
       }
 
@@ -1110,7 +1110,7 @@ export class VanityComponent implements OnInit, OnDestroy {
       //this.infoLabel = "opening sign request";
       window.ReactNativeWebView.postMessage(JSON.stringify({
         command: "openBrowser",
-        url: "https://xumm.app/detect/xapp:xumm.support?xAppSource=xumm.vanity"
+        url: "https://xaman.app/detect/xapp:xumm.support?xAppSource=xumm.vanity"
       }));
     }
   }
