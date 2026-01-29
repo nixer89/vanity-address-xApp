@@ -101,7 +101,6 @@ export class VanityComponent implements OnInit, OnDestroy {
 
   highlightedText:string = null;
   fullAccessAccount:boolean = true;
-  isProUser:boolean = false;
 
   loadingCheckForPurchaseActivation:boolean = false;
 
@@ -126,7 +125,6 @@ export class VanityComponent implements OnInit, OnDestroy {
     if(this.debugMode) {
       this.testMode = true;
       await this.loadAccountData("rNixerUVPwrhxGDt4UooDu6FJ7zuofvjCF");
-      this.isProUser = true;
       this.fixAmounts = await this.xummService.getFixAmounts();
 
       let response = await this.xummService.convertToXrp(this.getPurchaseAmount());
@@ -159,8 +157,6 @@ export class VanityComponent implements OnInit, OnDestroy {
       //this.infoLabel = "ott received: " + JSON.stringify(ottData);
       //console.log("ottReceived: " + JSON.stringify(ottData));
       //console.log("OTT RECEIVED EVENT");
-
-      this.isProUser = ottData && ottData.account_info && ottData.account_info.proSubscription;
 
       this.fixAmounts = await this.xummService.getFixAmounts();
 
@@ -616,9 +612,6 @@ export class VanityComponent implements OnInit, OnDestroy {
       amount = Number(this.fixAmounts["*"]);
     else
       amount = null;
-
-    if(amount && this.isProUser)
-      amount = Math.round((amount * 100 * 0.8) / 100);
 
     return amount;
 
