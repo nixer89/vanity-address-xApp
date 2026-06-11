@@ -8,7 +8,11 @@
   </div>
 </div>
 
-<div id="topbar" *ngIf="!stepper && fullAccessAccount && useMainNet === !testMode">
+<div *ngIf="!loadingBackend && !backendAvailable" class="warning-background" fxLayout="row" fxLayoutAlign="center center" ngStyle.xs="font-size: 0.9em; white-space: pre-wrap;">
+  <label>Maintenance currently ongoing. We are back soon! Thank you for your understanding!</label>
+</div>
+
+<div id="topbar" *ngIf="!stepper && fullAccessAccount && useMainNet === !testMode && !loadingBackend && backendAvailable">
   <mat-toolbar color="secondary" fxLayout="row">
     <div fxLayoutAlign="start start" style="width: 50%;">
       <button class="topbar-button-left btn" (click)="openSearchClick()" [ngClass]="{'active' : openSearch}"
@@ -57,7 +61,7 @@
   <label>Please connect your Xaman app to the XRP Ledger {{testMode ? 'Mainnet' : 'Testnet'}} and open this xApp again.</label>
 </div>
 
-<div *ngIf="openSearch && fullAccessAccount && useMainNet === !testMode">
+<div *ngIf="openSearch && fullAccessAccount && useMainNet === !testMode && !loadingBackend && backendAvailable">
   <div>
     <div *ngIf="!selectedVanityAddress && !(loadingData && !vanityWordInput)">
       <div class="p-3 pb-1">
@@ -447,7 +451,7 @@
   </div>
 </div>
 
-<div *ngIf="!openSearch && fullAccessAccount">
+<div *ngIf="!openSearch && fullAccessAccount && !loadingBackend && backendAvailable">
 
   <div class="purchases p-2 pt-4" fxLayout="column">
     <div class="alert alert-info" fxLayout="column">

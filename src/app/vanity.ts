@@ -118,9 +118,16 @@ export class VanityComponent implements OnInit, OnDestroy {
   "cloho","scbnhjuz","gjkizf","ssdfzii","ghjhkh","cgfhg","ghgfhsdf","efrhjhlkl","hkues","daniel","richard","peter","wietse","tristan","qwertzui","poiuztre",
   "asdfghjk","cvbnmjkl","xdcfvgbh","xxxxxxxx","vbnhzuik","fghjmkiz","kiolpztd","xyascbmk","aghjiztr",]
 
+  loadingBackend:boolean = true;
+  backendAvailable:boolean = false;
+
   async ngOnInit() {
 
     this.loadingData = true;
+
+    this.loadingBackend = true;
+    this.backendAvailable = await this.xummService.ping();
+    this.loadingBackend = false;
 
     if(this.debugMode) {
       this.testMode = true;
